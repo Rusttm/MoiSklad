@@ -1,3 +1,9 @@
+
+*.json
+config.ini
+googleEmail.txt
+token.pickle
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
