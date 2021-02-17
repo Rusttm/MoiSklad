@@ -9,7 +9,7 @@ from datetime import date
 import configparser
 
 conf = configparser.ConfigParser()
-conf.read('config.ini')
+conf.read('alex.ini')
 URL = conf['MoiSklad']['URL']
 URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
 url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
@@ -117,6 +117,7 @@ def get_customer_name(customer_href):
         print('Error, cant find customer', Exception)
         y = {'name':'Unknown_Customer','tags_list': tags, 'shift_days':shift_days_values}
         return y
+
 def fill_the_df(data_linked):
     try:
         columns_for_df = ['Дата формирования отчета', 'Группы покупателя', 'Покупатель', 'Номер и дата отгрузки',
