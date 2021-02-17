@@ -1,6 +1,8 @@
 
 *.json
-config.ini
+*.ini
+*.xls
+*.xlsx
 googleEmail.txt
 token.pickle
 
