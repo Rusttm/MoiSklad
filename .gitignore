@@ -4,6 +4,7 @@
 *.xls
 *.xlsx
 *.httml
+*.html
 googleEmail.txt
 token.pickle
 
