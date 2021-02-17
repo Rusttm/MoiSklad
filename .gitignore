@@ -3,6 +3,7 @@
 *.ini
 *.xls
 *.xlsx
+*.httml
 googleEmail.txt
 token.pickle
 
