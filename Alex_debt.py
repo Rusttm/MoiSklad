@@ -3,7 +3,7 @@ import requests
 import json
 from base64 import b64encode
 from datetime import datetime
-from openpyxl import Workbook
+import xlsxwriter
 import pandas as pd
 from datetime import date
 import configparser
@@ -15,12 +15,7 @@ URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
 url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
 alex_access_token = conf['MoiSklad']['alex_access_token']
 header_for_token_auth = {'Authorization': 'Bearer %s' % alex_access_token}
-
 url_customers = conf['MoiSklad']['url_customers']
-
-
-
-
 
 def auth_api():
     ''''get token from for api'''
@@ -118,7 +113,7 @@ def get_customer_name(customer_href):
         y = {'name':'Unknown_Customer','tags_list': tags, 'shift_days':shift_days_values}
         return y
 
-def fill_the_df(data_linked):
+def fill_the_df_old(data_linked):
     try:
         columns_for_df = ['Дата формирования отчета', 'Группы покупателя', 'Покупатель', 'Номер и дата отгрузки',
                           'ссылка на документ', 'Отсрочка, дней', 'Дней до оплаты', 'Размер просроченной задолженности', 'Статус']
@@ -138,5 +133,47 @@ def fill_the_df(data_linked):
     except Exception:
         print('Error cant fill the DataFrame', Exception)
 
+def fill_the_df(data_linked):
+    try:
+        columns_for_df = ['Дата формирования отчета', 'Группы покупателя', 'Покупатель', 'Номер и дата отгрузки',
+                          'ссылка на документ', 'Отсрочка, дней', 'Дней до оплаты', 'Размер просроченной задолженности', 'Статус']
+        '''write to excell'''
+        data_linked=sorted(data_linked, key=lambda y: (y[1], y[2], y[3])) #sorting by group and name
+        try:
+            today = date.today()
+            sheet_name = str(today.strftime("%m-%d-%y"))
+            alex_workbook = xlsxwriter.Workbook('alex_debt_%s.xlsx' % today)
+            alex_worksheet = alex_workbook.add_worksheet(str(today.strftime("%m-%d-%y")))
+            bold = alex_workbook.add_format({'bold': True})
+
+            # insert top line
+            for col_num, col_data in enumerate(columns_for_df):
+                alex_worksheet.write(0, col_num, col_data, bold)
+
+            customer_name ='Покупатель'
+            new_customer_name =' '
+            start_row = 1
+            shift_row = 1 #shifting for write total sum
+
+            #write data to file and insert Total sums
+            for row_num, row_data in enumerate(data_linked):
+                new_customer_name=row_data[2]
+                if not ((customer_name == new_customer_name) or (customer_name =='Покупатель')):
+                    alex_worksheet.set_row(row_num + shift_row, None, None, {'level': 0})
+                    alex_worksheet.write(row_num + shift_row, 0, customer_name, bold)
+                    alex_worksheet.write(row_num + shift_row, 6, 'Всего', bold)
+                    alex_worksheet.write(row_num+ shift_row, 7, f'=SUM(H{start_row}:H{row_num+ shift_row})', bold)
+                    shift_row += 1
+                    start_row = row_num + shift_row + 1
+                alex_worksheet.set_row(row_num + shift_row, None, None, {'level': 1})
+                for col_num, col_data in enumerate(row_data):
+                    alex_worksheet.write(row_num + shift_row, col_num, col_data)
+                customer_name = new_customer_name
+            alex_workbook.close()
+        except Exception:
+            print('Error, cant create file', Exception)
+
+    except Exception:
+        print('Error cant fill the DataFrame', Exception)
 
 get_otgruzka_list()

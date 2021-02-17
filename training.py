@@ -60,23 +60,29 @@ def fill_the_df(data_linked):
             for col_num, col_data in enumerate(columns_for_df):
                 alex_worksheet.write(0, col_num, col_data, bold)
 
-            customer_name =''
-            cell_row_group = 2
-            shift_row=1
-            # insert data
+            customer_name ='Покупатель'
+            new_customer_name =' '
+            start_row = 1
+            shift_row = 1 #shifting for write total sum
+
+            #insert data
             for row_num, row_data in enumerate(data_linked):
 
-                for col_num, col_data in enumerate(row_data):
-                    if col_num == 3 : new_customer_name = col_data
-                if customer_name != new_customer_name:
-                    cell_row_group = 2
-                    alex_worksheet.set_row(row_num + shift_row, None, None, {'level': cell_row_group})
-                    alex_worksheet.write(row_num + shift_row, col_num, col_data)
-                else:
-                    cell_row_group = 1
-                    alex_worksheet.write(row_num+shift_row, 3, customer_name)
-                    alex_worksheet.set_row(row_num + shift_row, None, None, {'level': cell_row_group})
+                new_customer_name=row_data[2]
+
+                if not ((customer_name == new_customer_name) or (customer_name =='Покупатель')):
+                    alex_worksheet.set_row(row_num + shift_row, None, None, {'level': 0})
+                    alex_worksheet.write(row_num + shift_row, 0, customer_name, bold)
+                    alex_worksheet.write(row_num + shift_row, 6, 'Всего', bold)
+                    alex_worksheet.write(row_num+ shift_row, 7, f'=SUM(H{start_row}:H{row_num+ shift_row})', bold)
                     shift_row += 1
+                    start_row = row_num + shift_row + 1
+                alex_worksheet.set_row(row_num + shift_row, None, None, {'level': 1})
+                for col_num, col_data in enumerate(row_data):
+                    alex_worksheet.write(row_num + shift_row, col_num, col_data)
+
+                customer_name = new_customer_name
+
 
 
 
