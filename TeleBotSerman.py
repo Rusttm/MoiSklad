@@ -35,7 +35,9 @@ def send_text(message):
         emploee_name = conf['TeleBot'][str(message.chat.id)]
         bot.send_message(message.chat.id, f'Здравствуйте {emploee_name}')
         if message.text.lower() == 'просрочка(файл)':
-                bot.send_document(message.chat.id, debt_f)
+            bot.send_message(message.chat.id, f'{emploee_name}, файл просрочки формируется!')
+            bot.send_document(message.chat.id, debt_f)
+
         else: bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
 
     else: bot.send_message(message.chat.id, f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')
