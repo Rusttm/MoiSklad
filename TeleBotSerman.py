@@ -13,14 +13,16 @@ bot_token = conf['TeleBot']['bot_token']
 bot_user_name = conf['TeleBot']['bot_user_name']
 sticker_id = conf['TeleBot']['sticker_id']
 command = conf['TeleBot']['macos_command']
-company_ids = [str(conf['TeleBot']['my_chat_id']),  str(conf['TeleBot']['alex_id'])]
+company_ids = [str(conf['TeleBot']['my_chat_id']),
+               str(conf['TeleBot']['minasyan_id]),  
+               str(conf['TeleBot']['alex_id'])]
 
 debt_file=str(conf['MoiSklad']['last_debt_file'])
 debt_f = open(debt_file,'rb')
 
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True) #1st True - shrink keyborad 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(файл)', 'Отчет за день')
+keyboard1.row('Просрочка(файл)', 'Обновить файл')
 
 @bot.message_handler(commands=['start'])  #decorator
 def start_message(message):
