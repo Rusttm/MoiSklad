@@ -114,3 +114,5 @@ def fill_the_df(data_linked):
 
 
 #fill_the_df(data_linked)
+def test_module():
+    return True
