@@ -14,7 +14,7 @@ bot_user_name = conf['TeleBot']['bot_user_name']
 sticker_id = conf['TeleBot']['sticker_id']
 command = conf['TeleBot']['macos_command']
 company_ids = [str(conf['TeleBot']['my_chat_id']),
-               str(conf['TeleBot']['minasyan_id]),  
+               str(conf['TeleBot']['minasyan_id']),
                str(conf['TeleBot']['alex_id'])]
 
 debt_file=str(conf['MoiSklad']['last_debt_file'])
