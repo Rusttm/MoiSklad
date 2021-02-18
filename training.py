@@ -1,6 +1,24 @@
 # -*- coding: utf8 -*-
 import xlsxwriter
 from datetime import date
+import configparser
+from pathlib import Path
+
+
+
+def ini_file_write(file_name='bot.ini' , tree='MoiSklad', section='last_debt_file', entry='alex_debt_2021-02-17.xlsx'):
+    try:
+        ini_file = Path(file_name)
+        config = configparser.ConfigParser()
+        config.read(ini_file)
+        config.set(tree, section, entry)
+        config.write(ini_file.open("w"))
+    except:
+        print('ini file hasnt updated')
+
+
+ini_file_write('bot.ini', 'MoiSklad', 'last_debt_file', 'alex_debt_2021-02-17.xlsx')
+ini_file_write('alex.ini', 'MoiSklad', 'last_debt_file', 'alex_debt_2021-02-17.xlsx')
 
 # Create a workbook and add a worksheet.
 workbook = xlsxwriter.Workbook('Expenses01.xlsx')
@@ -95,4 +113,4 @@ def fill_the_df(data_linked):
         print('Error cant fill the DataFrame', Exception)
 
 
-fill_the_df(data_linked)
+#fill_the_df(data_linked)

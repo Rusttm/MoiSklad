@@ -7,6 +7,7 @@ import xlsxwriter
 import pandas as pd
 from datetime import date
 import configparser
+from pathlib import Path
 
 conf = configparser.ConfigParser()
 conf.read('alex.ini')
@@ -16,6 +17,18 @@ url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
 alex_access_token = conf['MoiSklad']['alex_access_token']
 header_for_token_auth = {'Authorization': 'Bearer %s' % alex_access_token}
 url_customers = conf['MoiSklad']['url_customers']
+
+
+
+def ini_file_write(file_name='bot.ini' , tree='MoiSklad', section='last_debt_file', entry='alex_debt_2021-02-17.xlsx'):
+    try:
+        ini_file = Path(file_name)
+        config = configparser.ConfigParser()
+        config.read(ini_file)
+        config.set(tree, section, entry)
+        config.write(ini_file.open("w"))
+    except:
+        print('ini file hasnt updated')
 
 def auth_api():
     ''''get token from for api'''
@@ -142,7 +155,8 @@ def fill_the_df(data_linked):
         try:
             today = date.today()
             sheet_name = str(today.strftime("%m-%d-%y"))
-            alex_workbook = xlsxwriter.Workbook('alex_debt_%s.xlsx' % today)
+            file_name=str('alex_debt_%s.xlsx' % today)
+            alex_workbook = xlsxwriter.Workbook(file_name)
             alex_worksheet = alex_workbook.add_worksheet(str(today.strftime("%m-%d-%y")))
             bold = alex_workbook.add_format({'bold': True})
 
@@ -175,5 +189,9 @@ def fill_the_df(data_linked):
 
     except Exception:
         print('Error cant fill the DataFrame', Exception)
+
+    ini_file_write('bot.ini', 'MoiSklad', 'last_debt_file', file_name)
+    ini_file_write('alex.ini', 'MoiSklad', 'last_debt_file', file_name)
+
 
 get_otgruzka_list()
