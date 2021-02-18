@@ -39,9 +39,6 @@ def send_text(message):
     else: bot.send_message(message.chat.id, f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')
 
 
-def load_file_to_ttelegram():
-    return True
-
 @bot.message_handler(content_types=['sticker'])
 def send_sticker_id(message):
     bot.send_message(message.chat.id, f'your sticker id is {sticker_id}')
