@@ -15,7 +15,8 @@ sticker_id = conf['TeleBot']['sticker_id']
 command = conf['TeleBot']['macos_command']
 company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['minasyan_id']),
-               str(conf['TeleBot']['alex_id'])]
+               str(conf['TeleBot']['alex_id']),
+               str(conf['TeleBot']['mans_id'])]
 
 
 account_sum = str(float(conf['MoiSklad']['account_sum'])/100)
