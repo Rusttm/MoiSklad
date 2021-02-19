@@ -44,7 +44,7 @@ def get_account_summ():
         acc_req = requests.get(url=url_money, headers=header_for_token_auth)
         #with open('money_req_list.json', 'w') as ff:
         #    json.dump(acc_req.json(), ff, ensure_ascii=False)
-        acc_2_3_sum=acc_req.json()['rows'][2]['balance']+acc_req.json()['rows'][2]['balance']
+        acc_2_3_sum=acc_req.json()['rows'][2]['balance']/100+acc_req.json()['rows'][2]['balance']/100
         #account_sum=str(acc_2_3_sum)
         #ini_file_write('finance.ini', 'MoiSklad', 'account_sum', account_sum)  # write data to finance.ini file
         #ini_file_write('finance.ini', 'MoiSklad', 'account_date', today_date)
@@ -58,4 +58,3 @@ def get_account_summ():
 
 
 #ini_file_write('finance.ini', 'MoiSklad', 'account', '0') #write data to finance.ini file
-print(get_account_summ())
