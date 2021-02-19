@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 import xlsxwriter
-from datetime import date
+import datetime
 import configparser
 from pathlib import Path
 import os
@@ -119,6 +119,3 @@ def fill_the_df(data_linked):
 def test_module():
     return True
 
-
-account_sum, account_date = [0, 0]
-print(account_sum, account_date)

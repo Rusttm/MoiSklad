@@ -48,8 +48,8 @@ def send_text(message):
             bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам {debt_file_sum}руб.')
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
-            account_sum, account_date=finance.get_account_summ()
-            bot.send_message(message.chat.id, f'На {account_date} остаток денег на счетах {account_sum}руб.')
+            account_sum = finance.get_account_summ()
+            bot.send_message(message.chat.id, f'Остаток денег на счетах {account_sum}руб.')
         # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
             for sale in sales_control.get_sales_list():
