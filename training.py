@@ -119,9 +119,6 @@ def fill_the_df(data_linked):
 def test_module():
     return True
 
-try:
-    _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    pass
-else:
-    ssl._create_default_https_context = _create_unverified_https_context
+
+account_sum, account_date = [0, 0]
+print(account_sum, account_date)

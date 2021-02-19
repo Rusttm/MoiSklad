@@ -3,6 +3,7 @@
 import telebot
 import configparser
 import sales_control
+import finance
 
 #curl -v -F "chat_id=569502265" -F document=@/Users/users/Desktop/file.txt https://api.telegram.org/bot<TOKEN>/sendDocument
 
@@ -20,8 +21,8 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['mans_id'])]
 
 
-account_sum = str(float(conf['MoiSklad']['account_sum'])/100)
-account_date = conf['MoiSklad']['account_date']
+#account_sum = str(float(conf['MoiSklad']['account_sum'])/100)
+#account_date = conf['MoiSklad']['account_date']
 #prepare xlsx file
 debt_file = str(conf['MoiSklad']['last_debt_file'])
 debt_file_sum = int(conf['MoiSklad']['debt_file_sum'])
@@ -47,6 +48,7 @@ def send_text(message):
             bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам {debt_file_sum}руб.')
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
+            account_sum, account_date=finance.get_account_summ()
             bot.send_message(message.chat.id, f'На {account_date} остаток денег на счетах {account_sum}руб.')
         # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:

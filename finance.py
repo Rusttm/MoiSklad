@@ -24,7 +24,7 @@ except:
     print('Error, cant read .ini file')
 
 today = date.today()
-today_date = str(today.strftime("%d.%m.%y"))
+today_date = str(today.strftime("%d.%m.%y_%H:%M"))
 
 
 def ini_file_write(file_name='finance.ini' , tree='MoiSklad', section='account', entry='0'):
@@ -45,17 +45,17 @@ def get_account_summ():
         #with open('money_req_list.json', 'w') as ff:
         #    json.dump(acc_req.json(), ff, ensure_ascii=False)
         acc_2_3_sum=acc_req.json()['rows'][2]['balance']+acc_req.json()['rows'][2]['balance']
-        account_sum=str(acc_2_3_sum)
-        ini_file_write('finance.ini', 'MoiSklad', 'account_sum', account_sum)  # write data to finance.ini file
-        ini_file_write('finance.ini', 'MoiSklad', 'account_date', today_date)
-        ini_file_write('bot.ini', 'MoiSklad', 'account_sum', account_sum)
-        ini_file_write('bot.ini', 'MoiSklad', 'account_date', today_date)
-        return True
+        #account_sum=str(acc_2_3_sum)
+        #ini_file_write('finance.ini', 'MoiSklad', 'account_sum', account_sum)  # write data to finance.ini file
+        #ini_file_write('finance.ini', 'MoiSklad', 'account_date', today_date)
+        #ini_file_write('bot.ini', 'MoiSklad', 'account_sum', account_sum)
+        #ini_file_write('bot.ini', 'MoiSklad', 'account_date', today_date)
+        return [acc_2_3_sum, today_date]
     except:
         print('Cant read account data')
-        return False
+        return [0, 0]
 
 
 
 #ini_file_write('finance.ini', 'MoiSklad', 'account', '0') #write data to finance.ini file
-get_account_summ()
+print(get_account_summ())
