@@ -23,7 +23,7 @@ except:
     print('Error, cant read in file')
 
 today = date.today()
-today_date = str(today.strftime("%d-%m-%y"))
+today_date = str(today.strftime("%d.%m.%y"))
 
 
 def ini_file_write(file_name='finance.ini' , tree='MoiSklad', section='account', entry='0'):
