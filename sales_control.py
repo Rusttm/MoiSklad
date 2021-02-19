@@ -41,4 +41,3 @@ def get_sales_list():
         print('Cant read sales data', Exception)
 
     return failed_sales_list
-get_sales_list()
