@@ -3,7 +3,9 @@ import xlsxwriter
 from datetime import date
 import configparser
 from pathlib import Path
-
+import os
+import ssl
+import certifi
 
 
 def ini_file_write(file_name='bot.ini' , tree='MoiSklad', section='last_debt_file', entry='alex_debt_2021-02-17.xlsx'):
@@ -117,4 +119,9 @@ def fill_the_df(data_linked):
 def test_module():
     return True
 
-print(round(2.357, 2))
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
