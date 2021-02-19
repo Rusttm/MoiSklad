@@ -38,7 +38,7 @@ def start_message(message):
 def send_text(message):
     if str(message.chat.id) in company_ids:
         emploee_name = conf['TeleBot'][str(message.chat.id)]
-        bot.send_message(message.chat.id, f'Здравствуйте {emploee_name}')
+        bot.send_message(message.chat.id, f'Здравствуйте, {emploee_name}')
         if message.text.lower() == 'просрочка(файл)':
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется!')
             bot.send_document(message.chat.id, debt_f)
