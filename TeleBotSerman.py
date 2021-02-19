@@ -18,8 +18,8 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['alex_id'])]
 
 
-account_sum = conf['TeleBot']['account_sum']
-account_date = conf['TeleBot']['account_date']
+account_sum = str(conf['MoiSklad']['account_sum'])
+account_date = conf['MoiSklad']['account_date']
 #prepare xlsx file
 debt_file=str(conf['MoiSklad']['last_debt_file'])
 debt_file_sum=int(conf['MoiSklad']['debt_file_sum'])
