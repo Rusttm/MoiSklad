@@ -1,9 +1,6 @@
 import configparser
-from math import ceil, floor
-import pathlib
 import requests
 from datetime import date
-import json
 
 
 try:
