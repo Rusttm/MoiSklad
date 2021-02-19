@@ -27,7 +27,7 @@ today_date_req = str(today.strftime("%Y-%m-%d"))
 
 
 def get_sales_list():
-    '''this function gets clients with efficiency <30% in that day'''
+    '''this function gets list of clients with efficiency <30% in that day'''
     try:
         failed_sales_list = []
         sales_req = requests.get(url=f"https://online.moysklad.ru/api/remap/1.2/report/profit/bycounterparty?momentFrom={today_date_req} 00:00:01", headers=header_for_token_auth)
