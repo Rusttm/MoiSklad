@@ -87,9 +87,8 @@ def get_otgruzka_list():
                 remains = int(customer_shift_days) - int(time_delta_days)
                 if  remains < 0 : customer_debt='Просрочено!'
                 else: customer_debt = 'В рамках отсрочки'
-
                     #print(f'Отгрузка № {demand_no} от {demand_date} на сумму {demand_sum} руб. {customer_name} отсрочка {customer_shift_days} не оплачено {difference}')
-                data_linked.append([list_date_format, customer_tags_list,customer_name,demand_no_date,demand_doc,customer_shift_days,remains,difference,customer_debt])
+                data_linked.append([list_date_format, customer_tags_list, customer_name, demand_no_date, customer_shift_days, remains, difference, customer_debt, demand_doc])
         fill_the_df(data_linked)
         return True
     except Exception:
@@ -148,8 +147,8 @@ def fill_the_df_old(data_linked):
 
 def fill_the_df(data_linked):
     try:
-        columns_for_df = ['Дата формирования отчета', 'Группы покупателя', 'Покупатель', 'Номер и дата отгрузки',
-                          'ссылка на документ', 'Отсрочка, дней', 'Дней до оплаты', 'Размер просроченной задолженности', 'Статус']
+        columns_for_df = ['Дата формирования отчета', 'Группы покупателя', 'Покупатель', 'Номер и дата отгрузки', 'Отсрочка, дней', 'Дней до оплаты', 'Размер просроченной задолженности', 'Статус',
+                          'ссылка на документ']
         '''write to excell'''
         data_linked=sorted(data_linked, key=lambda y: (y[1], y[2], y[3])) #sorting by group and name
         try:
@@ -168,21 +167,30 @@ def fill_the_df(data_linked):
             new_customer_name =' '
             start_row = 1
             shift_row = 1 #shifting for write total sum
-
+            doc_sum=0
             #write data to file and insert Total sums
             for row_num, row_data in enumerate(data_linked):
                 new_customer_name=row_data[2]
+                doc_sum += float(row_data[6])
                 if not ((customer_name == new_customer_name) or (customer_name =='Покупатель')):
                     alex_worksheet.set_row(row_num + shift_row, None, None, {'level': 0})
                     alex_worksheet.write(row_num + shift_row, 0, customer_name, bold)
-                    alex_worksheet.write(row_num + shift_row, 6, 'Всего', bold)
-                    alex_worksheet.write(row_num+ shift_row, 7, f'=SUM(H{start_row}:H{row_num+ shift_row})', bold)
+                    alex_worksheet.write(row_num + shift_row, 5, 'Всего', bold)
+                    alex_worksheet.write(row_num+ shift_row, 6, f'=SUM(G{start_row}:G{row_num+ shift_row})', bold)
                     shift_row += 1
                     start_row = row_num + shift_row + 1
                 alex_worksheet.set_row(row_num + shift_row, None, None, {'level': 1})
                 for col_num, col_data in enumerate(row_data):
                     alex_worksheet.write(row_num + shift_row, col_num, col_data)
                 customer_name = new_customer_name
+            '''make last customer summary'''
+            alex_worksheet.write(row_num + shift_row+1, 0, customer_name, bold)
+            alex_worksheet.write(row_num + shift_row+1, 5, 'Всего', bold)
+            alex_worksheet.write(row_num + shift_row+1, 6, f'=SUM(G{start_row}:G{row_num + shift_row+1})', bold)
+
+            '''make all customer summary'''
+            alex_worksheet.write(row_num + shift_row+2, 0, 'По всем клиентам', bold)
+            alex_worksheet.write(row_num + shift_row+2, 1, doc_sum, bold)
             alex_workbook.close()
         except Exception:
             print('Error, cant create file', Exception)
@@ -192,6 +200,8 @@ def fill_the_df(data_linked):
 
     ini_file_write('bot.ini', 'MoiSklad', 'last_debt_file', file_name)
     ini_file_write('alex.ini', 'MoiSklad', 'last_debt_file', file_name)
+    ini_file_write('bot.ini', 'MoiSklad', 'debt_file_sum', str(doc_sum))
+    ini_file_write('alex.ini', 'MoiSklad', 'debt_file_sum', str(doc_sum))
 
 
 get_otgruzka_list()
