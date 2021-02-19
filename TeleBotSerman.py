@@ -17,13 +17,17 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['minasyan_id']),
                str(conf['TeleBot']['alex_id'])]
 
+
+account_sum = conf['TeleBot']['account_sum']
+account_date = conf['TeleBot']['account_date']
+#prepare xlsx file
 debt_file=str(conf['MoiSklad']['last_debt_file'])
 debt_file_sum=int(conf['MoiSklad']['debt_file_sum'])
 debt_f = open(debt_file,'rb')
-
+#run the bot
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True) #1st True - shrink keyborad 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(файл)', 'Обновить файл')
+keyboard1.row('Просрочка(файл)', 'Остатки на счетах')
 
 @bot.message_handler(commands=['start'])  #decorator
 def start_message(message):
@@ -39,8 +43,10 @@ def send_text(message):
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется!')
             bot.send_document(message.chat.id, debt_f)
             bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам {debt_file_sum}руб.')
-
         else: bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
+        if message.text.lower() in ['остатки на счетах', 'остатки']:
+            bot.send_message(message.chat.id, f'На {account_date} остаток денег на счетах{account_sum}')
+
 
     else: bot.send_message(message.chat.id, f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')
 

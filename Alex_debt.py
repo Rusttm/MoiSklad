@@ -126,6 +126,7 @@ def get_customer_name(customer_href):
         return y
 
 def fill_the_df_old(data_linked):
+    '''deprecated function'''
     try:
         columns_for_df = ['Дата формирования отчета', 'Группы покупателя', 'Покупатель', 'Номер и дата отгрузки',
                           'ссылка на документ', 'Отсрочка, дней', 'Дней до оплаты', 'Размер просроченной задолженности', 'Статус']
