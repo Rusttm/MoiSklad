@@ -38,7 +38,7 @@ def send_text(message):
         if message.text.lower() == 'просрочка(файл)':
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется!')
             bot.send_document(message.chat.id, debt_f)
-            bot.send_message(message.chat.id, f'Общая задолженность {debt_file_sum}руб.')
+            bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам с 8фев21г. {debt_file_sum}руб.')
 
         else: bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
 
