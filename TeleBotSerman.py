@@ -43,9 +43,10 @@ def send_text(message):
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется!')
             bot.send_document(message.chat.id, debt_f)
             bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам {debt_file_sum}руб.')
-        else: bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
-        if message.text.lower() in ['остатки на счетах', 'остатки']:
+        elif message.text.lower() in ['остатки на счетах', 'остатки']:
             bot.send_message(message.chat.id, f'На {account_date} остаток денег на счетах{account_sum}')
+        else:
+            bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
 
 
     else: bot.send_message(message.chat.id, f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')
