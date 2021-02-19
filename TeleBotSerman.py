@@ -18,10 +18,10 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['alex_id'])]
 
 
-account_sum = str(conf['MoiSklad']['account_sum'])
+account_sum = str(float(conf['MoiSklad']['account_sum'])/100)
 account_date = conf['MoiSklad']['account_date']
 #prepare xlsx file
-debt_file = str(float(conf['MoiSklad']['last_debt_file'])/100)
+debt_file = str(conf['MoiSklad']['last_debt_file'])
 debt_file_sum = int(conf['MoiSklad']['debt_file_sum'])
 debt_f = open(debt_file,'rb')
 #run the bot
