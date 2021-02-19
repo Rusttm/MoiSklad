@@ -18,6 +18,7 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['alex_id'])]
 
 debt_file=str(conf['MoiSklad']['last_debt_file'])
+debt_file_sum=int(conf['MoiSklad']['debt_file_sum'])
 debt_f = open(debt_file,'rb')
 
 bot = telebot.TeleBot(bot_token)
@@ -37,6 +38,7 @@ def send_text(message):
         if message.text.lower() == 'просрочка(файл)':
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется!')
             bot.send_document(message.chat.id, debt_f)
+            bot.send_message(message.chat.id, f'Общая задолженность {debt_file_sum}руб.')
 
         else: bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
 
