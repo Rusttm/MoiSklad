@@ -52,8 +52,11 @@ def send_text(message):
             bot.send_message(message.chat.id, f'Остаток денег на счетах {account_sum}руб.')
         # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
-            for sale in sales_control.get_sales_list():
-                bot.send_message(message.chat.id, f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {sale[2]}%')
+            sales_list = sales_control.get_sales_list()
+            if len(sales_list)>0:
+                for sale in sales_control.get_sales_list():
+                    bot.send_message(message.chat.id, f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {sale[2]}%')
+            else: bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')
         # unknown command
         else:
             bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')
