@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 import telebot
 import configparser
+import sales_control
 
 #curl -v -F "chat_id=569502265" -F document=@/Users/users/Desktop/file.txt https://api.telegram.org/bot<TOKEN>/sendDocument
 
@@ -28,7 +29,7 @@ debt_f = open(debt_file,'rb')
 #run the bot
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True) #1st True - shrink keyborad 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(файл)', 'Остатки на счетах')
+keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%')
 
 @bot.message_handler(commands=['start'])  #decorator
 def start_message(message):
@@ -45,6 +46,10 @@ def send_text(message):
             bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам {debt_file_sum}руб.')
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             bot.send_message(message.chat.id, f'На {account_date} остаток денег на счетах {account_sum}руб.')
+        elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
+            for sale in sales_control.get_sales_list():
+                bot.send_message(message.chat.id, f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность {sale[2]}%')
+
         else:
             bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
 

@@ -1,12 +1,13 @@
 import configparser
 import pathlib
 import requests
+from datetime import date
 import json
 from base64 import b64encode
 from datetime import datetime
 import xlsxwriter
 import pandas as pd
-from datetime import date
+
 
 try:
     #get data from in file
@@ -20,7 +21,7 @@ try:
     header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token}
     url_customers = conf['MoiSklad']['url_customers']
 except:
-    print('Error, cant read in file')
+    print('Error, cant read .ini file')
 
 today = date.today()
 today_date = str(today.strftime("%d.%m.%y"))
