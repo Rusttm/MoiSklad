@@ -200,8 +200,8 @@ def fill_the_df(data_linked):
 
     ini_file_write('bot.ini', 'MoiSklad', 'last_debt_file', file_name)
     ini_file_write('alex.ini', 'MoiSklad', 'last_debt_file', file_name)
-    ini_file_write('bot.ini', 'MoiSklad', 'debt_file_sum', int(doc_sum))
-    ini_file_write('alex.ini', 'MoiSklad', 'debt_file_sum', int(doc_sum))
+    ini_file_write('bot.ini', 'MoiSklad', 'debt_file_sum', str(int(doc_sum)))
+    ini_file_write('alex.ini', 'MoiSklad', 'debt_file_sum', str(int(doc_sum)))
 
 
 get_otgruzka_list()
