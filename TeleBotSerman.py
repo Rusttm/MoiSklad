@@ -38,21 +38,24 @@ def start_message(message):
 @bot.message_handler(content_types=['text'])
 def send_text(message):
     if str(message.chat.id) in company_ids:
-        emploee_name = conf['TeleBot'][str(message.chat.id)]
-        bot.send_message(message.chat.id, f'Здравствуйте, {emploee_name}')
+        employee_name = conf['TeleBot'][str(message.chat.id)]
+        bot.send_message(message.chat.id, f'Здравствуйте, {employee_name}')
+        # debt file
         if message.text.lower() == 'просрочка(файл)':
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется!')
             bot.send_document(message.chat.id, debt_f)
             bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам {debt_file_sum}руб.')
+        # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             bot.send_message(message.chat.id, f'На {account_date} остаток денег на счетах {account_sum}руб.')
+        # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
             for sale in sales_control.get_sales_list():
                 bot.send_message(message.chat.id, f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность {sale[2]}%')
-
+        # unknown command
         else:
-            bot.send_message(message.chat.id, f'{emploee_name}, команда {message.text} не опознана!')
-
+            bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')
+    # unknown employee
     else: bot.send_message(message.chat.id, f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')
 
 
