@@ -25,15 +25,11 @@ today = date.today()
 today_date = str(today.strftime("%d.%m.%y_%H:%M"))
 today_date_req = str(today.strftime("%Y-%m-%d"))
 
-def round_number(numb: float):
-    x=(numb*10000)//100
-    return x
 
 def get_sales_list():
+    '''this function gets clients with efficiency <30% in that day'''
     try:
         failed_sales_list = []
-        #, filter = date > '2021-02-08 12:00:00'
-        #sales_req = requests.get(url=f'{url_sales_list}?filter=number=100', headers=header_for_token_auth)
         sales_req = requests.get(url=f"https://online.moysklad.ru/api/remap/1.2/report/profit/bycounterparty?momentFrom={today_date_req} 00:00:01", headers=header_for_token_auth)
         #with open('sales_req_list.json', 'w') as ff:
         #    json.dump(sales_req.json(), ff, ensure_ascii=False)
@@ -41,10 +37,10 @@ def get_sales_list():
             client_name=client['counterparty']['name']
             client_sales=round(client['sellSum']/100,2)
             client_profit = client['profit']/100
-            client_rent=round_number(client_profit/client_sales)
+            client_rent=round(client_profit/client_sales,2)*100
             if client_rent < 30:
                 failed_sales_list.append([client_name, client_sales, client_rent])
-        return failed_sales_list
     except Exception:
         print('Cant read sales data', Exception)
-        return failed_sales_list
+
+    return failed_sales_list

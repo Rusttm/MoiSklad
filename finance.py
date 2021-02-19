@@ -39,6 +39,7 @@ def ini_file_write(file_name='finance.ini' , tree='MoiSklad', section='account',
         print('ini file hasnt updated')
 
 def get_account_summ():
+    '''this function gets account remains'''
     try:
         acc_req = requests.get(url=url_money, headers=header_for_token_auth)
         #with open('money_req_list.json', 'w') as ff:
