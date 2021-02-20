@@ -6,7 +6,7 @@ from pathlib import Path
 import os
 import ssl
 import certifi
-
+from datetime import date
 
 def ini_file_write(file_name='bot.ini' , tree='MoiSklad', section='last_debt_file', entry='alex_debt_2021-02-17.xlsx'):
     try:
@@ -119,3 +119,7 @@ def fill_the_df(data_linked):
 def test_module():
     return True
 
+today = date.today()
+today_date = str(today.strftime("%d.%m.%y_%H:%M"))
+today_date_req = str(today.strftime("%Y-%m-%d"))
+print(today_date_req)
