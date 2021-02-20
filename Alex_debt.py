@@ -89,11 +89,11 @@ def get_otgruzka_list():
                 else: customer_debt = 'В рамках отсрочки'
                     #print(f'Отгрузка № {demand_no} от {demand_date} на сумму {demand_sum} руб. {customer_name} отсрочка {customer_shift_days} не оплачено {difference}')
                 data_linked.append([list_date_format, customer_tags_list, customer_name, demand_no_date, customer_shift_days, remains, difference, customer_debt, demand_doc])
-        fill_the_df(data_linked)
-        return True
+
+        return fill_the_df(data_linked)
     except Exception:
         print('Error, cant get sales list', Exception)
-        return False
+        return fill_the_df(data_linked)
 
 def get_customer_name(customer_href):
     '''Return customer name'''
@@ -151,13 +151,13 @@ def fill_the_df(data_linked):
         columns_for_df = ['Дата формирования отчета', 'Группы покупателя', 'Покупатель', 'Номер и дата отгрузки', 'Отсрочка, дней', 'Дней до оплаты', 'Размер просроченной задолженности', 'Статус',
                           'ссылка на документ']
         '''write to excell'''
-        data_linked=sorted(data_linked, key=lambda y: (y[1], y[2], y[3])) #sorting by group and name
+        data_linked = sorted(data_linked, key=lambda y: (y[1], y[2], y[3])) #sorting by group and name
         try:
             today = date.today()
-            sheet_name = str(today.strftime("%m-%d-%y"))
+            file_date = str(today.strftime("%d.%m.%y"))
             file_name=str('alex_debt_%s.xlsx' % today)
             alex_workbook = xlsxwriter.Workbook(file_name)
-            alex_worksheet = alex_workbook.add_worksheet(str(today.strftime("%m-%d-%y")))
+            alex_worksheet = alex_workbook.add_worksheet(str(today.strftime("%d-%m-%y")))
             bold = alex_workbook.add_format({'bold': True})
 
             # insert top line
@@ -191,18 +191,18 @@ def fill_the_df(data_linked):
 
             '''make all customer summary'''
             alex_worksheet.write(row_num + shift_row+2, 0, 'По всем клиентам', bold)
-            alex_worksheet.write(row_num + shift_row+2, 1, doc_sum, bold)
+            alex_worksheet.write(row_num + shift_row+2, 2, doc_sum, bold)
             alex_workbook.close()
+            return [file_name, round(doc_sum,2), file_date]
         except Exception:
             print('Error, cant create file', Exception)
-
+            return [NAN, NAN, NAN]
     except Exception:
         print('Error cant fill the DataFrame', Exception)
-
+        return [NAN, NAN, NAN]
     ini_file_write('bot.ini', 'MoiSklad', 'last_debt_file', file_name)
     ini_file_write('alex.ini', 'MoiSklad', 'last_debt_file', file_name)
     ini_file_write('bot.ini', 'MoiSklad', 'debt_file_sum', str(int(doc_sum)))
     ini_file_write('alex.ini', 'MoiSklad', 'debt_file_sum', str(int(doc_sum)))
 
 
-get_otgruzka_list()

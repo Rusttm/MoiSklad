@@ -4,6 +4,7 @@ import telebot
 import configparser
 import sales_control
 import finance
+import Alex_debt
 
 #curl -v -F "chat_id=569502265" -F document=@/Users/users/Desktop/file.txt https://api.telegram.org/bot<TOKEN>/sendDocument
 
@@ -43,9 +44,10 @@ def send_text(message):
         #bot.send_message(message.chat.id, f'Здравствуйте, {employee_name}')
         # debt file
         if message.text.lower() == 'просрочка(файл)':
-            bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется!')
-            bot.send_document(message.chat.id, debt_f)
-            bot.send_message(message.chat.id, f'Общая задолженность по отгрузкам {debt_file_sum}руб.')
+            bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется, подождите!')
+            alex_file_data = Alex_debt.get_otgruzka_list()
+            #bot.send_document(message.chat.id, str(alex_file_data[0]))
+            bot.send_message(message.chat.id, f'Общая задолженность {alex_file_data[2]} по отгрузкам {alex_file_data[1]}руб.')
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()
