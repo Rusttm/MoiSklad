@@ -21,7 +21,11 @@ def get_account_summ():
         acc_req = requests.get(url=url_money, headers=header_for_token_auth)
         #with open('money_req_list.json', 'w') as ff:
         #    json.dump(acc_req.json(), ff, ensure_ascii=False)
-        acc_2_3_sum=acc_req.json()['rows'][2]['balance']/100+acc_req.json()['rows'][3]['balance']/100
+        accounts_list=[acc_req.json()['rows'][0]['balance']/100,
+                       acc_req.json()['rows'][1]['balance']/100,
+                       acc_req.json()['rows'][2]['balance']/100,
+                       acc_req.json()['rows'][3]['balance']/100]
+        acc_2_3_sum=accounts_list[2]+accounts_list[3]
         return acc_2_3_sum
     except:
         print('Cant read account data')
