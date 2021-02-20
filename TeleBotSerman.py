@@ -1,12 +1,10 @@
-''' telebot that sends files and statistic information '''
+""" telebot that sends files and statistic information """
 # -*- coding: utf8 -*-
 import telebot
 import configparser
 import sales_control
 import finance
 import Alex_debt
-
-#curl -v -F "chat_id=569502265" -F document=@/Users/users/Desktop/file.txt https://api.telegram.org/bot<TOKEN>/sendDocument
 
 conf = configparser.ConfigParser()
 conf.read('bot.ini')
@@ -21,34 +19,28 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['alex_id']),
                str(conf['TeleBot']['mans_id'])]
 
-
-#account_sum = str(float(conf['MoiSklad']['account_sum'])/100)
-#account_date = conf['MoiSklad']['account_date']
-#prepare xlsx file
-#debt_file = str(conf['MoiSklad']['last_debt_file'])
-#debt_file_sum = int(conf['MoiSklad']['debt_file_sum'])
-#debt_f = open(debt_file,'rb')
-#run the bot
 bot = telebot.TeleBot(bot_token)
-keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True) #1st True - shrink keyborad 2nd  True  -hide keyboard
+keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
 keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%')
 
-@bot.message_handler(commands=['start'])  #decorator
+
+@bot.message_handler(commands=['start'])  # decorator
 def start_message(message):
     bot.send_message(message.chat.id, 'Привет, я сервисный бот', reply_markup=keyboard1)
+
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
     if str(message.chat.id) in company_ids:
         employee_name = conf['TeleBot'][str(message.chat.id)]
-        #bot.send_message(message.chat.id, f'Здравствуйте, {employee_name}')
         # debt file
         if message.text.lower() == 'просрочка(файл)':
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется, подождите!')
             alex_file_data = Alex_debt.get_otgruzka_list()
             debt_f = open(alex_file_data[0], 'rb')
             bot.send_document(message.chat.id, debt_f)
-            bot.send_message(message.chat.id, f'Общая задолженность {alex_file_data[2]} по отгрузкам {alex_file_data[1]}руб.')
+            bot.send_message(message.chat.id,
+                             f'Общая задолженность {alex_file_data[2]} по отгрузкам {alex_file_data[1]}руб.')
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()
@@ -56,15 +48,19 @@ def send_text(message):
         # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
             sales_list = sales_control.get_sales_list()
-            if len(sales_list)>0:
+            if len(sales_list) > 0:
                 for sale in sales_control.get_sales_list():
-                    bot.send_message(message.chat.id, f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {sale[2]}%')
-            else: bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')
+                    bot.send_message(message.chat.id,
+                                     f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {sale[2]}%')
+            else:
+                bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')
         # unknown command
         else:
             bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')
     # unknown employee
-    else: bot.send_message(message.chat.id, f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')
+    else:
+        bot.send_message(message.chat.id,
+                         f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')
 
 
 @bot.message_handler(content_types=['sticker'])
@@ -72,7 +68,5 @@ def send_sticker_id(message):
     bot.send_message(message.chat.id, f'your sticker id is {sticker_id}')
     bot.send_sticker(message.chat.id, sticker_id)
 
+
 bot.polling()
-
-
-
