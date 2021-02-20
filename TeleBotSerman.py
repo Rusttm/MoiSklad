@@ -25,9 +25,9 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
 #account_sum = str(float(conf['MoiSklad']['account_sum'])/100)
 #account_date = conf['MoiSklad']['account_date']
 #prepare xlsx file
-debt_file = str(conf['MoiSklad']['last_debt_file'])
-debt_file_sum = int(conf['MoiSklad']['debt_file_sum'])
-debt_f = open(debt_file,'rb')
+#debt_file = str(conf['MoiSklad']['last_debt_file'])
+#debt_file_sum = int(conf['MoiSklad']['debt_file_sum'])
+#debt_f = open(debt_file,'rb')
 #run the bot
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True) #1st True - shrink keyborad 2nd  True  -hide keyboard
@@ -46,7 +46,8 @@ def send_text(message):
         if message.text.lower() == 'просрочка(файл)':
             bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется, подождите!')
             alex_file_data = Alex_debt.get_otgruzka_list()
-            #bot.send_document(message.chat.id, str(alex_file_data[0]))
+            debt_f = open(alex_file_data[0], 'rb')
+            bot.send_document(message.chat.id, debt_f)
             bot.send_message(message.chat.id, f'Общая задолженность {alex_file_data[2]} по отгрузкам {alex_file_data[1]}руб.')
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
