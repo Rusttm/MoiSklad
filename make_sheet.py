@@ -40,6 +40,8 @@ def make_sheet():
 
 
 
+
+
 #делаем доступ к листу
 def make_access(spreadsheetId,user_email=conf['GOOGLE']['user_email']):
     driveService = apiclient.discovery.build('drive', 'v3', http = httpAuth) # Выбираем работу с Google Drive и 3 версию API
