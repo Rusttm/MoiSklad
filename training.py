@@ -117,9 +117,15 @@ def fill_the_df(data_linked):
 
 #fill_the_df(data_linked)
 def test_module():
-    return True
+    new_sheet_name = '3a'
+    shift = 1
+    got_list=['1a','3a','3a+1','3a_1','5a']
+    while new_sheet_name in got_list:
+        new_sheet_name = f"{new_sheet_name}_{shift}"
+        shift += 1
+    return new_sheet_name
 
 today = date.today()
 today_date = str(today.strftime("%d.%m.%y_%H:%M"))
 today_date_req = str(today.strftime("%Y-%m-%d"))
-print(today_date_req)
+print(test_module())

@@ -108,13 +108,18 @@ class GoogleBook:
         try:
             got_list = self.get_sheets_list()
             got_list = sorted(got_list, key=lambda y: (y[0], y[1]))
-            last_id = got_list[-1][0]+1
+            last_id = got_list[-1][0]+1  # find last id
+            got_sheet_names = [x[1] for x in got_list]  #make list of sheets
+            shift = 0
+            while new_sheet_name in got_sheet_names:
+                new_sheet_name = f"{new_sheet_name}_{shift}"
+                shift+= 1
             request_body={
                 "requests": [{
                     "addSheet": {
                     "properties":{
                         "sheetId": last_id,
-                        #"title": new_sheet_name,
+                        "title": new_sheet_name,
                         "tabColor": {
                         "red": 0.01,
                         "green": 0.9,
