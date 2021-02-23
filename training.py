@@ -125,6 +125,9 @@ def test_module():
         shift += 1
     return new_sheet_name
 
+def test_module2():
+    return ['1skghspkghd;lfgka','3a','3a+1','3a_1','5aadhsdfkljh sdkljfh']
+
 today = date.today()
 today_date = str(today.strftime("%d.%m.%y_%H:%M"))
 today_date_req = str(today.strftime("%Y-%m-%d"))
@@ -133,3 +136,5 @@ today_date_req = str(today.strftime("%Y-%m-%d"))
 a=[1,2,3,4]
 b=[1,2,3,5]
 print(zip(a,b))
+
+
