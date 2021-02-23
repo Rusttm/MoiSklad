@@ -14,8 +14,8 @@ locale.setlocale(locale.LC_ALL, 'ru_RU')
 
 try:
     conf = configparser.ConfigParser()
-    #conf.read('/Volumes/GoogleDrive/My Drive/Python/MoiSklad/MoiSklad/google_books.ini') # macos version
-    conf.read('D:/Python_proj/MoiSklad/google_books.ini') # WINdows version path
+    conf.read('/Volumes/GoogleDrive/My Drive/Python/MoiSklad/MoiSklad/google_books.ini') # macos version
+    #conf.read('D:/Python_proj/MoiSklad/google_books.ini') # WINdows version path
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
