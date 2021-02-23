@@ -56,10 +56,10 @@ def send_text(message):
             else:
                 bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')
         # forest price
-        #elif message.text.lower() in ['прайс', 'форест']:
+        elif message.text.lower() in ['прайс', 'цены', 'форест']:
         #    scrapped = Scraping.run_scrapy()
-        #    my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=0'
-        #    bot.send_message(message.chat.id, f'Сравнение цен по ссылке {my_book_link}')
+            my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=0'
+            bot.send_message(message.chat.id, f'Сравнение цен по ссылке {my_book_link}')
         # unknown command
         else:
             bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')
