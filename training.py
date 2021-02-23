@@ -128,4 +128,8 @@ def test_module():
 today = date.today()
 today_date = str(today.strftime("%d.%m.%y_%H:%M"))
 today_date_req = str(today.strftime("%Y-%m-%d"))
-print(test_module())
+
+
+a=[1,2,3,4]
+b=[1,2,3,5]
+print(zip(a,b))

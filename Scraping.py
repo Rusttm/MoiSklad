@@ -19,12 +19,6 @@ try:
 except IndexError:
     print('Cant read data from ini file', Exception)
 
-class BrickSetSpider(scrapy.Spider):
-    name = "brickset_spider"
-    start_urls = ['http://brickset.com/sets/year-2016']
-
-
-
 
 def try_with_scrapy():
     cookie_content = {'BITRIX_SM_SALE_UID': '13563937',
