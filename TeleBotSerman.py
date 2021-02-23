@@ -5,7 +5,7 @@ import configparser
 import sales_control
 import finance
 import Alex_debt
-
+import Scraping
 
 conf = configparser.ConfigParser()
 conf.read('bot.ini')
