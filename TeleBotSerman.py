@@ -5,6 +5,7 @@ import configparser
 import sales_control
 import finance
 import Alex_debt
+import Scraping
 
 conf = configparser.ConfigParser()
 conf.read('bot.ini')
@@ -21,7 +22,7 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
 
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%')
+keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены')
 
 
 @bot.message_handler(commands=['start'])  # decorator
@@ -54,6 +55,11 @@ def send_text(message):
                                      f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {sale[2]}%')
             else:
                 bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')
+        # forest price
+        elif message.text.lower() in ['прайс', 'форест']:
+            scrapped = Scraping.run_scrapy()
+            my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=0'
+            bot.send_message(message.chat.id, f'Сравнение цен по ссылке {my_book_link}')
         # unknown command
         else:
             bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')

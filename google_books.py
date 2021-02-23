@@ -201,3 +201,6 @@ def send_to_forest_sheet(name_array =[], price_array=[]):
     work_forest_book = GoogleBook(parsing_book)
     work_forest_book.append_array(zipped_data)
     return zipped_data
+
+#forest_pars=GoogleBook(parsing_book)
+#forest_pars.make_new_sheet()

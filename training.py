@@ -7,6 +7,7 @@ import os
 import ssl
 import certifi
 from datetime import date
+from scrapy import cmdline
 
 def ini_file_write(file_name='bot.ini' , tree='MoiSklad', section='last_debt_file', entry='alex_debt_2021-02-17.xlsx'):
     try:
@@ -138,3 +139,8 @@ b=[1,2,3,5]
 print(zip(a,b))
 
 
+def start_scrapy():
+    cmdline.execute("scrapy runspider scrapy_lib.py".split())  # followall is the spider name
+    return True
+
+start_scrapy()
