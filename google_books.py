@@ -200,7 +200,6 @@ def send_to_forest_sheet(name_array =[], price_array=[]):
         for i in range(len(name_array)):
             zipped_data.append([name_array[i], locale.atof(price_array[i])])
     work_forest_book = GoogleBook(parsing_book)
-    work_forest_book.clear_data_sheet()
     work_forest_book.append_array(zipped_data)
     return zipped_data
 
