@@ -4,8 +4,8 @@ import google_books
 
 class ForestSpider(scrapy.Spider):
     name = "forest_spider"
-    start_urls = ['https://www.for-est.ru/catalog/skoby/obivochnye/',
-                  'https://www.for-est.ru/catalog/skoby/karkasnye/']
+    start_urls = ['https://www.for-est.ru/catalog/skoby/obivochnye/',  'https://www.for-est.ru/catalog/krepezh/skoby/obivochnye/',
+                  'https://www.for-est.ru/catalog/skoby/karkasnye/', 'https://www.for-est.ru/catalog/krepezh/skoby/karkasnye/']
 
     def parse(self, response):
         names = response.xpath('//div[@class = "description"]/div[@class = "desc_name"]/a/text()').extract()
