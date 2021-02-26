@@ -42,6 +42,8 @@ def send_text(message):
             bot.send_document(message.chat.id, debt_f)
             bot.send_message(message.chat.id,
                              f'Общая задолженность {alex_file_data[2]} по отгрузкам {alex_file_data[1]}руб.')
+            debt_link = 'https://docs.google.com/spreadsheets/d/1NUJo6PmTgfZ8OvXnl8tSPEv6DNwWXA4WXBquBAznJ3g/edit#gid=0'
+            bot.send_message(message.chat.id, f'Ссылка на файл {debt_link}')
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()

@@ -6,6 +6,7 @@ from datetime import datetime
 import xlsxwriter
 from datetime import date
 import configparser
+import google_books
 
 
 conf = configparser.ConfigParser()
@@ -16,6 +17,7 @@ url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
 alex_access_token = conf['MoiSklad']['alex_access_token']
 header_for_token_auth = {'Authorization': 'Bearer %s' % alex_access_token}
 url_customers = conf['MoiSklad']['url_customers']
+
 
 
 def auth_api():
@@ -58,6 +60,11 @@ def fill_the_df(data_linked):
             alex_workbook = xlsxwriter.Workbook(file_name)
             alex_worksheet = alex_workbook.add_worksheet(str(today.strftime("%d-%m-%y")))
             bold = alex_workbook.add_format({'bold': True})
+
+            try:
+                print(google_books.fill_the_debt_gb(columns_for_df,data_linked))
+            except IndexError:
+                print('Error, cant fill GoogleBook', Exception)
 
             # insert top line
             for col_num, col_data in enumerate(columns_for_df):
@@ -174,3 +181,5 @@ def get_customer_name(customer_href):
         print('Error, cant find customer', Exception)
         y = {'name': 'Unknown_Customer', 'tags_list': tags, 'shift_days': shift_days_values}
         return y
+
+get_otgruzka_list()
