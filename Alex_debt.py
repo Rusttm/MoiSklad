@@ -162,8 +162,10 @@ def get_customer_name(customer_href):
             print('Error, there are no tags in list', Exception)
 
         try:
+            #print(customer_req.json()['name'])
             b = customer_req.json()['attributes']
             d = b[0]['value']
+
             shift_days_values = d
         except IndexError:
             print(f'Error, there are no attributes in list {customer_href}', Exception)
