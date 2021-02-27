@@ -142,5 +142,3 @@ print(zip(a,b))
 def start_scrapy():
     cmdline.execute("scrapy runspider scrapy_lib.py".split())  # followall is the spider name
     return True
-
-start_scrapy()
