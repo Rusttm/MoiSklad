@@ -181,5 +181,3 @@ def get_customer_name(customer_href):
         print('Error, cant find customer', Exception)
         y = {'name': 'Unknown_Customer', 'tags_list': tags, 'shift_days': shift_days_values}
         return y
-
-get_otgruzka_list()
