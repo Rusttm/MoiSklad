@@ -2,18 +2,11 @@
 """this module is for sales and purchases books forms"""
 import requests
 import json
-from base64 import b64encode
-from datetime import datetime
-import xlsxwriter
-from datetime import date
 import configparser
-import google_books
 import httplib2
 import apiclient
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
-from datetime import date
-from googleapiclient import discovery
 
 try:
     conf = configparser.ConfigParser()
@@ -53,7 +46,6 @@ toda_y_date = str(datetime.now().strftime("%Y-%m-%d"))
 
 class sp_books():
     """new class for sales and purchases books"""
-
     def __init__(self, start_day='2021-02-08', end_day='2021-02-28'):
         self.start_day = start_day
         self.end_day = end_day
