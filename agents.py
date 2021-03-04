@@ -7,6 +7,7 @@ import httplib2
 import apiclient
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import xlsxwriter
 
 
 try:
@@ -26,6 +27,7 @@ try:
     url_profit_product = conf['MoiSklad']['url_profit_product']
     saratov_book = conf['GOOGLE']['saratov_book']
     nsk_book = conf['GOOGLE']['nsk_book']
+    temp_book = conf['GOOGLE']['temp_book']
     saratov_link = conf['GOOGLE']['saratov_link']
     nsk_link = conf['GOOGLE']['nsk_link']
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
@@ -49,15 +51,17 @@ toda_y_date = str(datetime.now().strftime("%Y-%m-%d"))
 
 class agents_books():
     """new class for sales and purchases books"""
-    def __init__(self, work_book = saratov_book, start_day='2021-02-08', end_day='2021-02-28'):
-        self.start_day = start_day
-        self.end_day = end_day
-        self.bookId = work_book
+    def __init__(self, agent_name = "Саратов"):
         self.bookName = 'Отчет агента'
         self.email = 'rustammazhatov@gmail.com'
         self.sheets = []
         self.sheets_dict = {}
         self.today_date = str(datetime.now().strftime("%Y%m%d"))
+        if agent_name == "Саратов": self.bookId = saratov_book
+        elif agent_name == "Новосибирск": self.bookId = nsk_book
+        else:
+            print('Data was send to Temporary book')
+            self.bookId = temp_book
 
     def get_sheets_list(self):
         try:
@@ -150,18 +154,22 @@ class agents_books():
             return Exception
 
 class moi_sklad():
-    def __init__(self, start_day='2021-02-08', end_day=toda_y_date):
+    def __init__(self, agent_name = 'Саратов', start_day='2021-02-08', end_day=toda_y_date):
+        self.agent_name = agent_name
         self.start_day = start_day
         self.end_day = end_day
+        self.payed_demand_data_linked = []
         self.product_dict = {}
         self.demands_payed_dict = {}
-        self.sales_arr=[['№ п/п', 'Дата отгрузки', 'Номер отгрзки',
+        self.sales_arr=[['№ п/п', 'Дата отгрузки', 'Номер отгрузки',
                         'Наименование покупателя', 'Стоимость продажи', 'Себестоимость',
                          'Прибыль', 'Оплачено', 'Группа'],
                         ['1', '2', '3', '4', '5', '6', '7', '8', '9']]
 
-    def get_payments_list(self, start_day='2021-02-08', end_day=toda_y_date):
+    def get_payments_list(self):
         """Return dict { demand_link : linked_sum}"""
+        start_day =  self.start_day
+        end_day = self.end_day
         try:
             url_filtered = str(
                 f'{url_payments_list}?order=moment,name&filter=moment>={start_day} 00:00:00.000;moment<={end_day} 23:00:00.000')
@@ -191,10 +199,12 @@ class moi_sklad():
 
         return self.demands_payed_dict
 
-    def get_profit_by_product_list(self, start_day='2021-02-08', end_day=toda_y_date):
+    def get_profit_by_product_list(self):
         """'''Return dict { prod_link : sale_cost}'''"""
+        start_day = self.start_day
+        end_day = self.end_day
         try:
-            url_filtered = str(f'{url_profit_product}?momentFrom=2021-02-08 01:00:00')
+            url_filtered = str(f'{url_profit_product}?momentFrom={start_day} 00:00:00') # !momentTo doesnt work
                 #f'{url_profit_product}?momentFrom={start_day} 00:00:00;momentTo={end_day} 23:00:00')
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
             with open('profit_prod_list.json', 'w') as ff:
@@ -207,7 +217,7 @@ class moi_sklad():
             print('Sorry, cant get products dict ')
             return False
 
-    def get_positions_costsum(self, positions_link='https://online.moysklad.ru/api/remap/1.2/entity/demand/5c1b5f34-69ce-11eb-0a80-05f4002445e1/positions'):
+    def get_positions_costsum(self, positions_link):
         """'''Return cost summ of positions in demand'''"""
         pos_cost_sum = 0
         try:
@@ -235,11 +245,32 @@ class moi_sklad():
         except IndexError:
             print(f'Error, cant find the customer {customer_link}', Exception)
 
-    def get_sales_list(self, agent_name = 'Саратов', start_day='2021-02-08', end_day=toda_y_date):
+    def get_info_from_demand(self, demand_link):
+        """Return array [customer_name, demandNo, demandDate, demandSum, demandPayedSum, customerGroup]"""
+        try:
+            demand_req_json = requests.get(url=demand_link, headers=header_for_token_auth)
+            #with open('demand_structure.json', 'w') as ff:
+            #    json.dump(req.json(), ff, ensure_ascii=False)
+            demand_req = demand_req_json.json()
+            customer_link = demand_req['agent']['meta']['href']
+            customer_req = self.request_customer_data(customer_link)
+            customer_name = customer_req[0]
+            customer_group = customer_req[1]
+            demand_no = demand_req['name']
+            demand_date = demand_req['moment']
+            demand_sum = demand_req['sum']
+            demand_payed_sum = demand_req['payedSum']
+            return [customer_name, demand_no, demand_date, demand_sum, demand_payed_sum, customer_group]
+        except IndexError:
+            print('Sorry, cant get products dict ')
+            return ['NA','NA','NA',0,0]
+
+    def get_sales_list(self):
         """'''get sales list from MS and put it in file .json'''"""
+        start_day = self.start_day
+        end_day = self.end_day
+        agent_name = self.agent_name
         data_linked = []
-        saratov_data_linked = []
-        nsk_data_linked = []
         doc_sum = 0
         cost_sum = 0
         profit_sum = 0
@@ -247,8 +278,8 @@ class moi_sklad():
         vatsum = 0
         position = 0
         try:
-            product_profit = self.get_profit_by_product_list(start_day, end_day)
-            payments = self.get_payments_list(start_day, end_day)
+            product_profit = self.get_profit_by_product_list()
+            payments = self.get_payments_list()
             url_filtered = str(
                 f'{url_otgruzka_list}?order=moment,name&filter=moment>={start_day} 00:00:00.000;moment<={end_day} 23:00:00.000')
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
@@ -307,8 +338,41 @@ class moi_sklad():
         data_linked.append(['', '', '', '',
                             doc_sum, cost_sum, profit_sum,
                             payed_sum, ''])
+        data_linked += self.get_1c_sales_list()
         return data_linked
 
+    def get_1c_sales_list(self):
+        """'''get sales list from MS and put it in file .json'''"""
+        start_day = self.start_day
+        end_day = self.end_day
+        agent_name = self.agent_name
+        self.payed_demand_data_linked = []
+        doc_sum = 0
+        cost_sum = 0
+        profit_sum = 0
+        payed_sum = 0
+        vatsum = 0
+        position = 0
+        try:
+            payments = self.demands_payed_dict
+            for payment, payment_sum in payments.items():
+                demand_info = self.get_info_from_demand(payment)
+                if demand_info[5] != agent_name: continue
+                demand_date_temp = demand_info[2]
+                demand_date = datetime.strptime(demand_date_temp,'%Y-%m-%d %H:%M:%S.%f')
+                req_date = datetime.strptime(self.start_day,'%Y-%m-%d')
+                if demand_date < req_date:
+                    position += 1
+                    self.payed_demand_data_linked.append(
+                        [position, str(demand_date.strftime("%d.%m.%Y")),
+                         demand_info[1], demand_info[0], demand_info[3],
+                         '','',demand_info[4], demand_info[5]]
+                    )
+                else: continue
+        except IndexError:
+            print('Error, cant prepare array for sales book ', Exception)
+        #data_linked = sorted(data_linked, key=lambda y: (y[1], y[4], y[2]))  # sorting by group and name
+        return self.payed_demand_data_linked
 
 
 
@@ -317,10 +381,18 @@ def get_pfo_agent_report():
     занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
     надо найти почти 200к отгрузок
     """
-    pfo_report = moi_sklad()
-    pfo_report_book = agents_books(saratov_book)
+    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-02-08', end_day='2021-02-28')
+    pfo_report_book = agents_books(agent_name = "Саратов")
+
     pfo_report_book.clear_data_sheet()
-    pfo_report_book.append_array(pfo_report.get_sales_list())
+    req_list = pfo_report.get_sales_list()
+    workbook = xlsxwriter.Workbook('pfo_report.xlsx')
+    worksheet = workbook.add_worksheet('temporary1')
+    col = 0
+    for row, data in enumerate(req_list):
+        worksheet.write_row(row, col, data)
+    workbook.close()
+    pfo_report_book.append_array(req_list)
     #print(pfo_report.get_profit_by_product_list())
     #print(pfo_report.get_positions_costsum('https://online.moysklad.ru/api/remap/1.2/entity/demand/5c1b5f34-69ce-11eb-0a80-05f4002445e1/positions'))
 
