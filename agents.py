@@ -365,8 +365,8 @@ class moi_sklad():
                     position += 1
                     self.payed_demand_data_linked.append(
                         [position, str(demand_date.strftime("%d.%m.%Y")),
-                         demand_info[1], demand_info[0], demand_info[3],
-                         '','',demand_info[4], demand_info[5]]
+                         demand_info[1], demand_info[0], demand_info[3]/100,
+                         '','',demand_info[4]/100, demand_info[5]]
                     )
                 else: continue
         except IndexError:
