@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a907a808-9d59-47ce-9c43-12678287e37b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/MoiSklad.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MoiSklad.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Alex_debt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Alex_debt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeleBotSerman.py" beforeDir="false" afterPath="$PROJECT_DIR$/TeleBotSerman.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -270,6 +266,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="finance reports" />
