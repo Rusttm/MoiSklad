@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-
-    <list default="true" id="a907a808-9d59-47ce-9c43-12678287e37b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
-
+    <list default="true" id="a907a808-9d59-47ce-9c43-12678287e37b" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,7 +43,6 @@
     <option name="width" value="1412" />
     <option name="height" value="615" />
   </component>
-
   <component name="ProjectId" id="1p1oSgqnFeO8fpQZtCMMkJeO7x9" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -77,9 +72,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
-
   <component name="RunManager" selected="Python.TeleBotSerman">
-
     <configuration name="Alex_debt" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="MoiSklad" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -101,7 +94,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-
     <configuration name="TeleBotSerman" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MoiSklad" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -115,28 +107,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TeleBotSerman.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="finance" type="PythonConfigurationType" factoryName="Python" temporary="true">
-
-      <module name="MoiSklad" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../SkillFactory2" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../SkillFactory2/Module2_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -187,6 +157,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="finance" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="MoiSklad" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../SkillFactory2" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../SkillFactory2/Module2_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="sp_books" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MoiSklad" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -210,12 +201,8 @@
     </configuration>
     <recent_temporary>
       <list>
-
         <item itemvalue="Python.TeleBotSerman" />
         <item itemvalue="Python.finance" />
-        <item itemvalue="Python.training" />
-        <item itemvalue="Python.main_module" />
-
       </list>
     </recent_temporary>
   </component>
