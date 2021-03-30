@@ -33,7 +33,7 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
-    event = str(time.ctime(message.date), message.chat.id, message.chat.first_name, message.text)
+    event = str(f'{time.ctime(message.date)};{message.chat.id};{message.chat.first_name};{message.text}\n')
     print(event)
     with open("bot_log.txt", "a") as myfile:
         myfile.write(event)
