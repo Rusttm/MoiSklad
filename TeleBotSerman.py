@@ -5,6 +5,7 @@ import configparser
 import sales_control
 import finance
 import Alex_debt
+import time
 
 
 conf = configparser.ConfigParser()
@@ -32,6 +33,7 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
+    print(time.ctime(message.date), message.chat.id, message.chat.first_name, message.text)
     if str(message.chat.id) in company_ids:
         employee_name = conf['TeleBot'][str(message.chat.id)]
         # debt file
