@@ -1,0 +1,272 @@
+Index: TeleBotSerman.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\"\"\" telebot that sends files and statistic information \"\"\"\r\n# -*- coding: utf8 -*-\r\nimport telebot\r\nimport configparser\r\nimport sales_control\r\nimport finance\r\nimport Alex_debt\r\nimport Scraping\r\n\r\nconf = configparser.ConfigParser()\r\nconf.read('bot.ini')\r\n\r\nmy_chat_id = conf['TeleBot']['my_chat_id']\r\nbot_token = conf['TeleBot']['bot_token']\r\nbot_user_name = conf['TeleBot']['bot_user_name']\r\nsticker_id = conf['TeleBot']['sticker_id']\r\ncommand = conf['TeleBot']['macos_command']\r\ncompany_ids = [str(conf['TeleBot']['my_chat_id']),\r\n               str(conf['TeleBot']['minasyan_id']),\r\n               str(conf['TeleBot']['alex_id']),\r\n               str(conf['TeleBot']['mans_id'])]\r\n\r\nbot = telebot.TeleBot(bot_token)\r\nkeyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard\r\nkeyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены')\r\n\r\n\r\n@bot.message_handler(commands=['start'])  # decorator\r\ndef start_message(message):\r\n    bot.send_message(message.chat.id, 'Привет, я сервисный бот', reply_markup=keyboard1)\r\n\r\n\r\n@bot.message_handler(content_types=['text'])\r\ndef send_text(message):\r\n    if str(message.chat.id) in company_ids:\r\n        employee_name = conf['TeleBot'][str(message.chat.id)]\r\n        # debt file\r\n        if message.text.lower() == 'просрочка(файл)':\r\n            bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется, подождите!')\r\n            alex_file_data = Alex_debt.get_otgruzka_list()\r\n            debt_f = open(alex_file_data[0], 'rb')\r\n            bot.send_document(message.chat.id, debt_f)\r\n            bot.send_message(message.chat.id,\r\n                             f'Общая задолженность {alex_file_data[2]} по отгрузкам {alex_file_data[1]}руб.')\r\n        # account remains\r\n        elif message.text.lower() in ['остатки на счетах', 'остатки']:\r\n            account_sum = finance.get_account_summ()\r\n            bot.send_message(message.chat.id, f'Остаток денег на рублевых счетах {account_sum}руб.')\r\n        # low profits\r\n        elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:\r\n            sales_list = sales_control.get_sales_list()\r\n            if len(sales_list) > 0:\r\n                for sale in sales_control.get_sales_list():\r\n                    bot.send_message(message.chat.id,\r\n                                     f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {sale[2]}%')\r\n            else:\r\n                bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')\r\n        # forest price\r\n        elif message.text.lower() in ['прайс', 'цены', 'форест']:\r\n            #scrapped = Scraping.run_scrapy()\r\n            my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=0'\r\n            bot.send_message(message.chat.id, f'Сравнение цен по ссылке {my_book_link}')\r\n        # unknown command\r\n        else:\r\n            bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')\r\n    # unknown employee\r\n    else:\r\n        bot.send_message(message.chat.id,\r\n                         f'Пользователь с id {message.chat.id} не зарегистрирован. Пожалуйста, пройдите регистрацию')\r\n\r\n\r\n@bot.message_handler(content_types=['sticker'])\r\ndef send_sticker_id(message):\r\n    bot.send_message(message.chat.id, f'your sticker id is {sticker_id}')\r\n    bot.send_sticker(message.chat.id, sticker_id)\r\n\r\n\r\nbot.polling()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/TeleBotSerman.py b/TeleBotSerman.py
+--- a/TeleBotSerman.py	(revision 552ee68d7892721705c4159567a3b9d1e862539a)
++++ b/TeleBotSerman.py	(date 1614361001781)
+@@ -5,7 +5,7 @@
+ import sales_control
+ import finance
+ import Alex_debt
+-import Scraping
++
+ 
+ conf = configparser.ConfigParser()
+ conf.read('bot.ini')
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"a907a808-9d59-47ce-9c43-12678287e37b\" name=\"Default Changelist\" comment=\"\">\r\n      <change beforePath=\"$PROJECT_DIR$/TeleBotSerman.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/TeleBotSerman.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/finance.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/finance.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/training.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/training.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"EXCLUDED_CONVERTED_TO_IGNORED\" value=\"true\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileEditorManager\">\r\n    <leaf>\r\n      <file pinned=\"false\" current-in-tab=\"false\">\r\n        <entry file=\"file://$PROJECT_DIR$/finance.py\">\r\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n            <state relative-caret-position=\"772\">\r\n              <caret line=\"60\" column=\"25\" selection-start-line=\"60\" selection-start-column=\"25\" selection-end-line=\"60\" selection-end-column=\"25\" />\r\n              <folding>\r\n                <element signature=\"e#0#19#0\" expanded=\"true\" />\r\n              </folding>\r\n            </state>\r\n          </provider>\r\n        </entry>\r\n      </file>\r\n      <file pinned=\"false\" current-in-tab=\"false\">\r\n        <entry file=\"file://$PROJECT_DIR$/config.ini\">\r\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n            <state relative-caret-position=\"195\">\r\n              <caret line=\"13\" column=\"55\" lean-forward=\"true\" selection-start-line=\"13\" selection-start-column=\"55\" selection-end-line=\"13\" selection-end-column=\"55\" />\r\n            </state>\r\n          </provider>\r\n        </entry>\r\n      </file>\r\n      <file pinned=\"false\" current-in-tab=\"false\">\r\n        <entry file=\"file://$PROJECT_DIR$/Alex_debt.py\">\r\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n            <state relative-caret-position=\"-525\">\r\n              <caret line=\"55\" column=\"23\" selection-start-line=\"55\" selection-start-column=\"4\" selection-end-line=\"55\" selection-end-column=\"23\" />\r\n              <folding>\r\n                <element signature=\"e#23#38#0\" expanded=\"true\" />\r\n              </folding>\r\n            </state>\r\n          </provider>\r\n        </entry>\r\n      </file>\r\n      <file pinned=\"false\" current-in-tab=\"false\">\r\n        <entry file=\"file://$PROJECT_DIR$/sales_control.py\">\r\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n            <state relative-caret-position=\"-327\">\r\n              <folding>\r\n                <element signature=\"e#0#19#0\" expanded=\"true\" />\r\n              </folding>\r\n            </state>\r\n          </provider>\r\n        </entry>\r\n      </file>\r\n      <file pinned=\"false\" current-in-tab=\"false\">\r\n        <entry file=\"file://$PROJECT_DIR$/training.py\">\r\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n            <state relative-caret-position=\"293\">\r\n              <caret line=\"122\" lean-forward=\"true\" selection-start-line=\"122\" selection-end-line=\"123\" selection-end-column=\"32\" />\r\n              <folding>\r\n                <element signature=\"e#23#40#0\" expanded=\"true\" />\r\n              </folding>\r\n            </state>\r\n          </provider>\r\n        </entry>\r\n      </file>\r\n      <file pinned=\"false\" current-in-tab=\"false\">\r\n        <entry file=\"file://$PROJECT_DIR$/api_test.py\">\r\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n            <state relative-caret-position=\"-315\">\r\n              <folding>\r\n                <element signature=\"e#0#15#0\" expanded=\"true\" />\r\n              </folding>\r\n            </state>\r\n          </provider>\r\n        </entry>\r\n      </file>\r\n      <file pinned=\"false\" current-in-tab=\"true\">\r\n        <entry file=\"file://$PROJECT_DIR$/TeleBotSerman.py\">\r\n          <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n            <state relative-caret-position=\"92\">\r\n              <caret line=\"24\" column=\"1\" selection-start-line=\"24\" selection-start-column=\"1\" selection-end-line=\"24\" selection-end-column=\"1\" />\r\n              <folding>\r\n                <element signature=\"e#82#96#0\" expanded=\"true\" />\r\n              </folding>\r\n            </state>\r\n          </provider>\r\n        </entry>\r\n      </file>\r\n    </leaf>\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"IdeDocumentHistory\">\r\n    <option name=\"CHANGED_PATHS\">\r\n      <list>\r\n        <option value=\"$PROJECT_DIR$/__init__.py\" />\r\n        <option value=\"$PROJECT_DIR$/main.py\" />\r\n        <option value=\"$PROJECT_DIR$/main_module.py\" />\r\n        <option value=\"$PROJECT_DIR$/training.py\" />\r\n        <option value=\"$PROJECT_DIR$/finance.py\" />\r\n        <option value=\"$PROJECT_DIR$/TeleBotSerman.py\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectFrameBounds\">\r\n    <option name=\"x\" value=\"48\" />\r\n    <option name=\"y\" value=\"60\" />\r\n    <option name=\"width\" value=\"1400\" />\r\n    <option name=\"height\" value=\"782\" />\r\n  </component>\r\n  <component name=\"ProjectView\">\r\n    <navigator proportions=\"\" version=\"1\">\r\n      <foldersAlwaysOnTop value=\"true\" />\r\n    </navigator>\r\n    <panes>\r\n      <pane id=\"ProjectPane\">\r\n        <subPane>\r\n          <expand>\r\n            <path>\r\n              <item name=\"MoiSklad\" type=\"b2602c69:ProjectViewProjectNode\" />\r\n              <item name=\"MoiSklad\" type=\"462c0819:PsiDirectoryNode\" />\r\n            </path>\r\n          </expand>\r\n          <select />\r\n        </subPane>\r\n      </pane>\r\n      <pane id=\"Scope\" />\r\n    </panes>\r\n  </component>\r\n  <component name=\"PropertiesComponent\">\r\n    <property name=\"SHARE_PROJECT_CONFIGURATION_FILES\" value=\"true\" />\r\n    <property name=\"settings.editor.selected.configurable\" value=\"com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable\" />\r\n  </component>\r\n  <component name=\"RunDashboard\">\r\n    <option name=\"ruleStates\">\r\n      <list>\r\n        <RuleState>\r\n          <option name=\"name\" value=\"ConfigurationTypeDashboardGroupingRule\" />\r\n        </RuleState>\r\n        <RuleState>\r\n          <option name=\"name\" value=\"StatusDashboardGroupingRule\" />\r\n        </RuleState>\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Python.finance\">\r\n    <configuration name=\"Alex_debt\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\">\r\n      <module name=\"MoiSklad\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"/usr/local/bin/python3.7\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/Alex_debt.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"finance\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\">\r\n      <module name=\"MoiSklad\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"/usr/local/bin/python3.7\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/finance.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"main_module\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\">\r\n      <module name=\"MoiSklad\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"/usr/local/bin/python3.7\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main_module.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"training\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\">\r\n      <module name=\"MoiSklad\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"/usr/local/bin/python3.7\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/training.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Python.finance\" />\r\n        <item itemvalue=\"Python.training\" />\r\n        <item itemvalue=\"Python.main_module\" />\r\n        <item itemvalue=\"Python.Alex_debt\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SvnConfiguration\">\r\n    <configuration />\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"a907a808-9d59-47ce-9c43-12678287e37b\" name=\"Default Changelist\" comment=\"\" />\r\n      <created>1613670026904</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1613670026904</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"finance reports\">\r\n      <created>1613670234353</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1613670234353</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"2\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"ToolWindowManager\">\r\n    <frame x=\"48\" y=\"60\" width=\"1400\" height=\"782\" extended-state=\"0\" />\r\n    <editor active=\"true\" />\r\n    <layout>\r\n      <window_info id=\"Favorites\" side_tool=\"true\" />\r\n      <window_info active=\"true\" content_ui=\"combo\" id=\"Project\" order=\"0\" visible=\"true\" weight=\"0.2496318\" />\r\n      <window_info id=\"Structure\" order=\"1\" side_tool=\"true\" weight=\"0.25\" />\r\n      <window_info anchor=\"bottom\" id=\"Version Control\" />\r\n      <window_info anchor=\"bottom\" id=\"Python Console\" />\r\n      <window_info anchor=\"bottom\" id=\"Terminal\" />\r\n      <window_info anchor=\"bottom\" id=\"Event Log\" side_tool=\"true\" />\r\n      <window_info anchor=\"bottom\" id=\"Message\" order=\"0\" />\r\n      <window_info anchor=\"bottom\" id=\"Find\" order=\"1\" />\r\n      <window_info anchor=\"bottom\" id=\"Run\" order=\"2\" visible=\"true\" weight=\"0.3289855\" />\r\n      <window_info anchor=\"bottom\" id=\"Debug\" order=\"3\" weight=\"0.4\" />\r\n      <window_info anchor=\"bottom\" id=\"Cvs\" order=\"4\" weight=\"0.25\" />\r\n      <window_info anchor=\"bottom\" id=\"Inspection\" order=\"5\" weight=\"0.4\" />\r\n      <window_info anchor=\"bottom\" id=\"TODO\" order=\"6\" />\r\n      <window_info anchor=\"right\" id=\"R Packages\" />\r\n      <window_info anchor=\"right\" id=\"R Graphics\" />\r\n      <window_info anchor=\"right\" id=\"Commander\" internal_type=\"SLIDING\" order=\"0\" type=\"SLIDING\" weight=\"0.4\" />\r\n      <window_info anchor=\"right\" id=\"Ant Build\" order=\"1\" weight=\"0.25\" />\r\n      <window_info anchor=\"right\" content_ui=\"combo\" id=\"Hierarchy\" order=\"2\" weight=\"0.25\" />\r\n    </layout>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"finance reports\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"finance reports\" />\r\n  </component>\r\n  <component name=\"editorHistoryManager\">\r\n    <entry file=\"file://$PROJECT_DIR$/api_test.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"-315\">\r\n          <folding>\r\n            <element signature=\"e#0#15#0\" expanded=\"true\" />\r\n          </folding>\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/__init__.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\" />\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/main.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\" />\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/main_module.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"45\">\r\n          <caret line=\"3\" selection-start-line=\"3\" selection-end-line=\"3\" />\r\n          <folding>\r\n            <element signature=\"e#1#28#0\" expanded=\"true\" />\r\n          </folding>\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/sales_control.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"-327\">\r\n          <folding>\r\n            <element signature=\"e#0#19#0\" expanded=\"true\" />\r\n          </folding>\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/training.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"293\">\r\n          <caret line=\"122\" lean-forward=\"true\" selection-start-line=\"122\" selection-end-line=\"123\" selection-end-column=\"32\" />\r\n          <folding>\r\n            <element signature=\"e#23#40#0\" expanded=\"true\" />\r\n          </folding>\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/Alex_debt.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"-525\">\r\n          <caret line=\"55\" column=\"23\" selection-start-line=\"55\" selection-start-column=\"4\" selection-end-line=\"55\" selection-end-column=\"23\" />\r\n          <folding>\r\n            <element signature=\"e#23#38#0\" expanded=\"true\" />\r\n          </folding>\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/finance.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"772\">\r\n          <caret line=\"60\" column=\"25\" selection-start-line=\"60\" selection-start-column=\"25\" selection-end-line=\"60\" selection-end-column=\"25\" />\r\n          <folding>\r\n            <element signature=\"e#0#19#0\" expanded=\"true\" />\r\n          </folding>\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/config.ini\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"195\">\r\n          <caret line=\"13\" column=\"55\" lean-forward=\"true\" selection-start-line=\"13\" selection-start-column=\"55\" selection-end-line=\"13\" selection-end-column=\"55\" />\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n    <entry file=\"file://$PROJECT_DIR$/TeleBotSerman.py\">\r\n      <provider selected=\"true\" editor-type-id=\"text-editor\">\r\n        <state relative-caret-position=\"92\">\r\n          <caret line=\"24\" column=\"1\" selection-start-line=\"24\" selection-start-column=\"1\" selection-end-line=\"24\" selection-end-column=\"1\" />\r\n          <folding>\r\n            <element signature=\"e#82#96#0\" expanded=\"true\" />\r\n          </folding>\r\n        </state>\r\n      </provider>\r\n    </entry>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 552ee68d7892721705c4159567a3b9d1e862539a)
++++ b/.idea/workspace.xml	(date 1614360516624)
+@@ -2,98 +2,14 @@
+ <project version="4">
+   <component name="ChangeListManager">
+     <list default="true" id="a907a808-9d59-47ce-9c43-12678287e37b" name="Default Changelist" comment="">
+-      <change beforePath="$PROJECT_DIR$/TeleBotSerman.py" beforeDir="false" afterPath="$PROJECT_DIR$/TeleBotSerman.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/finance.py" beforeDir="false" afterPath="$PROJECT_DIR$/finance.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/MoiSklad.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MoiSklad.iml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+     </list>
+-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+-  </component>
+-  <component name="FileEditorManager">
+-    <leaf>
+-      <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/finance.py">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="772">
+-              <caret line="60" column="25" selection-start-line="60" selection-start-column="25" selection-end-line="60" selection-end-column="25" />
+-              <folding>
+-                <element signature="e#0#19#0" expanded="true" />
+-              </folding>
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-      <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/config.ini">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="195">
+-              <caret line="13" column="55" lean-forward="true" selection-start-line="13" selection-start-column="55" selection-end-line="13" selection-end-column="55" />
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-      <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/Alex_debt.py">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="-525">
+-              <caret line="55" column="23" selection-start-line="55" selection-start-column="4" selection-end-line="55" selection-end-column="23" />
+-              <folding>
+-                <element signature="e#23#38#0" expanded="true" />
+-              </folding>
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-      <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/sales_control.py">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="-327">
+-              <folding>
+-                <element signature="e#0#19#0" expanded="true" />
+-              </folding>
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-      <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/training.py">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="293">
+-              <caret line="122" lean-forward="true" selection-start-line="122" selection-end-line="123" selection-end-column="32" />
+-              <folding>
+-                <element signature="e#23#40#0" expanded="true" />
+-              </folding>
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-      <file pinned="false" current-in-tab="false">
+-        <entry file="file://$PROJECT_DIR$/api_test.py">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="-315">
+-              <folding>
+-                <element signature="e#0#15#0" expanded="true" />
+-              </folding>
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-      <file pinned="false" current-in-tab="true">
+-        <entry file="file://$PROJECT_DIR$/TeleBotSerman.py">
+-          <provider selected="true" editor-type-id="text-editor">
+-            <state relative-caret-position="92">
+-              <caret line="24" column="1" selection-start-line="24" selection-start-column="1" selection-end-line="24" selection-end-column="1" />
+-              <folding>
+-                <element signature="e#82#96#0" expanded="true" />
+-              </folding>
+-            </state>
+-          </provider>
+-        </entry>
+-      </file>
+-    </leaf>
+   </component>
+   <component name="FileTemplateManagerImpl">
+     <option name="RECENT_TEMPLATES">
+@@ -123,6 +39,7 @@
+     <option name="width" value="1400" />
+     <option name="height" value="782" />
+   </component>
++  <component name="ProjectId" id="1p1oSgqnFeO8fpQZtCMMkJeO7x9" />
+   <component name="ProjectView">
+     <navigator proportions="" version="1">
+       <foldersAlwaysOnTop value="true" />
+@@ -142,23 +59,15 @@
+       <pane id="Scope" />
+     </panes>
+   </component>
++  <component name="ProjectViewState">
++    <option name="hideEmptyMiddlePackages" value="true" />
++    <option name="showLibraryContents" value="true" />
++  </component>
+   <component name="PropertiesComponent">
+     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+   </component>
+-  <component name="RunDashboard">
+-    <option name="ruleStates">
+-      <list>
+-        <RuleState>
+-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+-        </RuleState>
+-        <RuleState>
+-          <option name="name" value="StatusDashboardGroupingRule" />
+-        </RuleState>
+-      </list>
+-    </option>
+-  </component>
+-  <component name="RunManager" selected="Python.finance">
++  <component name="RunManager" selected="Python.TeleBotSerman">
+     <configuration name="Alex_debt" type="PythonConfigurationType" factoryName="Python" temporary="true">
+       <module name="MoiSklad" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+@@ -172,6 +81,27 @@
+       <option name="ADD_CONTENT_ROOTS" value="true" />
+       <option name="ADD_SOURCE_ROOTS" value="true" />
+       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Alex_debt.py" />
++      <option name="PARAMETERS" value="" />
++      <option name="SHOW_COMMAND_LINE" value="false" />
++      <option name="EMULATE_TERMINAL" value="false" />
++      <option name="MODULE_MODE" value="false" />
++      <option name="REDIRECT_INPUT" value="false" />
++      <option name="INPUT_FILE" value="" />
++      <method v="2" />
++    </configuration>
++    <configuration name="TeleBotSerman" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
++      <module name="MoiSklad" />
++      <option name="INTERPRETER_OPTIONS" value="" />
++      <option name="PARENT_ENVS" value="true" />
++      <envs>
++        <env name="PYTHONUNBUFFERED" value="1" />
++      </envs>
++      <option name="SDK_HOME" value="" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
++      <option name="IS_MODULE_SDK" value="true" />
++      <option name="ADD_CONTENT_ROOTS" value="true" />
++      <option name="ADD_SOURCE_ROOTS" value="true" />
++      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TeleBotSerman.py" />
+       <option name="PARAMETERS" value="" />
+       <option name="SHOW_COMMAND_LINE" value="false" />
+       <option name="EMULATE_TERMINAL" value="false" />
+@@ -245,6 +175,7 @@
+     </configuration>
+     <recent_temporary>
+       <list>
++        <item itemvalue="Python.TeleBotSerman" />
+         <item itemvalue="Python.finance" />
+         <item itemvalue="Python.training" />
+         <item itemvalue="Python.main_module" />
+@@ -252,6 +183,7 @@
+       </list>
+     </recent_temporary>
+   </component>
++  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+   <component name="SvnConfiguration">
+     <configuration />
+   </component>
+@@ -301,6 +233,17 @@
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="finance reports" />
+     <option name="LAST_COMMIT_MESSAGE" value="finance reports" />
++  </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager>
++      <breakpoints>
++        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
++          <url>file://$PROJECT_DIR$/Alex_debt.py</url>
++          <line>164</line>
++          <option name="timeStamp" value="1" />
++        </line-breakpoint>
++      </breakpoints>
++    </breakpoint-manager>
+   </component>
+   <component name="editorHistoryManager">
+     <entry file="file://$PROJECT_DIR$/api_test.py">
+Index: .idea/MoiSklad.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\" />\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n    <orderEntry type=\"library\" name=\"R User Library\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"R Skeletons\" level=\"application\" />\r\n  </component>\r\n  <component name=\"TestRunnerService\">\r\n    <option name=\"PROJECT_TEST_RUNNER\" value=\"Unittests\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/MoiSklad.iml b/.idea/MoiSklad.iml
+--- a/.idea/MoiSklad.iml	(revision 552ee68d7892721705c4159567a3b9d1e862539a)
++++ b/.idea/MoiSklad.iml	(date 1614360208774)
+@@ -2,12 +2,9 @@
+ <module type="PYTHON_MODULE" version="4">
+   <component name="NewModuleRootManager">
+     <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="inheritedJdk" />
++    <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+     <orderEntry type="library" name="R User Library" level="project" />
+     <orderEntry type="library" name="R Skeletons" level="application" />
+   </component>
+-  <component name="TestRunnerService">
+-    <option name="PROJECT_TEST_RUNNER" value="Unittests" />
+-  </component>
+ </module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Uninitialized environment\" project-jdk-type=\"Python SDK\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 552ee68d7892721705c4159567a3b9d1e862539a)
++++ b/.idea/misc.xml	(date 1614360208954)
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Uninitialized environment" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
