@@ -49,6 +49,7 @@ except IndexError:
 
 toda_y_date = str(datetime.now().strftime("%Y-%m-%d"))
 
+
 class agents_books():
     """new class for sales and purchases books"""
     def __init__(self, agent_name = "Саратов"):
@@ -84,7 +85,7 @@ class agents_books():
             return self.sheets_dict
         except IndexError:
             print(f'Cant get sheet list of the book', Exception)
-            return {"0":"NONAME"}
+            return {"0": "NONAME"}
 
     def get_sheet_name(self, sheetid = 0):
         try:
@@ -178,9 +179,9 @@ class moi_sklad():
             #    json.dump(req.json(), ff, ensure_ascii=False)
             try:
                 for payment in req.json()['rows']:
-                    payment['name'] # number
-                    payment['moment']  # date
-                    payment['sum']  # payment sum
+                    #payment['name'] # number
+                    #payment['moment']  # date
+                    #payment['sum']  # payment sum
                     try:
                         x = payment['operations']
                     except:
@@ -277,6 +278,7 @@ class moi_sklad():
         payed_sum = 0
         vatsum = 0
         position = 0
+        payed_sum2 = 0
         try:
             product_profit = self.get_profit_by_product_list()
             payments = self.get_payments_list()
@@ -321,11 +323,12 @@ class moi_sklad():
                     doc_sum += sale_sum
                     vatsum += sale_vat
                     cost_sum += sale_cost_sum
-                    profit_sum = doc_sum - sale_cost_sum
-                    payed_sum += payed
+                    profit_sum += sale_sum - sale_cost_sum
+                    payed_sum += payed  #sum for payment in requested period
+                    payed_sum2 += sale_payed_sum  # payments for demand
                     data_linked.append([position, sale_date, sale_name,
                                         customer_data[0], sale_sum, sale_cost_sum,
-                                        sale_sum-sale_cost_sum, sale_payed_sum, customer_data[1]])
+                                        (sale_sum - sale_cost_sum), sale_payed_sum, customer_data[1]])
 
             except IndexError:
                 print('Error, cant prepare array for sales book ', Exception)
@@ -337,7 +340,7 @@ class moi_sklad():
         data_linked = self.sales_arr + data_linked
         data_linked.append(['', '', '', '',
                             doc_sum, cost_sum, profit_sum,
-                            payed_sum, ''])
+                            payed_sum2, payed_sum])
         data_linked += self.get_1c_sales_list()
         return data_linked
 
@@ -396,5 +399,25 @@ def get_pfo_agent_report():
     #print(pfo_report.get_profit_by_product_list())
     #print(pfo_report.get_positions_costsum('https://online.moysklad.ru/api/remap/1.2/entity/demand/5c1b5f34-69ce-11eb-0a80-05f4002445e1/positions'))
 
-get_pfo_agent_report()
 
+def get_nsk_agent_report():
+    """на четверг сделать выборку по оплатам вывести все оплаченные отгрузки
+    занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
+    надо найти почти 200к отгрузок
+    """
+    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-02-08', end_day='2021-03-30')
+    nsk_report_book = agents_books(agent_name = "Новосибирск")
+
+    nsk_report_book.clear_data_sheet()
+    nsk_req_list = nsk_report.get_sales_list()
+    workbook = xlsxwriter.Workbook('nsk_report.xlsx')
+    wsh_name = 'Февраль'
+    worksheet = workbook.add_worksheet(wsh_name)
+    col = 0
+    for row, data in enumerate(nsk_req_list):
+        worksheet.write_row(row, col, data)
+    workbook.close()
+    nsk_report_book.append_array(nsk_req_list)
+
+
+get_nsk_agent_report()

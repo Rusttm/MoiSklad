@@ -203,7 +203,8 @@ class moi_sklad():
             f_data = req.json()
             f_date_moment = str(f_data['incomingDate'])
             f_date = datetime.strptime(f_date_moment, '%Y-%m-%d %H:%M:%S.%f').date()
-            facture_data_list = [f_data['incomingNumber'], str(f_date), f_data['sum']]
+            f_date1 = f_date.strftime("%d.%m.%y")
+            facture_data_list = [f_data['incomingNumber'], str(f_date1), f_data['sum']]
             return facture_data_list
         except:
             return ['б/н', 'неизвестно', '0']
@@ -295,8 +296,8 @@ class moi_sklad():
             self.start_day = start_day
             self.end_day = end_day
             file_name = str('supply_book_%s.json' % self.req_date)
-            with open(file_name, 'w') as ff:
-                json.dump(req.json(), ff, ensure_ascii=False)
+            #with open(file_name, 'w') as ff:
+            #    json.dump(req.json(), ff, ensure_ascii=False)
 
             """prepare data in list format"""
             try:
@@ -306,6 +307,8 @@ class moi_sklad():
                     purchase_date = purchase_date_0.strftime("%d.%m.%y")
                     purchase_name = purchase['name']
                     purchase_in_name = purchase['incomingNumber']
+                    purchase_in_date0 = datetime.strptime(str(purchase['incomingDate']), '%Y-%m-%d %H:%M:%S.%f').date()
+                    purchase_in_date = purchase_in_date0.strftime("%d.%m.%y")
                     purchase_sum = purchase['sum']/100
                     if purchase['vatEnabled']: purchase_vat = purchase['vatSum']/100
                     else: purchase_vat = 0
@@ -315,7 +318,7 @@ class moi_sklad():
                         facture_data = self.request_facturein_data(f_in_link)
                     except:
                         #continue
-                        facture_data = [purchase_in_name, 'неизвестно', '0']
+                        facture_data = [purchase_in_name, purchase_in_date, '0']
 
                     try:
                         customer_link = purchase['agent']['meta']['href']
@@ -327,7 +330,7 @@ class moi_sklad():
                     position += 1
                     doc_sum += purchase_sum
                     vatsum += purchase_vat
-                    data_linked.append([position, purchase_date, facture_data[0],
+                    data_linked.append([position, facture_data[1], facture_data[0],
                                         customer_data[0], customer_data[1], 'Российский рубль,643',
                                         purchase_sum, purchase_vat])
             except IndexError:
