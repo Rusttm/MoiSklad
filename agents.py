@@ -156,12 +156,15 @@ class agents_books():
 
 class moi_sklad():
     def __init__(self, agent_name = 'Саратов', start_day='2021-02-08', end_day=toda_y_date):
+
         self.agent_name = agent_name
         self.start_day = start_day
         self.end_day = end_day
         self.payed_demand_data_linked = []
         self.product_dict = {}
         self.demands_payed_dict = {}
+        self.skipped_customers_name = ['ООО "ТРЕЙД-НСК"', 'ИП Горбунов Алексей Анатольевич', 'биэс ч\л',
+                                       'ЭРА ч.л.', 'Ульяновск ч\л']
         self.sales_arr=[['№ п/п', 'Дата отгрузки', 'Номер отгрузки',
                         'Наименование покупателя', 'Стоимость продажи', 'Себестоимость',
                          'Прибыль', 'Оплачено', 'Группа'],
@@ -309,8 +312,15 @@ class moi_sklad():
                     except:
                         continue
 
+                    # skip agents
+                    if customer_data[0] in self.skipped_customers_name:
+                        continue
+
                     # skip non requested groups
-                    if customer_data[1] != agent_name: continue
+                    if customer_data[1] != agent_name:
+                        continue
+
+
 
                     try:
                         payed = payments[sale['meta']['href']]/100
