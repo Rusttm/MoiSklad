@@ -266,7 +266,12 @@ class moi_sklad():
             border_date = datetime.strptime('2021-02-06', '%Y-%m-%d')
             demand_sum = demand_req['sum']
             demand_payed_sum = demand_req['payedSum']
-            return [customer_name, demand_no, demand_date, demand_sum, demand_payed_sum, customer_group]
+            if demand_date_date >= border_date:
+                positions_in_sale_link = demand_req['positions']['meta']['href']
+                sale_cost_sum = self.get_positions_costsum(positions_in_sale_link)
+            else:
+                sale_cost_sum = 0
+            return [customer_name, demand_no, demand_date, demand_sum, demand_payed_sum, customer_group, sale_cost_sum]
         except IndexError:
             print('Sorry, cant get products dict ')
             return ['NA','NA','NA',0,0,0]
@@ -371,7 +376,7 @@ class moi_sklad():
         position = 0
         try:
             payments = self.demands_payed_dict
-            self.get_profit_by_product_list(start_day)
+            self.get_profit_by_product_list('2021-02-08')
             for payment, payment_sum in payments.items():
                 demand_info = self.get_info_from_demand(payment)
                 if demand_info[5] != agent_name: continue
@@ -384,7 +389,7 @@ class moi_sklad():
                     self.payed_demand_data_linked.append(
                         [position, str(demand_date.strftime("%d.%m.%Y")),
                          demand_info[1], demand_info[0], demand_info[3]/100,
-                         '','',demand_info[4]/100, demand_info[5]]
+                         demand_info[6],(demand_info[3]/100 - demand_info[6]),demand_info[4]/100, demand_info[5]]
                     )
                 else: continue
         except IndexError:
