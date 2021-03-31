@@ -13,7 +13,7 @@ from scrapy.http.cookies import CookieJar
 
 try:
     conf = configparser.ConfigParser()
-    conf.read('scraping.ini')
+    conf.read('sp_books.ini')
     forest_80 = conf['WEB']['forest_80']
     forest_80_pages = conf['WEB']['forest_80_pages']
 except IndexError:
