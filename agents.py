@@ -203,10 +203,9 @@ class moi_sklad():
 
         return self.demands_payed_dict
 
-    def get_profit_by_product_list(self):
+    def get_profit_by_product_list(self,start_day_for_sales):
         """'''Return dict { prod_link : sale_cost}'''"""
-        #start_day = self.start_day
-        start_day_for_sales =  self.start_day
+        #start_day_for_sales =  self.start_day
         end_day = self.end_day
         try:
             url_filtered = str(f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00') # !momentTo doesnt work
@@ -255,7 +254,7 @@ class moi_sklad():
         try:
             demand_req_json = requests.get(url=demand_link, headers=header_for_token_auth)
             #with open('demand_structure.json', 'w') as ff:
-            #    json.dump(req.json(), ff, ensure_ascii=False)
+            #    json.dump(demand_req_json.json(), ff, ensure_ascii=False)
             demand_req = demand_req_json.json()
             customer_link = demand_req['agent']['meta']['href']
             customer_req = self.request_customer_data(customer_link)
@@ -263,12 +262,14 @@ class moi_sklad():
             customer_group = customer_req[1]
             demand_no = demand_req['name']
             demand_date = demand_req['moment']
+            demand_date_date = datetime.strptime(demand_date,'%Y-%m-%d %H:%M:%S.%f')
+            border_date = datetime.strptime('2021-02-06', '%Y-%m-%d')
             demand_sum = demand_req['sum']
             demand_payed_sum = demand_req['payedSum']
             return [customer_name, demand_no, demand_date, demand_sum, demand_payed_sum, customer_group]
         except IndexError:
             print('Sorry, cant get products dict ')
-            return ['NA','NA','NA',0,0]
+            return ['NA','NA','NA',0,0,0]
 
     def get_sales_list(self):
         """'''get sales list from MS and put it in file .json'''"""
@@ -284,9 +285,9 @@ class moi_sklad():
         position = 0
         payed_sum2 = 0
         try:
-            product_profit = self.get_profit_by_product_list()
-            payments = self.get_payments_list()
             start_day_for_sales = start_day
+            product_profit = self.get_profit_by_product_list(start_day_for_sales)
+            payments = self.get_payments_list()
             url_filtered = str(
                 f'{url_otgruzka_list}?order=moment,name&filter=moment>={start_day_for_sales} 00:00:00.000;moment<={end_day} 23:00:00.000')
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
@@ -370,6 +371,7 @@ class moi_sklad():
         position = 0
         try:
             payments = self.demands_payed_dict
+            self.get_profit_by_product_list(start_day)
             for payment, payment_sum in payments.items():
                 demand_info = self.get_info_from_demand(payment)
                 if demand_info[5] != agent_name: continue
