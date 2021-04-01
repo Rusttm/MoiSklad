@@ -203,12 +203,12 @@ class moi_sklad():
 
         return self.demands_payed_dict
 
-    def get_profit_by_product_list(self):
+    def get_profit_by_product_list(self,start_day_for_sales):
         """'''Return dict { prod_link : sale_cost}'''"""
-        start_day = self.start_day
+        #start_day_for_sales =  self.start_day
         end_day = self.end_day
         try:
-            url_filtered = str(f'{url_profit_product}?momentFrom={start_day} 00:00:00') # !momentTo doesnt work
+            url_filtered = str(f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00') # !momentTo doesnt work
                 #f'{url_profit_product}?momentFrom={start_day} 00:00:00;momentTo={end_day} 23:00:00')
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
             with open('profit_prod_list.json', 'w') as ff:
@@ -254,7 +254,7 @@ class moi_sklad():
         try:
             demand_req_json = requests.get(url=demand_link, headers=header_for_token_auth)
             #with open('demand_structure.json', 'w') as ff:
-            #    json.dump(req.json(), ff, ensure_ascii=False)
+            #    json.dump(demand_req_json.json(), ff, ensure_ascii=False)
             demand_req = demand_req_json.json()
             customer_link = demand_req['agent']['meta']['href']
             customer_req = self.request_customer_data(customer_link)
@@ -262,12 +262,19 @@ class moi_sklad():
             customer_group = customer_req[1]
             demand_no = demand_req['name']
             demand_date = demand_req['moment']
+            demand_date_date = datetime.strptime(demand_date,'%Y-%m-%d %H:%M:%S.%f')
+            border_date = datetime.strptime('2021-02-06', '%Y-%m-%d')
             demand_sum = demand_req['sum']
             demand_payed_sum = demand_req['payedSum']
-            return [customer_name, demand_no, demand_date, demand_sum, demand_payed_sum, customer_group]
+            if demand_date_date >= border_date:
+                positions_in_sale_link = demand_req['positions']['meta']['href']
+                sale_cost_sum = self.get_positions_costsum(positions_in_sale_link)
+            else:
+                sale_cost_sum = 0
+            return [customer_name, demand_no, demand_date, demand_sum, demand_payed_sum, customer_group, sale_cost_sum]
         except IndexError:
             print('Sorry, cant get products dict ')
-            return ['NA','NA','NA',0,0]
+            return ['NA','NA','NA',0,0,0]
 
     def get_sales_list(self):
         """'''get sales list from MS and put it in file .json'''"""
@@ -283,10 +290,11 @@ class moi_sklad():
         position = 0
         payed_sum2 = 0
         try:
-            product_profit = self.get_profit_by_product_list()
+            start_day_for_sales = start_day
+            product_profit = self.get_profit_by_product_list(start_day_for_sales)
             payments = self.get_payments_list()
             url_filtered = str(
-                f'{url_otgruzka_list}?order=moment,name&filter=moment>={start_day} 00:00:00.000;moment<={end_day} 23:00:00.000')
+                f'{url_otgruzka_list}?order=moment,name&filter=moment>={start_day_for_sales} 00:00:00.000;moment<={end_day} 23:00:00.000')
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
             self.req_date = str(datetime.now().strftime("%Y_%m_%d"))
             self.start_day = start_day
@@ -348,10 +356,10 @@ class moi_sklad():
 
         #data_linked = sorted(data_linked, key=lambda y: (y[1], y[4], y[2]))  # sorting by group and name
         data_linked = self.sales_arr + data_linked
-        data_linked.append(['', '', '', '',
+        data_linked.append(['Итого по отчетному периоду', '', '', '',
                             doc_sum, cost_sum, profit_sum,
                             payed_sum2, payed_sum])
-        data_linked += self.get_1c_sales_list()
+        data_linked += self.get_1c_sales_list() 
         return data_linked
 
     def get_1c_sales_list(self):
@@ -368,18 +376,24 @@ class moi_sklad():
         position = 0
         try:
             payments = self.demands_payed_dict
+            self.get_profit_by_product_list('2021-02-08')
             for payment, payment_sum in payments.items():
                 demand_info = self.get_info_from_demand(payment)
                 if demand_info[5] != agent_name: continue
                 demand_date_temp = demand_info[2]
                 demand_date = datetime.strptime(demand_date_temp,'%Y-%m-%d %H:%M:%S.%f')
                 req_date = datetime.strptime(self.start_day,'%Y-%m-%d')
+                # filtered date before requested
                 if demand_date < req_date:
                     position += 1
+                    if demand_info[6] == 0:
+                        profit = 0
+                    else:
+                        profit = demand_info[3]/100 - demand_info[6]
                     self.payed_demand_data_linked.append(
                         [position, str(demand_date.strftime("%d.%m.%Y")),
                          demand_info[1], demand_info[0], demand_info[3]/100,
-                         '','',demand_info[4]/100, demand_info[5]]
+                         demand_info[6], profit, demand_info[4]/100, demand_info[5]]
                     )
                 else: continue
         except IndexError:
@@ -394,7 +408,7 @@ def get_pfo_agent_report():
     занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
     надо найти почти 200к отгрузок
     """
-    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-02-08', end_day='2021-02-28')
+    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-03-01', end_day='2021-03-31')
     pfo_report_book = agents_books(agent_name = "Саратов")
 
     pfo_report_book.clear_data_sheet()
@@ -411,11 +425,9 @@ def get_pfo_agent_report():
 
 
 def get_nsk_agent_report():
-    """на четверг сделать выборку по оплатам вывести все оплаченные отгрузки
-    занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
-    надо найти почти 200к отгрузок
+    """Считаем агентские Новосибирска
     """
-    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-02-08', end_day='2021-03-30')
+    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-02-06', end_day='2021-03-31')
     nsk_report_book = agents_books(agent_name = "Новосибирск")
 
     nsk_report_book.clear_data_sheet()
