@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a907a808-9d59-47ce-9c43-12678287e37b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/reports.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agents.py" beforeDir="false" afterPath="$PROJECT_DIR$/agents.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot_log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bot_log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sp_books.py" beforeDir="false" afterPath="$PROJECT_DIR$/sp_books.py" afterDir="false" />
     </list>
@@ -78,7 +78,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
-  <component name="RunManager" selected="Python.sp_books">
+  <component name="RunManager" selected="Python.reports">
     <configuration name="TeleBotSerman" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MoiSklad" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -121,7 +121,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="finance" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="reports" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MoiSklad" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -129,11 +129,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../SkillFactory2" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../SkillFactory2/Module2_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/reports.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -186,11 +186,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.sp_books" />
+        <item itemvalue="Python.reports" />
         <item itemvalue="Python.agents" />
+        <item itemvalue="Python.sp_books" />
         <item itemvalue="Python.TeleBotSerman" />
         <item itemvalue="Python.training" />
-        <item itemvalue="Python.agents" />
       </list>
     </recent_temporary>
   </component>
