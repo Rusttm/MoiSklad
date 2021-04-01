@@ -5,6 +5,7 @@
 *.xlsx
 *.httml
 *.html
+workspace.xml
 googleEmail.txt
 token.pickle
 
