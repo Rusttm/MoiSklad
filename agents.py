@@ -356,7 +356,7 @@ class moi_sklad():
 
         #data_linked = sorted(data_linked, key=lambda y: (y[1], y[4], y[2]))  # sorting by group and name
         data_linked = self.sales_arr + data_linked
-        data_linked.append(['', '', '', '',
+        data_linked.append(['Итого по отчетному периоду', '', '', '',
                             doc_sum, cost_sum, profit_sum,
                             payed_sum2, payed_sum])
         data_linked += self.get_1c_sales_list() 
@@ -386,10 +386,14 @@ class moi_sklad():
                 # filtered date before requested
                 if demand_date < req_date:
                     position += 1
+                    if demand_info[6] == 0:
+                        profit = 0
+                    else:
+                        profit = demand_info[3]/100 - demand_info[6]
                     self.payed_demand_data_linked.append(
                         [position, str(demand_date.strftime("%d.%m.%Y")),
                          demand_info[1], demand_info[0], demand_info[3]/100,
-                         demand_info[6],(demand_info[3]/100 - demand_info[6]),demand_info[4]/100, demand_info[5]]
+                         demand_info[6], profit, demand_info[4]/100, demand_info[5]]
                     )
                 else: continue
         except IndexError:
@@ -421,11 +425,9 @@ def get_pfo_agent_report():
 
 
 def get_nsk_agent_report():
-    """на четверг сделать выборку по оплатам вывести все оплаченные отгрузки
-    занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
-    надо найти почти 200к отгрузок
+    """Считаем агентские Новосибирска
     """
-    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-02-08', end_day='2021-03-30')
+    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-02-06', end_day='2021-03-31')
     nsk_report_book = agents_books(agent_name = "Новосибирск")
 
     nsk_report_book.clear_data_sheet()
@@ -440,4 +442,4 @@ def get_nsk_agent_report():
     nsk_report_book.append_array(nsk_req_list)
 
 
-get_pfo_agent_report()
+get_nsk_agent_report()
