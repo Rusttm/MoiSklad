@@ -6,6 +6,7 @@ from datetime import datetime
 import apiclient
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
+import pandas as pd
 
 from googleapiclient import discovery
 
@@ -24,6 +25,7 @@ try:
     url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
     url_customers = conf['MoiSklad']['url_customers']
     url_payments_list = conf['MoiSklad']['url_payments_list']
+    url_outpayments_list = conf['MoiSklad']['url_outpayments_list']
     url_profit_product = conf['MoiSklad']['url_profit_product']
     url_customer_profit_product = conf['MoiSklad']['url_customer_profit_product']
     # goggle parts
@@ -171,6 +173,7 @@ class management_report():
         self.start_day = start_day
         self.end_day = end_day
         self.customers_profit_dict = {}
+        self.outpayments_purpose_dict = {}
         #print('today is', toda_y_date)
 
     def request_customer_data(self, customer_link):
@@ -191,11 +194,10 @@ class management_report():
         end_day = self.end_day
         start_day = self.start_day
         try:
-            url_filtered = str(f'{url_customer_profit_product}?moment>={start_day} 00:00:00;moment<={end_day} 23:00:00') # !momentTo doesnt work
-            #url_filtered = f'{url_profit_product}?momentFrom={start_day} 00:00:00;momentTo={end_day} 23:00:00')
-
+            #url_filtered = str(f'{url_customer_profit_product}?moment>={start_day} 00:00:00;moment<={end_day} 23:00:00') # !momentTo doesnt work
+            url_filtered = f'{url_customer_profit_product}?momentFrom={start_day} 00:00:00&momentTo={end_day} 23:00:00'
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
-            print(url_filtered)
+            print('requested: ',url_filtered)
             with open('profit_customer_list.json', 'w') as ff:
                 json.dump(req.json(), ff, ensure_ascii=False)
             for elem in req.json()['rows']:
@@ -206,20 +208,81 @@ class management_report():
             print('Sorry, cant get products dict ')
             return False
 
+    def get_payments_by_purpose_list(self):
+        """returns dict {paymentPurpose: paymentSum}"""
+        data_linked2 = []
+        temp_dict = {}
+        #url_filtered = f'{url_outpayments_list}?momentFrom={self.start_day} 00:00:00&momentTo={self.end_day} 23:00:00'
+        url_filtered = f'{url_outpayments_list}?filter=created>={self.start_day} 00:00:00;created<={self.end_day} 23:00:00'
+        req = requests.get(url=url_filtered, headers=header_for_token_auth)
+        print('requested: ', url_filtered)
+        #with open('outpayments_list.json', 'w') as ff:
+        #    json.dump(req.json(), ff, ensure_ascii=False)
+        # fill dictt by data
+        for elem in req.json()['rows']:
+            temp_dict[elem['expenseItem']['meta']['href']] = temp_dict.get(elem['expenseItem']['meta']['href'], 0) + elem['sum']
+        # convert link to names
+        for key, value in temp_dict.items():
+            req2 = requests.get(url=key, headers=header_for_token_auth)
+            req2.json()['name']
+            self.outpayments_purpose_dict[req2.json()['name']] = value
+            data_linked2.append([req2.json()['name'], value])
 
-    def form_report(self):
+        return self.outpayments_purpose_dict
+
+    def form_profit_by_customers_report(self):
+        """ main module for profit list"""
+        # this dict return group:[sumsales,sumcost,sumprofit]
+        profits_by_group_dict = {'Наименование': ['Выручка', 'Себестоимость', 'Валовая прибыль'],
+                                 'Всего': [0, 0, 0],
+                                 'Новосибирск': [0, 0, 0],
+                                 'Саратов': [0, 0, 0],
+                                 'Москва': [0, 0, 0],
+                                 'Основной': [0, 0, 0]}
         profit_by_customers_dict = self.get_profit_by_customer_list()
-        data_linked = []
+        data_linked = [['отчет создан:', toda_y_date], ['период с:', self.start_day], ['период по:', self.end_day],[]]
         for customer_link, sales in profit_by_customers_dict.items():
             customer_name = self.request_customer_data(customer_link)[0]
             customer_group = self.request_customer_data(customer_link)[1]
-            data_linked.append([customer_name, customer_group, sales[0], sales[1], sales[2]])
+            try:
+                profits_by_group_dict[customer_group][0] += sales[0]
+                profits_by_group_dict[customer_group][1] += sales[1]
+                profits_by_group_dict[customer_group][2] += sales[2]
+                profits_by_group_dict['Всего'][0] += sales[0]
+                profits_by_group_dict['Всего'][1] += sales[1]
+                profits_by_group_dict['Всего'][2] += sales[2]
+
+            except:
+                print(f'Cant find new group {customer_group} in dictionary')
+        # make the dataframe
+        my_df = pd.DataFrame(profits_by_group_dict)
+        data_linked.append(list(profits_by_group_dict.keys()))
+        for strin_g in my_df.values.tolist():
+            data_linked.append(strin_g)
+        #data_linked.append([customer_name, customer_group, sales[0], sales[1], sales[2]])
+        #data_linked = sorted(data_linked, key = lambda s: (s[1]))
         return data_linked
 
+    def form_general_report(self):
+        dropped_purpose = ['Выплаты Агенту', 'Закупка товаров', 'Перемещение', 'Чистая прибыль', 'Операционная прибыль', 'Операционные расходы']
+        data_linked_list = self.form_profit_by_customers_report()
+        temp_dict = self.get_payments_by_purpose_list()
+        temp_dict['Чистая прибыль'] = data_linked_list[-1][1]
+        nsk_profit = (data_linked_list[-1][2] - temp_dict.get('Новосибирск склад', 0)/100)*0.8*0.35
+        pfo_profit = (data_linked_list[-1][3] - temp_dict.get('Саратов склад', 0)/100)*0.8*0.5
+        data_linked_list.append(['Выплаты Агенту', nsk_profit+pfo_profit, nsk_profit, pfo_profit ])
+        temp_dict['Чистая прибыль'] -= nsk_profit + pfo_profit
+        for key, value in temp_dict.items():
+            if key not in dropped_purpose:
+                temp_dict['Чистая прибыль'] -= value/100
+                data_linked_list.append([key, value/100])
+        data_linked_list.append(['Чистая прибыль', temp_dict['Чистая прибыль']])
+        return data_linked_list
 
 
 new_report = management_report(start_day='2021-03-01', end_day='2021-03-31')
 new_report_book = report_book()
 new_report_book.clear_data_sheet()
-new_report_book.append_array(new_report.form_report())
+new_report_book.append_array(new_report.form_general_report())
+#print(new_report.get_payments_by_purpose_list())
 
