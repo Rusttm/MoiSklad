@@ -197,7 +197,6 @@ class management_report():
             #url_filtered = str(f'{url_customer_profit_product}?moment>={start_day} 00:00:00;moment<={end_day} 23:00:00') # !momentTo doesnt work
             url_filtered = f'{url_customer_profit_product}?momentFrom={start_day} 00:00:00&momentTo={end_day} 23:00:00'
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
-            print('requested: ',url_filtered)
             with open('profit_customer_list.json', 'w') as ff:
                 json.dump(req.json(), ff, ensure_ascii=False)
             for elem in req.json()['rows']:
@@ -215,7 +214,6 @@ class management_report():
         #url_filtered = f'{url_outpayments_list}?momentFrom={self.start_day} 00:00:00&momentTo={self.end_day} 23:00:00'
         url_filtered = f'{url_outpayments_list}?filter=created>={self.start_day} 00:00:00;created<={self.end_day} 23:00:00'
         req = requests.get(url=url_filtered, headers=header_for_token_auth)
-        print('requested: ', url_filtered)
         #with open('outpayments_list.json', 'w') as ff:
         #    json.dump(req.json(), ff, ensure_ascii=False)
         # fill dictt by data
