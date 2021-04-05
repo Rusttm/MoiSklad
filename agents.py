@@ -208,8 +208,8 @@ class moi_sklad():
         #start_day_for_sales =  self.start_day
         end_day = self.end_day
         try:
-            url_filtered = str(f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00') # !momentTo doesnt work
-                #f'{url_profit_product}?momentFrom={start_day} 00:00:00;momentTo={end_day} 23:00:00')
+            #url_filtered = str(f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00') # !momentTo doesnt work
+            url_filtered = f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00&momentTo={end_day} 23:00:00'
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
             with open('profit_prod_list.json', 'w') as ff:
                 json.dump(req.json(), ff, ensure_ascii=False)
@@ -443,3 +443,4 @@ def get_nsk_agent_report():
 
 
 get_nsk_agent_report()
+get_pfo_agent_report()

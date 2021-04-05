@@ -156,6 +156,10 @@ def xlsx_writer_train():
         worksheet.write_row(row, col, data)
     workbook.close()
 
-with open("bot_log.txt", "a") as myfile:
-    myfile.write("appended text")
+dd={}
+d = {1: [1, 2]}
+d[5] = d.get(5, 0) + 5
+d[5] = d.get(5, 0) + 5
+dd.update(d)
+print(dd)
 
