@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-"""this module is for sales and purchases books forms"""
+"""this module is for agent books forming"""
 import requests
 import json
 import configparser
