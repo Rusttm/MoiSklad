@@ -53,9 +53,10 @@ def send_text(message):
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()
-            bot.send_message(message.chat.id, f'Остаток денег на рублевых счетах {account_sum}руб.')
+            bot.send_message(message.chat.id, f'Остаток денег на рублевых счетах {int(account_sum)}руб.')
         # actual profit
         elif message.text.lower() in ['прибыль', 'отчет', 'отчет по прибыли']:
+            bot.send_message(message.chat.id, f'Файл отчетности формируется, подождите!')
             profit_sum = reports.actual_report()
             bot.send_message(message.chat.id, f'Текущая прибыль по месяцу {profit_sum[0]}руб.')
             bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}руб.')
@@ -65,7 +66,7 @@ def send_text(message):
             if len(sales_list) > 0:
                 for sale in sales_control.get_sales_list():
                     bot.send_message(message.chat.id,
-                                     f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {sale[2]}%')
+                                     f'Клиент {sale[0]} на сумму {sale[1]}руб. рентабельность(вал) {int(sale[2])}%')
             else:
                 bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')
         # forest price
