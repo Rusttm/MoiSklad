@@ -6,6 +6,7 @@ import sales_control
 import finance
 import Alex_debt
 import time
+import reports
 
 
 conf = configparser.ConfigParser()
@@ -23,7 +24,7 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
 
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены')
+keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены', 'Отчет')
 
 
 @bot.message_handler(commands=['start'])  # decorator
@@ -53,6 +54,11 @@ def send_text(message):
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()
             bot.send_message(message.chat.id, f'Остаток денег на рублевых счетах {account_sum}руб.')
+        # actual profit
+        elif message.text.lower() in ['прибыль', 'отчет', 'отчет по прибыли']:
+            profit_sum = reports.actual_report()
+            bot.send_message(message.chat.id, f'Текущая прибыль по месяцу {profit_sum[0]}руб.')
+            bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}руб.')
         # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
             sales_list = sales_control.get_sales_list()

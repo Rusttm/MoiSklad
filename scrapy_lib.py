@@ -20,3 +20,4 @@ class ForestSpider(scrapy.Spider):
                 response.urljoin(next_page),
                 callback=self.parse
             )
+        print('Thats ALL!!!')

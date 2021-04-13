@@ -174,6 +174,7 @@ class management_report():
         self.end_day = end_day
         self.customers_profit_dict = {}
         self.outpayments_purpose_dict = {}
+        self.general_profit = 0
         #print('today is', toda_y_date)
 
     def request_customer_data(self, customer_link):
@@ -275,12 +276,26 @@ class management_report():
                 temp_dict['Чистая прибыль'] -= value/100
                 data_linked_list.append([key, value/100])
         data_linked_list.append(['Чистая прибыль', temp_dict['Чистая прибыль']])
+        self.general_profit = temp_dict['Чистая прибыль']
         return data_linked_list
 
+def monthly_report():
+    new_report = management_report(start_day='2021-04-01', end_day='2021-04-30')
+    new_report_book = report_book()
+    new_report_book.clear_data_sheet()
+    new_report_book.append_array(new_report.form_general_report())
 
-new_report = management_report(start_day='2021-03-01', end_day='2021-03-31')
-new_report_book = report_book()
-new_report_book.clear_data_sheet()
-new_report_book.append_array(new_report.form_general_report())
+def actual_report():
+    todayYear = datetime.now().year
+    todayMonth = datetime.now().month
+    new_report = management_report(start_day=f'{todayYear}-{todayMonth}-01', end_day=toda_y_date)
+    new_report_book = report_book()
+    new_report_book.clear_data_sheet()
+    new_report_book.append_array(new_report.form_general_report())
+    report_link = f'https://docs.google.com/spreadsheets/d/{profit_book}/edit#gid=0'
+    generalProfit = new_report.general_profit
+    return (int(generalProfit), report_link)
+
+
 #print(new_report.get_payments_by_purpose_list())
 

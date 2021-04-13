@@ -9,6 +9,7 @@ import certifi
 from datetime import datetime
 from datetime import date
 from scrapy import cmdline
+from Scraping import run_scrapy
 import requests
 import json
 
@@ -156,10 +157,5 @@ def xlsx_writer_train():
         worksheet.write_row(row, col, data)
     workbook.close()
 
-dd={}
-d = {1: [1, 2]}
-d[5] = d.get(5, 0) + 5
-d[5] = d.get(5, 0) + 5
-dd.update(d)
-print(dd)
 
+print(datetime.now().month)
