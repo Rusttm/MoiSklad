@@ -55,11 +55,11 @@ def send_text(message):
             account_sum = finance.get_account_summ()
             bot.send_message(message.chat.id, f'Остаток денег на рублевых счетах {int(account_sum)}руб.')
         # actual profit
-        elif message.text.lower() in ['прибыль', 'отчет', 'отчет по прибыли']:
+        elif message.text.lower() in ['прибыль', 'отчет', 'отчет по прибыли', 'оборот']:
             bot.send_message(message.chat.id, f'Файл отчетности формируется, подождите!')
             profit_sum = reports.actual_report()
             bot.send_message(message.chat.id, f'Текущая прибыль по месяцу {profit_sum[0]}руб.')
-            bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}руб.')
+            bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}')
         # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
             sales_list = sales_control.get_sales_list()
