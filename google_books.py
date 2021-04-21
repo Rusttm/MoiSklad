@@ -10,7 +10,7 @@ from gspread_dataframe import set_with_dataframe
 import locale
 
 #locale.setlocale(locale.LC_ALL, 'fr_FR')
-locale.setlocale(locale.LC_ALL, 'ru_RU')
+#locale.setlocale(locale.LC_ALL, 'ru_RU')
 
 try:
     conf = configparser.ConfigParser()
