@@ -1,8 +1,8 @@
 pytelegrambotapi
 Locales
 google-api-python-client
-gspred
-gspred_dataframe
+gspread
+gspread_dataframe
 xlsxwriter
 configparser
 oauth2client
@@ -10,11 +10,8 @@ httplib2
 apiclient
 datetime
 requests
-telebot
 numpy
-pandas
-json
-time
+pandas==1.2.0
 pathlib
 
 
