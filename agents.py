@@ -408,13 +408,13 @@ def get_pfo_agent_report():
     занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
     надо найти почти 200к отгрузок
     """
-    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-04-01', end_day='2021-04-19')
+    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-04-01', end_day='2021-04-30')
     pfo_report_book = agents_books(agent_name = "Саратов")
 
     pfo_report_book.clear_data_sheet()
     req_list = pfo_report.get_sales_list()
     workbook = xlsxwriter.Workbook('pfo_report.xlsx')
-    worksheet = workbook.add_worksheet('temporary1')
+    worksheet = workbook.add_worksheet('Апрель')
     col = 0
     for row, data in enumerate(req_list):
         worksheet.write_row(row, col, data)
@@ -427,13 +427,13 @@ def get_pfo_agent_report():
 def get_nsk_agent_report():
     """Считаем агентские Новосибирска
     """
-    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-02-06', end_day='2021-03-31')
+    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-04-01', end_day='2021-04-30')
     nsk_report_book = agents_books(agent_name = "Новосибирск")
 
     nsk_report_book.clear_data_sheet()
     nsk_req_list = nsk_report.get_sales_list()
     workbook = xlsxwriter.Workbook('nsk_report.xlsx')
-    wsh_name = 'Март'
+    wsh_name = 'Апрель'
     worksheet = workbook.add_worksheet(wsh_name)
     col = 0
     for row, data in enumerate(nsk_req_list):
@@ -442,5 +442,5 @@ def get_nsk_agent_report():
     nsk_report_book.append_array(nsk_req_list)
 
 
-#get_nsk_agent_report()
+get_nsk_agent_report()
 get_pfo_agent_report()

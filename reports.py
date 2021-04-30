@@ -286,6 +286,7 @@ def monthly_report():
     new_report_book.append_array(new_report.form_general_report())
 
 def actual_report():
+    toda_y_date = str(datetime.now().strftime("%Y-%m-%d"))
     todayYear = datetime.now().year
     todayMonth = datetime.now().month
     new_report = management_report(start_day=f'{todayYear}-{todayMonth}-01', end_day=toda_y_date)
