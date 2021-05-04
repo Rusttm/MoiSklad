@@ -373,4 +373,4 @@ def fill_the_purchases_book(start_day='2021-04-01', end_day='2021-04-30'):
     new_sales_books.append_array(data_for_purchases_book, 0)
 
 fill_the_purchases_book()
-fill_the_sales_book()
+#fill_the_sales_book()

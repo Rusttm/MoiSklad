@@ -88,5 +88,5 @@ def send_sticker_id(message):
     bot.send_message(message.chat.id, f'your sticker id is {sticker_id}')
     bot.send_sticker(message.chat.id, sticker_id)
 
-
-bot.polling()
+if __name__ == '__main__':
+    bot.infinity_polling()
