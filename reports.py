@@ -299,4 +299,3 @@ def actual_report():
 
 
 #print(new_report.get_payments_by_purpose_list())
-
