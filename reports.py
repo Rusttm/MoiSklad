@@ -239,7 +239,7 @@ class management_report():
                                  'Москва': [0, 0, 0],
                                  'Основной': [0, 0, 0]}
         profit_by_customers_dict = self.get_profit_by_customer_list()
-        data_linked = [['отчет создан:', toda_y_date], ['период с:', self.start_day], ['период по:', self.end_day],[]]
+        data_linked = [['отчет создан:', self.form_date], ['период с:', self.start_day], ['период по:', self.end_day],[]]
         for customer_link, sales in profit_by_customers_dict.items():
             customer_name = self.request_customer_data(customer_link)[0]
             customer_group = self.request_customer_data(customer_link)[1]

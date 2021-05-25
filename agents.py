@@ -408,7 +408,7 @@ def get_pfo_agent_report():
     занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
     надо найти почти 200к отгрузок
     """
-    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-04-01', end_day='2021-04-30')
+    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-05-01', end_day='2021-05-17')
     pfo_report_book = agents_books(agent_name = "Саратов")
 
     pfo_report_book.clear_data_sheet()
@@ -442,5 +442,5 @@ def get_nsk_agent_report():
     nsk_report_book.append_array(nsk_req_list)
 
 
-get_nsk_agent_report()
-#get_pfo_agent_report()
+#get_nsk_agent_report()
+get_pfo_agent_report()
