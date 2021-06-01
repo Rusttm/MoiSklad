@@ -1,3 +1,4 @@
+""" остатки по счетам"""
 import configparser
 import requests
 

@@ -1,3 +1,4 @@
+""" control sales 30% minimum"""
 import configparser
 import requests
 from datetime import date
@@ -19,13 +20,14 @@ except IndexError:
     print('Error, cant read .ini file', Exception)
 
 
-today = date.today()
-today_date = str(today.strftime("%d.%m.%y_%H:%M"))
-today_date_req = str(today.strftime("%Y-%m-%d"))
+
 
 
 def get_sales_list():
     """'''this function gets list of clients with gross efficiency <30% in that day'''"""
+    today = date.today()
+    today_date = str(today.strftime("%d.%m.%y_%H:%M"))
+    today_date_req = str(today.strftime("%Y-%m-%d"))
     failed_sales_list = []
     try:
         sales_req = requests.get(url=f"{url_sales_list}?momentFrom={today_date_req} 00:00:01",

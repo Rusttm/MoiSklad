@@ -358,14 +358,14 @@ class moi_sklad():
             print('Sorry, cant get customers list ')
             return False
 
-def fill_the_sales_book(start_day='2021-04-01', end_day='2021-04-30'):
+def fill_the_sales_book(start_day='2021-05-01', end_day='2021-05-31'):
     get_new_data_for_sales_book = moi_sklad()
     data_for_sales_book = get_new_data_for_sales_book.get_sales_list(start_day, end_day)
     new_sales_books = sp_books()
     new_sales_books.clear_data_sheet(1)
     new_sales_books.append_array(data_for_sales_book, 1)
 
-def fill_the_purchases_book(start_day='2021-04-01', end_day='2021-04-30'):
+def fill_the_purchases_book(start_day='2021-05-01', end_day='2021-05-31'):
     get_new_data_for_purchases_book = moi_sklad()
     data_for_purchases_book = get_new_data_for_purchases_book.get_purchases_list(start_day, end_day)
     new_sales_books = sp_books()
@@ -373,4 +373,4 @@ def fill_the_purchases_book(start_day='2021-04-01', end_day='2021-04-30'):
     new_sales_books.append_array(data_for_purchases_book, 0)
 
 fill_the_purchases_book()
-#fill_the_sales_book()
+fill_the_sales_book()
