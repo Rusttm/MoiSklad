@@ -12,6 +12,7 @@ from scrapy import cmdline
 from Scraping import run_scrapy
 import requests
 import json
+import reports
 
 def ini_file_write(file_name='bot.ini' , tree='MoiSklad', section='last_debt_file', entry='alex_debt_2021-02-17.xlsx'):
     try:
@@ -150,3 +151,4 @@ def xlsx_writer_train():
 
 
 print(datetime.now().month)
+reports.monthly_report()

@@ -7,7 +7,6 @@ import apiclient
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-
 from googleapiclient import discovery
 
 try:
@@ -268,7 +267,7 @@ class management_report():
         temp_dict = self.get_payments_by_purpose_list()
         temp_dict['Чистая прибыль'] = data_linked_list[-1][1]
         nsk_profit = (data_linked_list[-1][2] - temp_dict.get('Новосибирск склад', 0)/100)*0.8*0.35
-        pfo_profit = (data_linked_list[-1][3] - temp_dict.get('Саратов склад', 0)/100)*0.8*0.5
+        pfo_profit = (data_linked_list[-1][3] - temp_dict.get('Саратов склад', 0)/100)*0.8*0.5*0 # exclude from 17-05-21
         data_linked_list.append(['Выплаты Агенту', nsk_profit+pfo_profit, nsk_profit, pfo_profit ])
         temp_dict['Чистая прибыль'] -= nsk_profit + pfo_profit
         for key, value in temp_dict.items():
@@ -280,7 +279,7 @@ class management_report():
         return data_linked_list
 
 def monthly_report():
-    new_report = management_report(start_day='2021-04-01', end_day='2021-04-30')
+    new_report = management_report(start_day='2021-05-01', end_day='2021-05-31')
     new_report_book = report_book()
     new_report_book.clear_data_sheet()
     new_report_book.append_array(new_report.form_general_report())
