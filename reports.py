@@ -167,7 +167,7 @@ class report_book():
 
 
 class management_report():
-    def __init__(self, start_day='2021-02-08', end_day=toda_y_date):
+    def __init__(self, start_day='2021-02-08', end_day=str(datetime.now().strftime("%Y-%m-%d"))):
         self.form_date = str(datetime.now().strftime("%d.%m.%y %H:%m"))
         self.start_day = start_day
         self.end_day = end_day
