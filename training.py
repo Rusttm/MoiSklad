@@ -1,19 +1,12 @@
 # -*- coding: utf8 -*-
-import xlsxwriter
-import datetime
-import configparser
-from pathlib import Path
-import os
-import ssl
-import certifi
+
+import times
+import schedule
+from threading import Thread
 from datetime import datetime
-from datetime import date
-from scrapy import cmdline
-from Scraping import run_scrapy
-import requests
-import json
-import reports
 
 
+my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=0'
+markdown = "<a href='<" + my_book_link + ">'>Сравнение цен</a>"
 
-
+print(markdown)

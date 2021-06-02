@@ -29,7 +29,7 @@ def get_customer_tag(link = 'https://online.moysklad.ru/api/remap/1.2/entity/cou
 def get_customers_balance():
     """'''Return customers debt grouped by branches'''"""
     sales_group_customers = {'новосибирскконтрагенты': 0, 'покупатели пфо': 0, 'москваконтрагенты':0, 'покупатели': 0, 'Итого': 0}
-    support_group_customers = {'офис поставщики':0, 'транспорт': 0, 'поставщики': 0, 'Итого': 0}
+    support_group_customers = {'офис поставщики': 0, 'транспорт': 0, 'поставщики': 0, 'Итого': 0}
 
     try:
         filtered_url = f'{url_customers}?filter=balance<0'
