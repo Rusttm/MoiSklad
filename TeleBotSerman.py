@@ -7,6 +7,7 @@ import finance
 import Alex_debt
 import time
 import reports
+import customers_debt
 
 
 conf = configparser.ConfigParser()
@@ -24,7 +25,7 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
 
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены', 'Отчет')
+keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб.<30%', 'Цены', 'Отчет', 'Задолженность')
 
 
 @bot.message_handler(commands=['start'])  # decorator
@@ -50,6 +51,12 @@ def send_text(message):
                              f'Общая задолженность {alex_file_data[2]} по отгрузкам {alex_file_data[1]}руб.')
             debt_link = 'https://docs.google.com/spreadsheets/d/1NUJo6PmTgfZ8OvXnl8tSPEv6DNwWXA4WXBquBAznJ3g/edit#gid=0'
             bot.send_message(message.chat.id, f'Ссылка на файл {debt_link}')
+        # debt
+        elif message.text.lower() in ['задолженность', 'долги']:
+            c_debt = customers_debt.get_customers_balance()
+            bot.send_message(message.chat.id, f'Запрашиваю данные, подождите!')
+            for group in c_debt['Покупатели']:
+                bot.send_message(message.chat.id, f'{group} : {c_debt["Покупатели"][group]}руб.')
         # account remains
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()
