@@ -53,8 +53,8 @@ def send_text(message):
             bot.send_message(message.chat.id, f'Ссылка на файл {debt_link}')
         # debt
         elif message.text.lower() in ['задолженность', 'долги']:
-            c_debt = customers_debt.get_customers_balance()
             bot.send_message(message.chat.id, f'Запрашиваю данные, подождите!')
+            c_debt = customers_debt.get_customers_balance()
             for group in c_debt['Покупатели']:
                 bot.send_message(message.chat.id, f'{group} : {c_debt["Покупатели"][group]}руб.')
         # account remains
