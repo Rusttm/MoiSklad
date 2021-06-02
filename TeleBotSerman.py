@@ -28,7 +28,7 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
 
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(файл)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены', 'Отчет', 'Задолженность')
+keyboard1.row('Просрочка(ссылка)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены', 'Отчет', 'Задолженность')
 
 
 @bot.message_handler(commands=['start'])  # decorator
@@ -45,17 +45,17 @@ def send_text(message):
     if str(message.chat.id) in company_ids:
         employee_name = conf['TeleBot'][str(message.chat.id)]
         # debt file
-        if message.text.lower() == 'просрочка(файл)':
-            bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется, подождите!')
-            alex_file_data = Alex_debt.get_otgruzka_list()
+        if message.text.lower() == 'просрочка(ссылка)':
+            #bot.send_message(message.chat.id, f'Файл дебетовой задолженности формируется, подождите!')
+            #alex_file_data = Alex_debt.get_otgruzka_list()
             #файл не высылается c 02-06-21
             #debt_f = open(alex_file_data[0], 'rb')
             #bot.send_document(message.chat.id, debt_f)
-            debt_link = 'https://docs.google.com/spreadsheets/d/1NUJo6PmTgfZ8OvXnl8tSPEv6DNwWXA4WXBquBAznJ3g/edit#gid=0'
-            markdown = f'На {alex_file_data[2]} просрочено <a href="{debt_link}">{alex_file_data[1]}руб.</a>'
-            bot.send_message(message.chat.id, markdown, parse_mode='html')
+            #debt_link = 'https://docs.google.com/spreadsheets/d/1NUJo6PmTgfZ8OvXnl8tSPEv6DNwWXA4WXBquBAznJ3g/edit#gid=0'
+            #markdown = f'На {alex_file_data[2]} просрочено <a href="{debt_link}">{alex_file_data[1]}руб.</a>'
+            #bot.send_message(message.chat.id, markdown, parse_mode='html')
             alex_debt_link = 'https://docs.google.com/spreadsheets/d/1ZSfXugnudJHYnGHxLQaU1W7iIQwFrIiFGsGkpR7jbwE/edit#gid=0'
-            markdown2 = f'<a href="{alex_debt_link}">Уточненные расчеты Александра</a>'
+            markdown2 = f'<a href="{alex_debt_link}">Расчеты просроченной задолженности</a>'
             bot.send_message(message.chat.id, markdown2, parse_mode='html')
         # debt
         elif message.text.lower() in ['задолженность', 'долги']:
