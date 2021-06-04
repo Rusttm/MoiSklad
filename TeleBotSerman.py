@@ -107,7 +107,7 @@ def send_sticker_id(message):
     bot.send_sticker(message.chat.id, sticker_id)
 
 def send_report():
-    chat_id = company_ids[0]
+    chat_id = company_ids[3]
     #рассылка только в рабочие дни
     if datetime.now().weekday() not in [5, 6]:
         form_date = str(datetime.now().strftime("%d:%m:%y"))
@@ -132,7 +132,7 @@ def send_report():
     else:
         bot.send_message(chat_id, 'Хороших Вам выходных!')
 def daily_report():
-    schedule.every().day.at("18:00").do(send_report)
+    schedule.every().day.at("17:00").do(send_report)
     while True:
         schedule.run_pending()
         time.sleep(1)  # Выберите оптимальное значение под свои задачи планировщика
