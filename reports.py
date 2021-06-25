@@ -278,11 +278,12 @@ class management_report():
         self.general_profit = temp_dict['Чистая прибыль']
         return data_linked_list
 
-def monthly_report():
-    new_report = management_report(start_day='2021-05-01', end_day='2021-05-31')
+def monthly_report(start_day='2021-05-01', end_day='2021-05-31'):
+    new_report = management_report(start_day=start_day, end_day=end_day)
     new_report_book = report_book()
     new_report_book.clear_data_sheet()
     new_report_book.append_array(new_report.form_general_report())
+    return profit_book
 
 def actual_report():
     toda_y_date = str(datetime.now().strftime("%Y-%m-%d"))
