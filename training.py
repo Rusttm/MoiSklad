@@ -1,12 +1,15 @@
 # -*- coding: utf8 -*-
+import kivy
+kivy.require('2.0.0')
+from kivy.app import App
+from kivy.uix.widget import Widget
 
-import times
-import schedule
-from threading import Thread
-from datetime import datetime
+class MyGrid(Widget):
+    pass
 
+class MyApp(App):
+    def build(self):
+        return MyGrid()
 
-my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=0'
-markdown = "<a href='<" + my_book_link + ">'>Сравнение цен</a>"
-
-print(markdown)
+if __name__ == "__main__":
+    MyApp().run()

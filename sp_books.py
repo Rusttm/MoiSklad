@@ -364,6 +364,7 @@ def fill_the_sales_book(start_day='2021-05-01', end_day='2021-05-31'):
     new_sales_books = sp_books()
     new_sales_books.clear_data_sheet(1)
     new_sales_books.append_array(data_for_sales_book, 1)
+    return work_book
 
 def fill_the_purchases_book(start_day='2021-05-01', end_day='2021-05-31'):
     get_new_data_for_purchases_book = moi_sklad()
@@ -371,6 +372,7 @@ def fill_the_purchases_book(start_day='2021-05-01', end_day='2021-05-31'):
     new_sales_books = sp_books()
     new_sales_books.clear_data_sheet(0)
     new_sales_books.append_array(data_for_purchases_book, 0)
+    return work_book
 
-fill_the_purchases_book()
-fill_the_sales_book()
+#fill_the_purchases_book()
+#fill_the_sales_book()

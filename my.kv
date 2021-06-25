@@ -1,0 +1,27 @@
+#:kivy 2.0.0
+
+<MyGrid>:
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+
+        GridLayout:
+            cols:2
+
+            Label:
+                text: "Name: "
+
+            TextInput:
+                multinline:False
+
+            Label:
+                text: "Email: "
+
+            TextInput:
+                multiline:False
+        Button:
+            text: str(self.state)
+        Label:
+            size_hint: 1, 0.1
+            text: "Some label text"
+            font_size: self.width/20
