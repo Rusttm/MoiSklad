@@ -7,11 +7,13 @@ import apiclient
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
+import os
 from googleapiclient import discovery
 
 try:
     conf = configparser.ConfigParser()
-    conf.read('reports.ini')
+    #conf.read('reports.ini')
+    conf.read(os.path.join(os.path.dirname(__file__), 'reports.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 
@@ -32,6 +34,7 @@ try:
     profit_book = conf['GOOGLE']['profit_book']
     temp_book = conf['GOOGLE']['temp_book']
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE']
+    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']

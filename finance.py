@@ -1,12 +1,13 @@
 """ остатки по счетам"""
 import configparser
 import requests
-
+import os
 
 try:
     # get data from in file
     conf = configparser.ConfigParser()
-    conf.read('config.ini')
+    #conf.read('config.ini')
+    conf.read(os.path.join(os.path.dirname(__file__), 'config.ini'))
     url_money = conf['MoiSklad']['url_money']
     my_access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token}

@@ -1,27 +1,12 @@
-#:kivy 2.0.0
+MDFloatLayout:
 
-<MyGrid>:
-    GridLayout:
-        cols:1
-        size: root.width, root.height
+	MDRaisedButton:
+		text: "Open Time Picker"
+		pos_hint: {'center_x': .5, 'center_y': .5}
+		on_release: app.show_time_picker()
 
-        GridLayout:
-            cols:2
 
-            Label:
-                text: "Name: "
-
-            TextInput:
-                multinline:False
-
-            Label:
-                text: "Email: "
-
-            TextInput:
-                multiline:False
-        Button:
-            text: str(self.state)
-        Label:
-            size_hint: 1, 0.1
-            text: "Some label text"
-            font_size: self.width/20
+	MDLabel:
+		id: time_label
+		text: "Some Stuff!"
+		pos_hint: {'center_x': .95, 'center_y': .4}

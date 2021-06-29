@@ -8,11 +8,12 @@ import apiclient
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import xlsxwriter
-
+import os
 
 try:
     conf = configparser.ConfigParser()
-    conf.read('agents.ini')
+    #conf.read('agents.ini')
+    conf.read(os.path.join(os.path.dirname(__file__), 'agents.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 
@@ -31,6 +32,7 @@ try:
     saratov_link = conf['GOOGLE']['saratov_link']
     nsk_link = conf['GOOGLE']['nsk_link']
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
+    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -403,12 +405,12 @@ class moi_sklad():
 
 
 
-def get_pfo_agent_report():
+def get_pfo_agent_report(start_day='2021-05-01', end_day='2021-05-31'):
     """на четверг сделать выборку по оплатам вывести все оплаченные отгрузки
     занести платежи в 1С и проверить по тем отгрузкам, есть ли неоплачеенные?
     надо найти почти 200к отгрузок
     """
-    pfo_report = moi_sklad(agent_name = 'Саратов', start_day='2021-05-01', end_day='2021-05-31')
+    pfo_report = moi_sklad(agent_name = 'Саратов', start_day=start_day, end_day=end_day)
     pfo_report_book = agents_books(agent_name = "Саратов")
 
     pfo_report_book.clear_data_sheet()
@@ -420,14 +422,15 @@ def get_pfo_agent_report():
         worksheet.write_row(row, col, data)
     workbook.close()
     pfo_report_book.append_array(req_list)
+    return saratov_link
     #print(pfo_report.get_profit_by_product_list())
     #print(pfo_report.get_positions_costsum('https://online.moysklad.ru/api/remap/1.2/entity/demand/5c1b5f34-69ce-11eb-0a80-05f4002445e1/positions'))
 
 
-def get_nsk_agent_report():
+def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-05-31'):
     """Считаем агентские Новосибирска
     """
-    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day='2021-04-01', end_day='2021-05-31')
+    nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day=start_day, end_day=end_day)
     nsk_report_book = agents_books(agent_name = "Новосибирск")
 
     nsk_report_book.clear_data_sheet()
@@ -440,7 +443,7 @@ def get_nsk_agent_report():
         worksheet.write_row(row, col, data)
     workbook.close()
     nsk_report_book.append_array(nsk_req_list)
+    return nsk_link
 
-
-get_nsk_agent_report()
-get_pfo_agent_report()
+#get_nsk_agent_report()
+#get_pfo_agent_report()
