@@ -8,11 +8,12 @@ import apiclient
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import xlsxwriter
-
+import os
 
 try:
     conf = configparser.ConfigParser()
-    conf.read('agents.ini')
+    #conf.read('agents.ini')
+    conf.read(os.path.join(os.path.dirname(__file__), 'agents.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 
@@ -31,6 +32,7 @@ try:
     saratov_link = conf['GOOGLE']['saratov_link']
     nsk_link = conf['GOOGLE']['nsk_link']
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
+    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']

@@ -7,10 +7,11 @@ import xlsxwriter
 from datetime import date
 import configparser
 import google_books
-
+import os
 
 conf = configparser.ConfigParser()
-conf.read('c_debdt.ini')
+#conf.read('c_debdt.ini')
+conf.read(os.path.join(os.path.dirname(__file__), 'c_debdt.ini'))
 access_token = conf['MoiSklad']['access_token']
 header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
 url_customers = conf['MoiSklad']['url_customers']
