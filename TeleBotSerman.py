@@ -131,6 +131,9 @@ def send_report():
         bot.send_message(chat_id, message_component, parse_mode='html')
     else:
         bot.send_message(chat_id, 'Хороших Вам выходных!')
+
+    print(f'daily report formed {form_date}')
+
 def daily_report():
     schedule.every().day.at("17:00").do(send_report)
     while True:

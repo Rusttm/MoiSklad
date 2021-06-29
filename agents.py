@@ -361,7 +361,7 @@ class moi_sklad():
         data_linked.append(['Итого по отчетному периоду', '', '', '',
                             doc_sum, cost_sum, profit_sum,
                             payed_sum2, payed_sum])
-        data_linked += self.get_1c_sales_list() 
+        data_linked += self.get_1c_sales_list()
         return data_linked
 
     def get_1c_sales_list(self):
@@ -422,7 +422,7 @@ def get_pfo_agent_report(start_day='2021-05-01', end_day='2021-05-31'):
         worksheet.write_row(row, col, data)
     workbook.close()
     pfo_report_book.append_array(req_list)
-    return saratov_link
+    return saratov_book
     #print(pfo_report.get_profit_by_product_list())
     #print(pfo_report.get_positions_costsum('https://online.moysklad.ru/api/remap/1.2/entity/demand/5c1b5f34-69ce-11eb-0a80-05f4002445e1/positions'))
 
@@ -443,7 +443,7 @@ def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-05-31'):
         worksheet.write_row(row, col, data)
     workbook.close()
     nsk_report_book.append_array(nsk_req_list)
-    return nsk_link
+    return nsk_book
 
 #get_nsk_agent_report()
 #get_pfo_agent_report()
