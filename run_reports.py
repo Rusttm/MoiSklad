@@ -55,7 +55,7 @@ class report_forming():
     def SalesBookReport(self):
         try:
             self.report_link = sp_books.fill_the_sales_book(self.from_date, self.to_date)
-            self.formed_data['tag'] = f'https://docs.google.com/spreadsheets/d/{str(self.report_link)}/edit#gid=0'
+            self.formed_data['tag'] = f'https://docs.google.com/spreadsheets/d/{str(self.report_link)}/edit#gid=1'
             self.formed_data['result'] = f'Sales taxbook report from {self.from_date} to {self.to_date} was formed {str(datetime.now().strftime("%Y-%m-%d"))}!'
         except:
             self.formed_data['result'] = "Error in SalesBookReport"
@@ -63,7 +63,7 @@ class report_forming():
 
     def PurchasesBookReport(self):
         try:
-            self.self.report_link = sp_books.fill_the_purchases_book(self.from_date, self.to_date)
+            self.report_link = sp_books.fill_the_purchases_book(self.from_date, self.to_date)
             self.formed_data['tag'] = f'https://docs.google.com/spreadsheets/d/{str(self.report_link)}/edit#gid=0'
             self.formed_data['result'] = f'Purchases taxbook report from {self.from_date} to {self.to_date} was formed {str(datetime.now().strftime("%Y-%m-%d"))}!'
         except:
