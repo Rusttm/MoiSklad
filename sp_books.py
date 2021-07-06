@@ -12,7 +12,7 @@ import os
 try:
     conf = configparser.ConfigParser()
     #conf.read('sp_books.ini')
-    conf.read(os.path.join(os.path.dirname(__file__), 'sp_books.ini'))
+    conf.read(os.path.join(os.path.dirname(__file__), 'config/sp_books.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 

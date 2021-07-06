@@ -1,11 +1,12 @@
 import requests
 import configparser
-
+import os
 
 
 try:
     conf = configparser.ConfigParser()
-    conf.read('avantel.ini')
+    #conf.read('avantel.ini')
+    conf.read(os.path.join(os.path.dirname(__file__), 'config/avantel.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 

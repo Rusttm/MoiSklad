@@ -13,9 +13,12 @@ from gspread_dataframe import set_with_dataframe, get_as_dataframe
 
 
 conf = configparser.ConfigParser()
-conf.read('config.ini')
+#conf.read('config.ini')
+conf.read(os.path.join(os.path.dirname(__file__), 'config/config.ini'))
 
 CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE']  # Имя файла с закрытым ключом, вы должны подставить свое
+CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
+
 spreadsheetId=conf['GOOGLE']['spreadsheetId']
 # Читаем ключи из файла
 credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])

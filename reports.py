@@ -13,7 +13,7 @@ from googleapiclient import discovery
 try:
     conf = configparser.ConfigParser()
     #conf.read('reports.ini')
-    conf.read(os.path.join(os.path.dirname(__file__), 'reports.ini'))
+    conf.read(os.path.join(os.path.dirname(__file__), 'config/reports.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 

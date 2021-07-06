@@ -8,6 +8,7 @@ from pathlib import Path
 import gspread
 from gspread_dataframe import set_with_dataframe
 import locale
+import os
 
 #locale.setlocale(locale.LC_ALL, 'fr_FR')
 #locale.setlocale(locale.LC_ALL, 'ru_RU')
@@ -15,8 +16,10 @@ import locale
 try:
     conf = configparser.ConfigParser()
     #conf.read('/Volumes/GoogleDrive/My Drive/Python/MoiSklad/MoiSklad/google_books.ini') # macos version
-    conf.read('./google_books.ini') # WINdows version path
-    CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
+    #conf.read('./google_books.ini') # WINdows version path
+    conf.read(os.path.join(os.path.dirname(__file__), 'config/google_books.ini'))
+    CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE']
+    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']

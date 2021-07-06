@@ -7,7 +7,7 @@ try:
     # get data from in file
     conf = configparser.ConfigParser()
     #conf.read('config.ini')
-    conf.read(os.path.join(os.path.dirname(__file__), 'config.ini'))
+    conf.read(os.path.join(os.path.dirname(__file__), 'config/config.ini'))
     url_money = conf['MoiSklad']['url_money']
     my_access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token}
@@ -30,3 +30,4 @@ def get_account_summ():
     except IndexError:
         print('Cant read account data', Exception)
         return 0
+    print(f'finance report ready')

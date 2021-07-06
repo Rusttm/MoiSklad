@@ -1,13 +1,15 @@
 """ control sales 30% minimum"""
 import configparser
 import requests
+import os
 from datetime import date
 
 
 try:
     # get data from in file
     conf = configparser.ConfigParser()
-    conf.read('config.ini')
+    #conf.read('config.ini')
+    conf.read(os.path.join(os.path.dirname(__file__), 'config/config.ini'))
     URL = conf['MoiSklad']['URL']
     URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
     url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']

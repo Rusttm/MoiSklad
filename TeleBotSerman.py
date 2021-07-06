@@ -11,10 +11,11 @@ import time
 import schedule
 from threading import Thread
 from datetime import datetime
-
+import os
 
 conf = configparser.ConfigParser()
-conf.read('bot.ini')
+#conf.read('bot.ini')
+conf.read(os.path.join(os.path.dirname(__file__), 'config/bot.ini'))
 
 my_chat_id = conf['TeleBot']['my_chat_id']
 bot_token = conf['TeleBot']['bot_token']
@@ -132,7 +133,7 @@ def send_report():
     else:
         bot.send_message(chat_id, 'Хороших Вам выходных!')
 
-    print(f'daily report formed {form_date}')
+    print(f'daily report formed {str(datetime.now().strftime("%d:%m:%y"))}')
 
 def daily_report():
     schedule.every().day.at("17:00").do(send_report)

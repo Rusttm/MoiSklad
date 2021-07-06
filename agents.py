@@ -13,12 +13,12 @@ import os
 try:
     conf = configparser.ConfigParser()
     #conf.read('agents.ini')
-    conf.read(os.path.join(os.path.dirname(__file__), 'agents.ini'))
+    conf.read(os.path.join(os.path.dirname(__file__), 'config/agents.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 
 try:
-    URL = conf['MoiSklad']['URL']
+    URL = conf['MoiSklad']['url']
     URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
     access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
@@ -32,7 +32,7 @@ try:
     saratov_link = conf['GOOGLE']['saratov_link']
     nsk_link = conf['GOOGLE']['nsk_link']
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
-    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
+    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), f'config/{CREDENTIALS_FILE}')
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -423,8 +423,7 @@ def get_pfo_agent_report(start_day='2021-05-01', end_day='2021-05-31'):
     workbook.close()
     pfo_report_book.append_array(req_list)
     return saratov_book
-    #print(pfo_report.get_profit_by_product_list())
-    #print(pfo_report.get_positions_costsum('https://online.moysklad.ru/api/remap/1.2/entity/demand/5c1b5f34-69ce-11eb-0a80-05f4002445e1/positions'))
+    print(f'report pfo from {start_day} to {end_day} ready')
 
 
 def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-05-31'):
@@ -444,6 +443,6 @@ def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-05-31'):
     workbook.close()
     nsk_report_book.append_array(nsk_req_list)
     return nsk_book
-
+    print(f'report nsk from {start_day} to {end_day} ready')
 #get_nsk_agent_report()
 #get_pfo_agent_report()

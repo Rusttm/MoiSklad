@@ -45,9 +45,7 @@ class report_forming():
             self.AccountSum()
 
         return self.formed_data
-    #requested_report = {'type_report': answer['type_report'],
-    #'from_date': answer['from_date'],
-    #'to_date': answer['to_date'],}
+
     def AccountSum(self):
         self.formed_data['result'] = f'Acount balance on {str(datetime.now().strftime("%Y-%m-%d"))} is {str(round(finance.get_account_summ(), 2))} RUB.'
         print(self.formed_data)

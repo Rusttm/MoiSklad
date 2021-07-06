@@ -7,10 +7,12 @@ import xlsxwriter
 from datetime import date
 import configparser
 import google_books
+import os
 
 
 conf = configparser.ConfigParser()
-conf.read('alex.ini')
+#conf.read('alex.ini')
+conf.read(os.path.join(os.path.dirname(__file__), 'config/alex.ini'))
 URL = conf['MoiSklad']['URL']
 URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
 url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
