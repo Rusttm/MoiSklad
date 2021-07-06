@@ -26,7 +26,7 @@ try:
     url_customers = conf['MoiSklad']['url_customers']
     url_factureout_list = conf['MoiSklad']['url_factureout_list']
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
-    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
+    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), f'config/{CREDENTIALS_FILE}')
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
