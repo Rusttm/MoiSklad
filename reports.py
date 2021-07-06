@@ -34,7 +34,7 @@ try:
     profit_book = conf['GOOGLE']['profit_book']
     temp_book = conf['GOOGLE']['temp_book']
     CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE']
-    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE)
+    CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), f'config/{CREDENTIALS_FILE}')
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
