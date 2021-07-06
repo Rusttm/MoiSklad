@@ -13,6 +13,7 @@ import os
 #locale.setlocale(locale.LC_ALL, 'fr_FR')
 #locale.setlocale(locale.LC_ALL, 'ru_RU')
 
+
 try:
     conf = configparser.ConfigParser()
     #conf.read('/Volumes/GoogleDrive/My Drive/Python/MoiSklad/MoiSklad/google_books.ini') # macos version
