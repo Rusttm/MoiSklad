@@ -34,7 +34,7 @@ class pars_serman_site():
         cert_reqs = 'CERT_NONE'
         http = urllib3.PoolManager(cert_reqs=cert_reqs, ca_certs=certifi.where())
         response = http.request('GET', self.last_link)
-        print(response.status)
+        #print(response.status)
         soup = BeautifulSoup(response.data, 'lxml')
         #take name
         quotes_names = soup.find_all('div', class_='title')
@@ -59,7 +59,7 @@ class pars_serman_site():
                 self.last_link = False
         except Exception:
             self.last_link = False
-            print('no links')
+            print('no links forward')
 
         if len(quotes_names) == len(quotes_price_text):
             for name in quotes_names:
@@ -78,7 +78,8 @@ class pars_serman_site():
                 elif price_string[3] == 'руб.':
                     price = str(price_string[1] + price_string[2])
                     self.list_price.append(float(price))
-        else: print('length of name and price are not equant')
+        else:
+            print('length of name and price are not equant')
 
         new_pos = list(zip(self.list_names, self.list_price, self.list_links))
         self.positions_price += new_pos
@@ -117,10 +118,10 @@ class pars_forest_site():
         self.list_links = []
         ssl._create_default_https_context = ssl._create_unverified_context
         #now certificate expired and we use 'CERT_NONE' but must 'CERT_REQUIRED'
-        cert_reqs = 'CERT_NONE'
+        cert_reqs = 'CERT_REQUIRED'
         http = urllib3.PoolManager(cert_reqs=cert_reqs, ca_certs=certifi.where())
         response = http.request('GET', self.last_link)
-        print(response.status)
+        #print(response.status)
         soup = BeautifulSoup(response.data, 'lxml')
 
         #take the name block
@@ -151,7 +152,8 @@ class pars_forest_site():
                     price = str(price_string[0] + price_string[1])
                     self.list_price.append(price)
 
-        else: print('length of name and price are not equant')
+        else:
+            print('length of name and price are not equant')
 
         #consolidate in array
         new_pos = list(zip(self.list_names, self.list_price, self.list_links))
@@ -169,12 +171,12 @@ class pars_forest_site():
             self.last_link = str(self.root_link + tail)
         else:
             self.last_link = False
-            print('last page')
+            #print('last page')
 
     def gather_info(self):
         while self.last_link:
             self.take_info_from_link()
-            print(self.positions_price)
+            #print(self.positions_price)
         print('info from Forest site gathered')
 
     def fill_the_forest_price(self):
@@ -210,8 +212,8 @@ class pars_pakt_site():
         cert_reqs = 'CERT_REQUIRED'
         http = urllib3.PoolManager(cert_reqs=cert_reqs, ca_certs=certifi.where())
         response = http.request('GET', self.last_link)
-        print(response.status)
-        print(self.last_link)
+        #print(response.status)
+        #print(self.last_link)
         if response.status == 404:
             self.last_link = False
             return False
@@ -256,7 +258,7 @@ class pars_pakt_site():
     def gather_info(self):
         while self.last_link:
             self.take_info_from_link()
-            print(self.positions_price[-1])
+            #print(self.positions_price[-1])
         print('info from Pakt site gathered')
 
 
