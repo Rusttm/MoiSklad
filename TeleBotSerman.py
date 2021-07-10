@@ -2,16 +2,20 @@
 # -*- coding: utf8 -*-
 import telebot
 import configparser
-import sales_control
-import finance
-import Alex_debt
-import reports
-import customers_debt
 import time
 import schedule
 from threading import Thread
 from datetime import datetime
 import os
+
+#my library import
+import sales_control
+import finance
+import reports
+import customers_debt
+import pars_sites
+import Alex_debt
+
 
 conf = configparser.ConfigParser()
 #conf.read('bot.ini')
@@ -87,12 +91,16 @@ def send_text(message):
             else:
                 bot.send_message(message.chat.id, f'Отгрузок с рентабельностью ниже 30% не обнаружено.')
         # forest price
-        elif message.text.lower() in ['прайс', 'цены', 'форест']:
+        elif message.text.lower() in ['прайс', 'цены']:
         #    scrapped = Scraping.run_scrapy()
-            my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=0'
-            #markdown = "<a href='"+my_book_link+"'>Сравнение цен</a>"
+            my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=1'
             markdown = f'<a href="{my_book_link}">Сравнение цен</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+        elif message.text.lower() in ['форест']:
+            my_book_link = pars_sites.parsing_forest_site()
+            markdown = f'<a href="{my_book_link}">Цены Форест</a>'
+            bot.send_message(message.chat.id, markdown, parse_mode='html')
+
         # unknown command
         else:
             bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')
