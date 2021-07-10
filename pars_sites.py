@@ -257,7 +257,7 @@ class pars_pneumatic_site():
         while self.last_link:
             self.take_info_from_link()
             #print(self.positions_price)
-        print(f'info from Forest site {self.root_link} gathered')
+        print(f'info from Cascad site {self.root_link} gathered')
 
     def fill_the_pneumatic_price(self):
         forest_book = service_google_books.GoogleBook()
