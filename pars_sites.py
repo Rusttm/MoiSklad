@@ -185,6 +185,86 @@ class pars_forest_site():
         return link
 
 
+class pars_pneumatic_site():
+    def __init__(self):
+        self.links_on_site = ['https://pneumatic-tools.ru/catalog/pnevmopistolety_dla_skob_i_gvozdey/gvozdezabivnye_pistolety/',
+                              'https://pneumatic-tools.ru/catalog/pnevmopistolety_dla_skob_i_gvozdey/skobozabivnye_pistolety/',
+                              'https://pneumatic-tools.ru/catalog/pnevmopistolety_dla_skob_i_gvozdey/skoby_dla_pnevmosteplera/'
+                              ]
+
+        self.positions_price = []
+        for tag in self.links_on_site:
+            self.root_link = tag
+            self.last_link = tag
+            self.gather_info()
+
+    def take_info_from_link(self):
+        """ """
+        self.list_price = []
+        self.list_names = []
+        self.list_links = []
+        next_tag = ''
+        ssl._create_default_https_context = ssl._create_unverified_context
+        #now certificate expired and we use 'CERT_NONE' but must 'CERT_REQUIRED'
+        cert_reqs = 'CERT_REQUIRED'
+        http = urllib3.PoolManager(cert_reqs=cert_reqs, ca_certs=certifi.where())
+        response = http.request('GET', self.last_link)
+        #print(response.status)
+        soup = BeautifulSoup(response.data, 'lxml')
+
+        #take the position block
+        position_block = soup.find_all('div', class_='catalog-item')
+        #href_positions = soup.find_all('a', class_='catalog-item__quickview', href=True)
+        for position in position_block:
+            x = json.loads(position['data-ecommerce'])
+            self.list_names.append(x["name"])
+            try:
+                self.list_price.append(x["price"])
+            except:
+                self.list_price.append("NA")
+            # get href from position block
+            pars_block = BeautifulSoup(str(position), 'html.parser')
+            links = pars_block.find_all('a', href=True)
+            href = links[0]
+            tag = href['href']
+            link = f'https://pneumatic-tools.ru/{tag}'
+            self.list_links.append(link)
+
+        #consolidate in array
+        new_pos = list(zip(self.list_names, self.list_price, self.list_links))
+        self.positions_price += new_pos
+
+        #take info about next page
+        block_link = soup.find_all('ul', class_='pagination pull-right')
+        block_soup = BeautifulSoup(str(block_link), 'html.parser')
+        next_arrow_list = block_soup.find_all('a', href=True)
+        for next in next_arrow_list:
+            if next.text == '»':
+                next_tag = next['href']
+                break
+            next_tag = ''
+
+
+        #take a tail from
+        if next_tag!='':
+            tail = next_tag
+            self.last_link = str(self.root_link + tail)
+        else:
+            self.last_link = False
+            #print('last page')
+
+    def gather_info(self):
+        while self.last_link:
+            self.take_info_from_link()
+            #print(self.positions_price)
+        print(f'info from Forest site {self.root_link} gathered')
+
+    def fill_the_pneumatic_price(self):
+        forest_book = service_google_books.GoogleBook()
+        link = forest_book.append_array(work_array=self.positions_price, sheetId='287408771')
+        return link
+
+
 class pars_pakt_site():
     def __init__(self):
         self.links_on_site = ['https://www.pakt-group.ru/catalog/skobi/c1092/',
@@ -280,9 +360,12 @@ def parsing_pakt_site():
     z = pars_pakt_site()
     return z.fill_the_pakt_price()
 
+def parsing_pneumatic_site():
+    w = pars_pneumatic_site()
+    return w.fill_the_pneumatic_price()
+
 
 #processing
-
 def write_to_sermanfile(data=[(None, None)]):
     workbook = xlsxwriter.Workbook('serman_pars.xlsx')
     worksheet = workbook.add_worksheet('serman')

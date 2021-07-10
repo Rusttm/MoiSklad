@@ -100,7 +100,7 @@ class GoogleBook:
         except IndexError:
             print('Cant fill sheet in the book', Exception)
             return self.full_path
-
+        print('data to GoogleBook was wrote')
 
 # work_array = [(1,1)]
 # x = GoogleBook(work_book='1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c')

@@ -108,7 +108,10 @@ def send_text(message):
             my_book_link = pars_sites.parsing_pakt_site()
             markdown = f'<a href="{my_book_link}">Цены Пакт</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
-
+        elif message.text.lower() in ['каскад']:
+            my_book_link = pars_sites.parsing_pneumatic_site()
+            markdown = f'<a href="{my_book_link}">Цены Каскад</a>'
+            bot.send_message(message.chat.id, markdown, parse_mode='html')
         # unknown command
         else:
             bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')
