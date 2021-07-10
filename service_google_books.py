@@ -72,7 +72,7 @@ class GoogleBook:
             body = {}
             resultClear = service.spreadsheets().values().clear(spreadsheetId=self.bookId, range=rangeAll,
                                                                 body=body).execute()
-            print(resultClear)
+            #print(resultClear)
             #other methon for clear sheet
             # range_of_cells = worksheet.range(rangeAll)  # -> Select the range you want to clear
             # for cell in range_of_cells:
