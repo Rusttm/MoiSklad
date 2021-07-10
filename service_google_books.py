@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 import locale
 
-locale.setlocale(locale.LC_ALL, 'fr_FR')
+#locale.setlocale(locale.LC_ALL, 'fr_FR')
 
 try:
     conf = configparser.ConfigParser()
