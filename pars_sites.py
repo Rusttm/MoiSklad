@@ -88,7 +88,7 @@ class pars_serman_site():
         while self.last_link:
             self.take_info_from_link()
             print(self.positions_price)
-        print('info from Serman site gathered')
+        print(f'info from Serman site {self.root_link} gathered')
 
     def fill_the_serman_price(self):
         serman_book = service_google_books.GoogleBook()
@@ -177,7 +177,7 @@ class pars_forest_site():
         while self.last_link:
             self.take_info_from_link()
             #print(self.positions_price)
-        print('info from Forest site gathered')
+        print(f'info from Forest site {self.root_link} gathered')
 
     def fill_the_forest_price(self):
         forest_book = service_google_books.GoogleBook()
@@ -259,7 +259,7 @@ class pars_pakt_site():
         while self.last_link:
             self.take_info_from_link()
             #print(self.positions_price[-1])
-        print('info from Pakt site gathered')
+        print(f'info from Pakt site {self.root_link} gathered')
 
 
     def fill_the_pakt_price(self):
