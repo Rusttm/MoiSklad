@@ -54,7 +54,7 @@ class pars_serman_site():
                     # предполагается что на этой кнопке висит ссылка вида /catalog/krepezh/skoby/?PAGEN_1=3&amp;SIZEN_1=12
                     tail = a['href'].split('/')[-1]
                     self.last_link = str(self.root_link + tail)
-                    print(tail)
+                    #print(tail)
                     break
                 self.last_link = False
         except Exception:
@@ -87,7 +87,7 @@ class pars_serman_site():
     def gather_info(self):
         while self.last_link:
             self.take_info_from_link()
-            print(self.positions_price)
+            #print(self.positions_price)
         print(f'info from Serman site {self.root_link} gathered')
 
     def fill_the_serman_price(self):
@@ -268,6 +268,21 @@ class pars_pakt_site():
         return link
 
 
+def parsing_serman_site():
+    x = pars_serman_site()
+    return x.fill_the_serman_price()
+
+def parsing_forest_site():
+    y = pars_forest_site()
+    return y.fill_the_forest_price()
+
+def parsing_pakt_site():
+    z = pars_pakt_site()
+    return z.fill_the_pakt_price()
+
+
+#processing
+
 def write_to_sermanfile(data=[(None, None)]):
     workbook = xlsxwriter.Workbook('serman_pars.xlsx')
     worksheet = workbook.add_worksheet('serman')
@@ -283,16 +298,3 @@ def write_to_paktfile(data=[(None, None)]):
         for col_num, col_data in enumerate(row_data):
             worksheet.write(row_num, col_num, col_data)
     workbook.close()
-
-
-def parsing_serman_site():
-    x = pars_serman_site()
-    return x.fill_the_serman_price()
-
-def parsing_forest_site():
-    y = pars_forest_site()
-    return y.fill_the_forest_price()
-
-def parsing_pakt_site():
-    z = pars_pakt_site()
-    return z.fill_the_pakt_price()
