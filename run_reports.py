@@ -143,9 +143,9 @@ class pars_forming():
         try:
             self.formed_data['tag'] = pars_sites.parsing_forest_site()
             if self.formed_data['tag']!=0:
-                self.formed_data['result'] = f'Serman site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+                self.formed_data['result'] = f'Forest site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
             else:
-                self.formed_data['result'] = f'Serman site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+                self.formed_data['result'] = f'Forest site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
         except:
             self.formed_data['result'] = "Error in Forest site parsing"
         print(self.formed_data)
@@ -155,9 +155,9 @@ class pars_forming():
         try:
             self.formed_data['tag'] = pars_sites.parsing_pakt_site()
             if self.formed_data['tag']!=0:
-                self.formed_data['result'] = f'Serman site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+                self.formed_data['result'] = f'Pakt site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
             else:
-                self.formed_data['result'] = f'Serman site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+                self.formed_data['result'] = f'Pakt site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
         except:
             self.formed_data['result'] = "Error in Pakt site parsing"
         print(self.formed_data)
@@ -166,9 +166,9 @@ class pars_forming():
         try:
             self.formed_data['tag'] = pars_sites.parsing_pneumatic_site()
             if self.formed_data['tag']!=0:
-                self.formed_data['result'] = f'Serman site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+                self.formed_data['result'] = f'Cascad site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
             else:
-                self.formed_data['result'] = f'Serman site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+                self.formed_data['result'] = f'Cascad site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
         except:
             self.formed_data['result'] = "Error in Cascad site parsing"
         print(self.formed_data)
