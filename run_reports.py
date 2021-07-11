@@ -107,7 +107,7 @@ class pars_forming():
 
     def report_data(self):
 
-        if self.answer['Choose site for parsing'] == 'Choose site for parsing':
+        if self.answer['type_report'] == 'Choose site for parsing':
             self.formed_data['result'] = 'Error due to site was not choose'
             return self.formed_data
 
