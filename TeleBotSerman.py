@@ -30,6 +30,8 @@ company_ids = [str(conf['TeleBot']['my_chat_id']),
                str(conf['TeleBot']['minasyan_id']),
                str(conf['TeleBot']['alex_id']),
                str(conf['TeleBot']['mans_id'])]
+report_site = conf['TeleBot']['report_site']
+parsing_site = conf['TeleBot']['parsing_site']
 
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
@@ -96,19 +98,30 @@ def send_text(message):
             my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=1'
             markdown = f'<a href="{my_book_link}">Сравнение цен</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+            markdown = f'<a href="{parsing_site}">Сайте</a>'
+            info_mess = f'Вы также можете сформировать файл с ценами на {markdown}!'
+            bot.send_message(message.chat.id, info_mess, parse_mode='html')
         elif message.text.lower() in ['форест']:
+            wait_mess = f'Сайт {message.text} проверяется, подождите!'
+            bot.send_message(message.chat.id, wait_mess, parse_mode='html')
             my_book_link = pars_sites.parsing_forest_site()
             markdown = f'<a href="{my_book_link}">Цены Форест</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
         elif message.text.lower() in ['серман']:
+            wait_mess = f'Сайт {message.text} проверяется, подождите!'
+            bot.send_message(message.chat.id, wait_mess, parse_mode='html')
             my_book_link = pars_sites.parsing_serman_site()
             markdown = f'<a href="{my_book_link}">Цены Серман</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
         elif message.text.lower() in ['пакт']:
+            wait_mess = f'Сайт {message.text} проверяется, подождите!'
+            bot.send_message(message.chat.id, wait_mess, parse_mode='html')
             my_book_link = pars_sites.parsing_pakt_site()
             markdown = f'<a href="{my_book_link}">Цены Пакт</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
         elif message.text.lower() in ['каскад']:
+            wait_mess = f'Сайт {message.text} проверяется, подождите!'
+            bot.send_message(message.chat.id, wait_mess, parse_mode='html')
             my_book_link = pars_sites.parsing_pneumatic_site()
             markdown = f'<a href="{my_book_link}">Цены Каскад</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
