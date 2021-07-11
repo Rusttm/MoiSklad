@@ -302,15 +302,28 @@ class pars_pakt_site():
         #take positions blocks and information from json
         position_block = soup.find_all('li', class_='lta-item position- image-position-')
         for position in position_block:
+            block_data = BeautifulSoup(str(position), 'html.parser')
+            pack_comment = block_data.find_all('li', class_="param-catalog-mini-comment")
             x = json.loads(position['data-layer-list'])
-            self.list_names.append(x["name"])
+            try:
+                package = pack_comment[0].text
+            except:
+                package = 'упаковка неизвестна'
+
+            try:
+                brand = x["brand"]
+            except:
+                brand = 'Noname'
+
+            full_name = str(f'{brand} {x["name"]} {package}')
+            self.list_names.append(full_name)
             self.list_price.append(x["price"])
             #get qty type
             pars_block = BeautifulSoup(str(position), 'html.parser')
             qty_name = pars_block.find_all('div', class_="base-unit")
             if qty_name!=[]:
                 qty = qty_name[0]
-                self.list_qty.append(qty.text)
+                self.list_qty.append(str(qty.text))
             else:
                 self.list_qty.append('Unknown')
             #get href from position block
