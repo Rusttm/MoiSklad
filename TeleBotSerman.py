@@ -14,7 +14,6 @@ import finance
 import reports
 import customers_debt
 import pars_sites
-import Alex_debt
 
 
 conf = configparser.ConfigParser()
@@ -98,8 +97,8 @@ def send_text(message):
             my_book_link = 'https://docs.google.com/spreadsheets/d/1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c/edit#gid=1'
             markdown = f'<a href="{my_book_link}">Сравнение цен</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
-            markdown = f'<a href="{parsing_site}">Сайте</a>'
-            info_mess = f'Вы также можете сформировать файл с ценами на {markdown}!'
+            markdown = f'<a href="{parsing_site}">service.sermangroup.ru</a>'
+            info_mess = f'Вы также можете сформировать файл с ценами на сайте {markdown}!'
             bot.send_message(message.chat.id, info_mess, parse_mode='html')
         elif message.text.lower() in ['форест']:
             wait_mess = f'Сайт {message.text} проверяется, подождите!'
