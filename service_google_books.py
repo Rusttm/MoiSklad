@@ -45,7 +45,7 @@ class GoogleBook:
         self.bookName = 'Testing google sheets'
         self.email = 'rustammazhatov@gmail.com'
         self.sheets = {}
-        self.full_path = 'NONE'
+        self.full_path = ''
         self.new_sheet = str(datetime.now().strftime("%Y%m%d"))
         self.get_sheets_list()
 

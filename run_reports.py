@@ -7,6 +7,7 @@ import sp_books
 import finance
 import reports
 import agents
+import pars_sites
 
 class report_forming():
     def __init__(self, answer):
@@ -93,4 +94,81 @@ class report_forming():
             self.formed_data['result'] = f'PFO agent report from {self.from_date} to {self.to_date} was formed {str(datetime.now().strftime("%Y-%m-%d"))}!'
         except:
             self.formed_data['result'] = "Error in AgentPfoReport"
+        print(self.formed_data)
+
+class pars_forming():
+
+    def __init__(self, answer):
+        self.answer = answer
+        self.type_report = answer['type_report']
+        self.report_link = ''
+        self.formed_data = {'tag': '', 'result': ''}
+        #print(answer['type_report'])
+
+    def report_data(self):
+
+        if self.answer['Choose site for parsing'] == 'Choose site for parsing':
+            self.formed_data['result'] = 'Error due to site was not choose'
+            return self.formed_data
+
+        if self.answer['type_report'] == 'All sites parsing':
+            self.AllSites()
+
+        if self.answer['type_report'] == 'Serman site':
+            self.SermanSite()
+
+        if self.answer['type_report'] == 'Forest site':
+            self.ForestSite()
+
+        if self.answer['type_report'] == 'Pakt site':
+            self.PaktSite()
+
+        if self.answer['type_report'] == 'Cascad site':
+            self.CascadSite()
+
+        return self.formed_data
+
+    def SermanSite(self):
+        try:
+            self.formed_data['tag'] = pars_sites.parsing_serman_site()
+            if self.formed_data['tag']!=0:
+                self.formed_data['result'] = f'Serman site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+            else:
+                self.formed_data['result'] = f'Serman site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+        except:
+            self.formed_data['result'] = "Error in Serman site parsing"
+        print(self.formed_data)
+
+    def ForestSite(self):
+        try:
+            self.formed_data['tag'] = pars_sites.parsing_forest_site()
+            if self.formed_data['tag']!=0:
+                self.formed_data['result'] = f'Serman site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+            else:
+                self.formed_data['result'] = f'Serman site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+        except:
+            self.formed_data['result'] = "Error in Forest site parsing"
+        print(self.formed_data)
+
+
+    def PaktSite(self):
+        try:
+            self.formed_data['tag'] = pars_sites.parsing_pakt_site()
+            if self.formed_data['tag']!=0:
+                self.formed_data['result'] = f'Serman site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+            else:
+                self.formed_data['result'] = f'Serman site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+        except:
+            self.formed_data['result'] = "Error in Pakt site parsing"
+        print(self.formed_data)
+
+    def CascadSite(self):
+        try:
+            self.formed_data['tag'] = pars_sites.parsing_pneumatic_site()
+            if self.formed_data['tag']!=0:
+                self.formed_data['result'] = f'Serman site was parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+            else:
+                self.formed_data['result'] = f'Serman site was NOT parsed {str(datetime.now().strftime("%Y-%m-%d"))}'
+        except:
+            self.formed_data['result'] = "Error in Cascad site parsing"
         print(self.formed_data)
