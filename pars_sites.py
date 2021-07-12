@@ -102,7 +102,8 @@ class pars_forest_site():
                               'https://www.for-est.ru/catalog/krepezh/skoby/karkasnye/',
                               'https://www.for-est.ru/catalog/krepezh/skoby/upakovochnye/',
                               'https://www.for-est.ru/catalog/krepezh/skoby/spetsialnye/',
-                              'https://www.for-est.ru/catalog/instrument/skobozabivnoy/'
+                              'https://www.for-est.ru/catalog/instrument/skobozabivnoy/',
+                              'https://www.for-est.ru/catalog/instrument/gvozdezabivnoy/'
                               ]
 
         self.positions_price = []

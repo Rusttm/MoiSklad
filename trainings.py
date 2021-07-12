@@ -16,4 +16,4 @@ def test1():
     print(len(quotes_names_block), response.status, response.data, response.headers)
 
 
-print(pars_sites.parsing_pakt_site())
+print(pars_sites.parsing_serman_site())
