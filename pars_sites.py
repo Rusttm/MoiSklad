@@ -31,7 +31,7 @@ class pars_serman_site():
         self.list_links = []
         ssl._create_default_https_context = ssl._create_unverified_context
         #now certificate expired and we use 'CERT_NONE' but must 'CERT_REQUIRED'
-        cert_reqs = 'CERT_NONE'
+        cert_reqs = 'CERT_REQUIRED'
         http = urllib3.PoolManager(cert_reqs=cert_reqs, ca_certs=certifi.where())
         response = http.request('GET', self.last_link)
         #print(response.status)
