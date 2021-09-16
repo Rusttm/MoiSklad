@@ -1,4 +1,4 @@
-# IMPORT THE LIBERARY.
+# IMPORT THE LIBRARY rapspberry pi power monitor.
 from ina219 import INA219
 from ina219 import DeviceRangeError
 SHUNT_OHMS = 0.05

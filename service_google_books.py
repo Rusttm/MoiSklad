@@ -25,6 +25,7 @@ try:
     debt_book = conf['GOOGLE']['debt_book']
     debt_nsk = conf['GOOGLE']['debt_nsk']
     debt_pfo = conf['GOOGLE']['debt_pfo']
+    balance_book = conf['GOOGLE']['balance_book']
         # Читаем ключи из файла
     credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE,
                                                                        ['https://www.googleapis.com/auth/spreadsheets',
@@ -102,7 +103,16 @@ class GoogleBook:
             return self.full_path
         print('data to GoogleBook was wrote')
 
+
+
 # work_array = [(1,1)]
 # x = GoogleBook(work_book='1_C6uxRFz5wb8K_Cu4c4HcUn8EYk0vnhARhA_UvtKT1c')
 # x.append_array(work_array=work_array, sheetId='1238490361')
 # print(x.get_sheets_list())
+
+class ServiceGoogleBook():
+    def __init__(self, work_book=test_spreadsheetId):
+        try:
+            self.bookId = conf['GOOGLE'][work_book]
+        except:
+            print(f'cant find {work_book} GoogleBook')
