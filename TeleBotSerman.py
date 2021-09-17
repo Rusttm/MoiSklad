@@ -165,7 +165,7 @@ def send_report():
             for sale in sales_control.get_sales_list():
                 message_component += f'{sale[0]} {sale[1]}руб. {int(sale[2])}%;\n'
         else:
-            message_component += f'Отгрузок с рентабельностью ниже 30% не обнаружено.\n'
+            message_component += f'Отгрузок с рентабельностью ниже 30 проц. не обнаружено.\n'
         #прибыль по месяцу
         profit_sum = reports.actual_report()
         message_component += f'Текущая <b>прибыль</b> по месяцу {profit_sum[0]}руб.\n'
