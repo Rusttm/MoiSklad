@@ -1,6 +1,6 @@
 # -*- coding: cp1251 -*-
 import datetime
-from service_google_books import ServiceGoogleBook
 
 
-x = ServiceGoogleBook(work_book='balance_book')
+x = [1,2,3,4]
+print(sum(x))
