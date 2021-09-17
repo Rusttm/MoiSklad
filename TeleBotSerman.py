@@ -171,7 +171,7 @@ def send_report():
         message_component += f'Текущая <b>прибыль</b> по месяцу {profit_sum[0]}руб.\n'
         # баланс по месяцу
         balance_sum = balance_report.new_balance_report()
-        message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.</a>'
+        message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.'
         #сформирован -отпправляем
         try:
             bot.send_message(chat_id, message_component, parse_mode='html')
