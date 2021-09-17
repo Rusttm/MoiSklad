@@ -34,7 +34,7 @@ report_site = conf['TeleBot']['report_site']
 parsing_site = conf['TeleBot']['parsing_site']
 
 bot = telebot.TeleBot(bot_token)
-keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
+keyboard1 = telebot.types.ReplyKeyboardMarkup(True, False)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
 keyboard1.row('Просрочка(ссылка)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены', 'Отчет', 'Баланс', 'Задолженность')
 
 
