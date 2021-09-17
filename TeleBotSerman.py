@@ -173,7 +173,10 @@ def send_report():
         balance_sum = balance_report.new_balance_report()
         message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.</a>'
         #сформирован -отпправляем
-        bot.send_message(chat_id, message_component, parse_mode='html')
+        try:
+            bot.send_message(chat_id, message_component, parse_mode='html')
+        except Exception as m:
+            print('Cant send daily report!!!', m)
     else:
         bot.send_message(chat_id, 'Хороших Вам выходных!')
 
