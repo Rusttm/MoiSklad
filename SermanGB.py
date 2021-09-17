@@ -16,7 +16,7 @@ class ServiceGoogleBook():
         self.conf.read(os.path.join(os.path.dirname(__file__), 'config/google_books.ini'))
         try:
             self.bookId = self.conf['GOOGLE'][work_book]
-            print(f'{work_book} is initialized')
+            #print(f'{work_book} is initialized')
         except Exception as m:
             print(f'cant find {work_book} GoogleBook', m)
         self.sheetId = 0
@@ -78,8 +78,8 @@ class ServiceGoogleBook():
                 body=values).execute()
             self.full_path = f'https://docs.google.com/spreadsheets/d/{self.bookId}/edit#gid={self.sheetId}'
             return self.full_path
-        except IndexError:
-            print('Cant fill sheet in the book', Exception)
+        except Exception as m:
+            print('Cant fill sheet in the book', m)
             return self.full_path
         print('data to GoogleBook was wrote')
 

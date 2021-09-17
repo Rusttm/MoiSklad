@@ -14,6 +14,7 @@ import finance
 import reports
 import customers_debt
 import pars_sites
+import balance_report
 
 
 conf = configparser.ConfigParser()
@@ -34,7 +35,7 @@ parsing_site = conf['TeleBot']['parsing_site']
 
 bot = telebot.TeleBot(bot_token)
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)  # 1st True - shrink keyboard 2nd  True  -hide keyboard
-keyboard1.row('Просрочка(ссылка)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены', 'Отчет', 'Задолженность')
+keyboard1.row('Просрочка(ссылка)', 'Остатки на счетах', 'Рентаб. < 30%', 'Цены', 'Отчет', 'Баланс', 'Задолженность')
 
 
 @bot.message_handler(commands=['start'])  # decorator
@@ -80,6 +81,14 @@ def send_text(message):
             profit_sum = reports.actual_report()
             href_link = profit_sum[1]
             markdown = f'Текущая прибыль по месяцу <a href="{href_link}">{profit_sum[0]}руб.</a>'
+            bot.send_message(message.chat.id, markdown, parse_mode='html')
+            #bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}')
+        # actual balance
+        elif message.text.lower() in ['баланс', 'итог']:
+            bot.send_message(message.chat.id, f'Баланс формируется, подождите!')
+            balance_sum = balance_report.new_balance_report()
+            href_link = balance_sum[1]
+            markdown = f'Баланс <a href="{href_link}">{balance_sum[0]}руб.</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
             #bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}')
         # low profits
@@ -160,6 +169,10 @@ def send_report():
         #прибыль по месяцу
         profit_sum = reports.actual_report()
         message_component += f'Текущая <b>прибыль</b> по месяцу {profit_sum[0]}руб.\n'
+        # баланс по месяцу
+        balance_sum = balance_report.new_balance_report()
+        message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.</a>'
+        #сформирован -отпправляем
         bot.send_message(chat_id, message_component, parse_mode='html')
     else:
         bot.send_message(chat_id, 'Хороших Вам выходных!')

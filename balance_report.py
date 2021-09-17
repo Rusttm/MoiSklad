@@ -16,8 +16,8 @@ try:
     url_customers2 = conf['MoiSklad']['url_customers2']
     my_access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token}
-except IndexError:
-    print('Error, cant read .ini file')
+except Exception as m:
+    print('Error, cant read .ini file', m)
 
 class serman_balance():
     def __init__(self):
@@ -31,7 +31,7 @@ class serman_balance():
         self.custm_bal = []
         self.final_list = []
         self.data_string = []
-        #arrangge method for customers
+        #arrange method for customers
         self.customers_shape = ['поставщики', 'новосибирскконтрагенты', 'москваконтрагенты', 'покупатели пфо']
 
     def send_balance_to_GB(self):
@@ -59,6 +59,7 @@ class serman_balance():
         self.final_list = [['Дата', today_date], ['Итог', int(summary_balance)]] + self.final_list
         for title, summ in self.final_list:
             self.data_string.append(summ)
+        return self.data_string[1]
 
     def account_summ(self):
         """'''this function gets account remains'''"""
@@ -132,17 +133,13 @@ class serman_balance():
                     if len(customer_groups)>1:
                         print(f'{customer_name} have {len(customer_groups)} groups')
                     else:
-                        # if customer_groups[0] in self.excluded_groups:
-                        #     continue
                         self.customers_groups[customer_groups[0]] += int(customer_bal)
 
-                    #self.account += account['balance']/100
                 except:
                     print(f'{customer_name} has no group')
 
-            #print(self.customers_groups)
-        except IndexError:
-            print('Cant read account data', Exception)
+        except Exception as m:
+            print('Cant read account data', m)
 
       #arrange list
         for group_name in self.customers_shape:
@@ -151,12 +148,14 @@ class serman_balance():
             except:
                 summ = 0
             self.custm_bal.append([group_name, -summ])
-        #if group not in self.excluded_groups:
 
-        #print(f'account_sum_ready')
-        #print(self.account)
-my_balance_report = serman_balance()
+
+def new_balance_report():
+    my_balance_report = serman_balance()
+    return my_balance_report.send_balance_to_GB()
+
+#my_balance_report = serman_balance()
 # my_balance_report.account_summ()
 # my_balance_report.store_remains()
 #my_balance_report.customers_bal()
-print(my_balance_report.send_balance_to_GB())
+#print(my_balance_report.send_balance_to_GB())
