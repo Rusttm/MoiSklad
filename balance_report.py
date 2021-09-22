@@ -32,7 +32,7 @@ class serman_balance():
         self.final_list = []
         self.data_string = []
         #arrange method for customers
-        self.customers_shape = ['поставщики', 'новосибирскконтрагенты', 'москваконтрагенты', 'покупатели пфо']
+        self.customers_shape = ['поставщики', 'новосибирскконтрагенты', 'москваконтрагенты', 'покупатели пфо', 'транспорт']
 
     def send_balance_to_GB(self):
         self.get_balance()
@@ -130,10 +130,13 @@ class serman_balance():
                     for group in sub_req.json()['tags']:
                         customer_groups.append(group)
                         self.customers_groups.setdefault(group, 0)
-                    if len(customer_groups)>1:
+
+                    # if you have customer has >1 groups
+                    if len(customer_groups) > 1:
                         print(f'{customer_name} have {len(customer_groups)} groups')
                     else:
-                        self.customers_groups[customer_groups[0]] += int(customer_bal)
+                        if group != 'транспорт' or customer_name == 'ПАО "ТРАНСКОНТЕЙНЕР"':
+                            self.customers_groups[customer_groups[0]] += int(customer_bal)
 
                 except:
                     print(f'{customer_name} has no group')
@@ -154,8 +157,13 @@ def new_balance_report():
     my_balance_report = serman_balance()
     return my_balance_report.send_balance_to_GB()
 
+
 #my_balance_report = serman_balance()
 # my_balance_report.account_summ()
 # my_balance_report.store_remains()
 #my_balance_report.customers_bal()
 #print(my_balance_report.send_balance_to_GB())
+
+
+if __name__ == "__main__":
+    new_balance_report()
