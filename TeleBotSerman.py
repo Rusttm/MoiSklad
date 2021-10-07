@@ -83,7 +83,7 @@ def send_text(message):
             href_link = profit_sum[1]
             markdown = f'Текущая прибыль по месяцу <a href="{href_link}">{profit_sum[0]}руб.</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
-            bot.delete_message(message.chat.id, message.message_id - 2)
+            bot.delete_message(message.chat.id, message.message_id - 1)
             #bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}')
         # actual balance
         elif message.text.lower() in ['баланс', 'итог']:
