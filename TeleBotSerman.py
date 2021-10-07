@@ -67,8 +67,8 @@ def send_text(message):
         # debt
         elif message.text.lower() in ['задолженность', 'долги']:
             bot.send_message(message.chat.id, f'Запрашиваю данные, подождите!')
-            bot.delete_message(message.chat.id, message.message_id + 1)
             c_debt = customers_debt.get_customers_balance()
+            bot.delete_message(message.chat.id, message.message_id + 1)
             for group in c_debt['Покупатели']:
                 bot.send_message(message.chat.id, f'{group} : {int(c_debt["Покупатели"][group])}руб.')
         # account remains
@@ -79,20 +79,20 @@ def send_text(message):
         # actual profit
         elif message.text.lower() in ['прибыль', 'отчет', 'отчет по прибыли', 'оборот']:
             bot.send_message(message.chat.id, f'Файл отчетности формируется, подождите!')
-            bot.delete_message(message.chat.id, message.message_id + 1)
             profit_sum = reports.actual_report()
             href_link = profit_sum[1]
             markdown = f'Текущая прибыль по месяцу <a href="{href_link}">{profit_sum[0]}руб.</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+            bot.delete_message(message.chat.id, message.message_id - 2)
             #bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}')
         # actual balance
         elif message.text.lower() in ['баланс', 'итог']:
             bot.send_message(message.chat.id, f'Баланс формируется, подождите!')
-            bot.delete_message(message.chat.id, message.message_id + 1)
             balance_sum = balance_report.new_balance_report()
             href_link = balance_sum[1]
             markdown = f'Баланс <a href="{href_link}">{balance_sum[0]}руб.</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+            bot.delete_message(message.chat.id, message.message_id - 2)
             #bot.send_message(message.chat.id, f'Расчет прибыли по ссылке {profit_sum[1]}')
         # low profits
         elif message.text.lower() in ['рентаб. < 30%', 'рентаб']:
@@ -115,31 +115,31 @@ def send_text(message):
         elif message.text.lower() in ['форест']:
             wait_mess = f'Сайт {message.text} проверяется, подождите!'
             bot.send_message(message.chat.id, wait_mess, parse_mode='html')
-            bot.delete_message(message.chat.id, message.message_id + 1)
             my_book_link = pars_sites.parsing_forest_site()
             markdown = f'<a href="{my_book_link}">Цены Форест</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+            bot.delete_message(message.chat.id, message.message_id - 2)
         elif message.text.lower() in ['серман']:
             wait_mess = f'Сайт {message.text} проверяется, подождите!'
             bot.send_message(message.chat.id, wait_mess, parse_mode='html')
-            bot.delete_message(message.chat.id, message.message_id + 1)
             my_book_link = pars_sites.parsing_serman_site()
             markdown = f'<a href="{my_book_link}">Цены Серман</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+            bot.delete_message(message.chat.id, message.message_id - 2)
         elif message.text.lower() in ['пакт']:
             wait_mess = f'Сайт {message.text} проверяется, подождите!'
             bot.send_message(message.chat.id, wait_mess, parse_mode='html')
-            bot.delete_message(message.chat.id, message.message_id + 1)
             my_book_link = pars_sites.parsing_pakt_site()
             markdown = f'<a href="{my_book_link}">Цены Пакт</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+            bot.delete_message(message.chat.id, message.message_id - 2)
         elif message.text.lower() in ['каскад']:
             wait_mess = f'Сайт {message.text} проверяется, подождите!'
             bot.send_message(message.chat.id, wait_mess, parse_mode='html')
-            bot.delete_message(message.chat.id, message.message_id + 1)
             my_book_link = pars_sites.parsing_pneumatic_site()
             markdown = f'<a href="{my_book_link}">Цены Каскад</a>'
             bot.send_message(message.chat.id, markdown, parse_mode='html')
+            bot.delete_message(message.chat.id, message.message_id - 2)
         # unknown command
         else:
             bot.send_message(message.chat.id, f'{employee_name}, команда {message.text} не опознана!')
