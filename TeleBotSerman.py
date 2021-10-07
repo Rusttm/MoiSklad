@@ -154,29 +154,34 @@ def send_report():
         form_date = str(datetime.now().strftime("%d:%m:%y"))
         message_component = ''
         #отчет по задолженности покупателей
-        c_debt = customers_debt.get_customers_balance()
-        all_cusomers_debt = c_debt['Покупатели']['Итого']
-        message_component += f'Отчеты на {form_date}:\n'
-        message_component += f'<b>Задолженность</b> по клиентам {all_cusomers_debt}руб.\n'
-        #отчет по продажам меньше 30
-        sales_list = sales_control.get_sales_list()
-        if len(sales_list) > 0:
-            message_component += f'Низкая <b>рентабельность</b>:\n'
-            for sale in sales_control.get_sales_list():
-                message_component += f'{sale[0]} {sale[1]}руб. {int(sale[2])}%;\n'
-        else:
-            message_component += f'Отгрузок с рентабельностью ниже 30 проц. не обнаружено.\n'
-        #прибыль по месяцу
-        profit_sum = reports.actual_report()
-        message_component += f'Текущая <b>прибыль</b> по месяцу {profit_sum[0]}руб.\n'
-        # баланс по месяцу
-        balance_sum = balance_report.new_balance_report()
-        message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.'
+        try:
+            c_debt = customers_debt.get_customers_balance()
+            all_cusomers_debt = c_debt['Покупатели']['Итого']
+            message_component += f'Отчеты на {form_date}:\n'
+            message_component += f'<b>Задолженность</b> по клиентам {all_cusomers_debt}руб.\n'
+            #отчет по продажам меньше 30
+            sales_list = sales_control.get_sales_list()
+            if len(sales_list) > 0:
+                message_component += f'Низкая <b>рентабельность</b>:\n'
+                for sale in sales_control.get_sales_list():
+                    message_component += f'{sale[0]} {sale[1]}руб. {int(sale[2])}%;\n'
+            else:
+                message_component += f'Отгрузок с рентабельностью ниже 30 проц. не обнаружено.\n'
+            #прибыль по месяцу
+            profit_sum = reports.actual_report()
+            message_component += f'Текущая <b>прибыль</b> по месяцу {profit_sum[0]}руб.\n'
+            # баланс по месяцу
+            balance_sum = balance_report.new_balance_report()
+            message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.'
+        except:
+            message_component += f'Ошибка. Обнаружены клиенты без указания дней отсрочки. Заполните обязательные поля в карточке контрагента!\n'
+            bot.send_message(my_chat_id, message_component, parse_mode='html')
         #сформирован -отпправляем
         try:
             bot.send_message(chat_id, message_component, parse_mode='html')
         except Exception as m:
             print('Cant send daily report!!!', m)
+            bot.send_message(my_chat_id, message_component, parse_mode='html')
     else:
         bot.send_message(chat_id, 'Хороших Вам выходных!')
 

@@ -180,7 +180,7 @@ class management_report():
         #print('today is', toda_y_date)
 
     def request_customer_data(self, customer_link):
-        """return data from facture return [customer_name, customer_group]"""
+        """return data from facture and return [customer_name, customer_group]"""
         try:
             customer_req = requests.get(url=customer_link, headers=header_for_token_auth)
             customer = customer_req.json()

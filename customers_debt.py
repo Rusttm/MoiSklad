@@ -10,14 +10,14 @@ import google_books
 import os
 
 conf = configparser.ConfigParser()
-#conf.read('c_debdt.ini')
+# conf.read('c_debdt.ini')
 conf.read(os.path.join(os.path.dirname(__file__), 'config/c_debdt.ini'))
 access_token = conf['MoiSklad']['access_token']
 header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
 url_customers = conf['MoiSklad']['url_customers']
 
 
-def get_customer_tag(link = 'https://online.moysklad.ru/api/remap/1.2/entity/counterparty/aea8eed7-5738-11eb-0a80-06ec00ac6c64'):
+def get_customer_tag(link='https://online.moysklad.ru/api/remap/1.2/entity/counterparty/aea8eed7-5738-11eb-0a80-06ec00ac6c64'):
     """gets link and returns tag"""
     try:
         req = requests.get(url=link, headers=header_for_token_auth)
