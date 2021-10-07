@@ -41,7 +41,7 @@ keyboard1.row('Просрочка(ссылка)', 'Остатки на счет�
 @bot.message_handler(commands=['start'])  # decorator
 def start_message(message):
     bot.send_message(message.chat.id, 'Привет, я сервисный бот', reply_markup=keyboard1)
-
+    bot.delete_message(message.chat.id, message.message_id + 1)
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
