@@ -181,7 +181,7 @@ def send_report():
             balance_sum = balance_report.new_balance_report()
             message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.'
         except:
-            message_component += f'Ошибка. Обнаружены клиенты без указания дней отсрочки. Заполните обязательные поля в карточке контрагента!\n'
+            message_component += f'Ошибка при формировании баланса!!!\n'
             bot.send_message(my_chat_id, message_component, parse_mode='html')
         #сформирован -отпправляем
         try:

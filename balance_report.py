@@ -79,8 +79,8 @@ class serman_balance():
         try:
             # lets made the price dictionary
             acc_req = requests.get(url=f'{url_store_all}?filter=quantityMode=all', headers=header_for_token_auth)
-            with open('store_all_req_list.json', 'w') as ff:
-                json.dump(acc_req.json(), ff, ensure_ascii=False)
+            # with open('store_all_req_list.json', 'w') as ff:
+            #     json.dump(acc_req.json(), ff, ensure_ascii=False)
             for good in acc_req.json()['rows']:
                 self.good[good['meta']['href']] = good['price']/100
             #     self.store += account['balance'] / 100
@@ -91,8 +91,8 @@ class serman_balance():
         try:
             # lets made and fill the stock sum dictionary
             acc_req = requests.get(url=url_stores, headers=header_for_token_auth)
-            with open('stores_req_list.json', 'w') as ff:
-                json.dump(acc_req.json(), ff, ensure_ascii=False)
+            # with open('stores_req_list.json', 'w') as ff:
+            #     json.dump(acc_req.json(), ff, ensure_ascii=False)
             for good in acc_req.json()['rows']:
                 good_name = good['meta']['href']
                 good_price = self.good[good_name]
