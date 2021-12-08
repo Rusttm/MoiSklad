@@ -14,7 +14,7 @@ import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
-
+from time import strftime
 #voltage libraries
 import struct
 import smbus
@@ -123,6 +123,10 @@ while True:
     Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"Battery: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
     My_message = 'Battery: ' + str(battery_cap) + '%'
+    Date = 'Today is: ' + str(strftime("%d/%m/%y"))
+    Time = 'Time: ' + str(strftime("%I:%M%p"))
+
+
     # Write four lines of text.
     y = top
     draw.text((x, y), IP, font=font, fill="#FFFFFF")
@@ -136,6 +140,10 @@ while True:
     draw.text((x, y), Temp, font=font, fill="#FF00FF")
     y += font.getsize(Disk)[1]
     draw.text((x, y), My_message, font=font, fill="#E76F51")
+    y += font.getsize(Disk)[1]
+    draw.text((x, y), Date, font=font, fill="#cb997e")
+    y += font.getsize(Disk)[1]
+    draw.text((x, y), Time, font=font, fill="#cb997e")
 
     # Display image.
     disp.image(image, rotation)
