@@ -1,11 +1,6 @@
 # SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
 # SPDX-License-Identifier: MIT
-"""
-this code was get from:
-https://wiki.geekworm.com/X708-Software
-https://learn.adafruit.com/adafruit-mini-pitft-135x240-color-tft-add-on-for-raspberry-pi/python-stats#modifications-for-the-1-dot-3-display-3066993-6
 
-"""
 # -*- coding: utf-8 -*-
 
 import time
@@ -14,13 +9,14 @@ import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
-from time import strftime
+
 #voltage libraries
 import struct
 import smbus
 import sys
 import time
 import RPi.GPIO as GPIO
+from time import strftime
 #battery starts
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(13, GPIO.OUT)
@@ -93,6 +89,7 @@ x = 0
 # same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
+font2 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 56)
 
 # Turn on the backlight
 backlight = digitalio.DigitalInOut(board.D22)
@@ -102,6 +99,7 @@ backlight.value = True
 while True:
 #battery section starts
     battery_cap = int(readCapacity(bus))
+
 
 
 
@@ -124,12 +122,10 @@ while True:
     cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"Battery: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
     My_message = 'Battery: ' + str(battery_cap) + '%'
     Date = 'Today is: ' + str(strftime("%d/%m/%y"))
-    Time = 'Time: ' + str(strftime("%I:%M%p"))
-
-
+    Time = '  '+str(strftime("%H:%M"))
     # Write four lines of text.
     y = top
-    draw.text((x, y), IP, font=font, fill="#FFFFFF")
+    draw.text((x, y), IP, font=font, fill="#cb997e")
     y += font.getsize(IP)[1]
     draw.text((x, y), CPU, font=font, fill="#FFFF00")
     y += font.getsize(CPU)[1]
@@ -142,9 +138,9 @@ while True:
     draw.text((x, y), My_message, font=font, fill="#E76F51")
     y += font.getsize(Disk)[1]
     draw.text((x, y), Date, font=font, fill="#cb997e")
-    y += font.getsize(Disk)[1]
-    draw.text((x, y), Time, font=font, fill="#cb997e")
+    y += font.getsize(Time)[1]
+    draw.text((x, y), Time, font=font2, fill="#FFFFFF")
 
     # Display image.
     disp.image(image, rotation)
-    time.sleep(0.1)
+    time.sleep(1)
