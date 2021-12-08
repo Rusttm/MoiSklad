@@ -113,7 +113,7 @@ while True:
     IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
     CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    CPU2 = 'CPU Load: ' + str(psutil.cpu_percent ()) + '%'
+    CPU2 = 'CPU: ' + str(psutil.cpu_percent ()) + '% ' + str(int(psutil.cpu_freq().current)) + 'MHz'
     cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
     MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
