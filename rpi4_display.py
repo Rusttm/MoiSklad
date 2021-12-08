@@ -9,7 +9,7 @@ import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
-
+import psutil
 #voltage libraries
 import struct
 import smbus
@@ -113,6 +113,7 @@ while True:
     IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
     CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
+    CPU2 = 'CPU Load: ' + str(psutil.cpu_percent (interval=1)) + '%'
     cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
     MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
@@ -127,7 +128,7 @@ while True:
     y = top
     draw.text((x, y), IP, font=font, fill="#cb997e")
     y += font.getsize(IP)[1]
-    draw.text((x, y), CPU, font=font, fill="#FFFF00")
+    draw.text((x, y), CPU2, font=font, fill="#FFFF00")
     y += font.getsize(CPU)[1]
     draw.text((x, y), MemUsage, font=font, fill="#00FF00")
     y += font.getsize(MemUsage)[1]
