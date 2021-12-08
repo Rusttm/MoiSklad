@@ -99,7 +99,7 @@ backlight.value = True
 while True:
 #battery section starts
     battery_cap = int(readCapacity(bus))
-
+    battery_vol = round(readVoltage(bus),2)
 
 
 
@@ -121,7 +121,7 @@ while True:
     cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
     Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"Battery: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
-    My_message = 'Battery: ' + str(battery_cap) + '%'
+    Batt = 'Batt: ' + str(battery_cap) + '% ' + str(battery_vol) + 'V'
     Date = 'Today is: ' + str(strftime("%d/%m/%y"))
     Time = '  '+str(strftime("%H:%M"))
     # Write four lines of text.
@@ -136,7 +136,7 @@ while True:
     y += font.getsize(Disk)[1]
     draw.text((x, y), Temp, font=font, fill="#FF00FF")
     y += font.getsize(Disk)[1]
-    draw.text((x, y), My_message, font=font, fill="#E76F51")
+    draw.text((x, y), Batt, font=font, fill="#E76F51")
     y += font.getsize(Disk)[1]
     draw.text((x, y), Date, font=font, fill="#cb997e")
     y += font.getsize(Time)[1]
