@@ -115,10 +115,17 @@ class pars_forming():
 
         if self.answer['type_report'] == 'All sites parsing':
             #self.AllSites()
-            self.SermanSite()
-            self.ForestSite()
-            self.PaktSite()
-            self.CascadSite()
+            try:
+                self.SermanSite()
+                sermanTag = self.formed_data['tag']
+                self.ForestSite()
+                self.PaktSite()
+                self.CascadSite()
+                self.formed_data['result'] = 'All sites was parsed'
+                self.formed_data['tag'] = sermanTag
+            except Exception as e:
+                print(f'Произошла ошибка {e}')
+
 
         if self.answer['type_report'] == 'Serman site':
             self.SermanSite()
