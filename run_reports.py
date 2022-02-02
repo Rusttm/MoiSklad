@@ -114,7 +114,11 @@ class pars_forming():
             return self.formed_data
 
         if self.answer['type_report'] == 'All sites parsing':
-            self.AllSites()
+            #self.AllSites()
+            self.SermanSite()
+            self.ForestSite()
+            self.PaktSite()
+            self.CascadSite()
 
         if self.answer['type_report'] == 'Serman site':
             self.SermanSite()
@@ -152,7 +156,6 @@ class pars_forming():
             self.formed_data['result'] = "Error in Forest site parsing"
         print(self.formed_data)
 
-
     def PaktSite(self):
         try:
             self.formed_data['tag'] = pars_sites.parsing_pakt_site()
@@ -174,3 +177,4 @@ class pars_forming():
         except:
             self.formed_data['result'] = "Error in Cascad site parsing"
         print(self.formed_data)
+
