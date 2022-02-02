@@ -34,12 +34,10 @@ class pars_serman_site():
         cert_reqs = 'CERT_REQUIRED'
         http = urllib3.PoolManager(cert_reqs=cert_reqs, ca_certs=certifi.where())
         response = http.request('GET', self.last_link)
-        #print(response.status)
+        print(f'Статус запроса {self.last_link} - {response.status}')
         soup = BeautifulSoup(response.data, 'lxml')
         #take name
         quotes_names = soup.find_all('div', class_='title')
-
-
 
         #take price
         quotes_price_text = soup.find_all('div', class_='price bx_price')
@@ -363,7 +361,10 @@ class pars_pakt_site():
 
 
 def parsing_serman_site():
-    x = pars_serman_site()
+    try:
+        x = pars_serman_site()
+    except:
+        print('cant parse Sermangroup.ru')
     return x.fill_the_serman_price()
 
 def parsing_forest_site():
@@ -395,3 +396,6 @@ def write_to_paktfile(data=[(None, None)]):
         for col_num, col_data in enumerate(row_data):
             worksheet.write(row_num, col_num, col_data)
     workbook.close()
+
+if __name__ == '__main__':
+    parsing_serman_site()
