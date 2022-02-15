@@ -22,6 +22,7 @@ except Exception as m:
 class serman_balance():
     def __init__(self):
         self.account_bal= 0
+        self.account_exch = {'40702840997960000004': 75, '40702156997960000002': 12}
         self.store_bal = 0
         self.good = {}
         self.stocks = {}
@@ -31,6 +32,7 @@ class serman_balance():
         self.custm_bal = []
         self.final_list = []
         self.data_string = []
+
         #arrange method for customers
         self.customers_shape = ['поставщики', 'новосибирскконтрагенты', 'москваконтрагенты', 'покупатели пфо', 'транспорт', 'офис поставщики']
 
@@ -62,13 +64,21 @@ class serman_balance():
         return self.data_string[1]
 
     def account_summ(self):
-        """'''this function gets account remains'''"""
+        """'''this function gets bank account remains'''"""
         try:
             acc_req = requests.get(url=url_money, headers=header_for_token_auth)
             # with open('money_req_list.json', 'w') as ff:
             #     json.dump(acc_req.json(), ff, ensure_ascii=False)
             for account in acc_req.json()['rows']:
-                self.account_bal += account['balance']/100
+                try:
+                    acc_name = account['account']['name']
+                    acc_courses = self.account_exch
+                    if acc_name in acc_courses.keys():
+                        self.account_bal += account['balance'] * acc_courses[acc_name] / 100
+                    else:
+                        self.account_bal += account['balance']/100
+                except:
+                    self.account_bal += account['balance'] / 100
         except IndexError:
             print('Cant read account data', Exception)
         #print(f'account_sum_ready')
