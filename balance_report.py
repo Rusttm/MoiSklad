@@ -32,6 +32,7 @@ class serman_balance():
         self.custm_bal = []
         self.final_list = []
         self.data_string = []
+        self.cont_transport = ['ПАО "ТРАНСКОНТЕЙНЕР"', 'ФТС России', 'ООО "ТРАСКО"']
 
         #arrange method for customers
         self.customers_shape = ['поставщики', 'новосибирскконтрагенты', 'москваконтрагенты', 'покупатели пфо', 'транспорт', 'офис поставщики']
@@ -145,7 +146,7 @@ class serman_balance():
                     if len(customer_groups) > 1:
                         print(f'{customer_name} have {len(customer_groups)} groups')
                     else:
-                        if group not in ['транспорт', 'офис поставщики'] or customer_name in ['ПАО "ТРАНСКОНТЕЙНЕР"', 'ФТС России']:
+                        if group not in ['транспорт', 'офис поставщики'] or customer_name in self.cont_transport:
                             self.customers_groups[customer_groups[0]] += int(customer_bal)
 
                 except:
