@@ -22,7 +22,8 @@ except Exception as m:
 class serman_balance():
     def __init__(self):
         self.account_bal= 0
-        self.account_exch = {'40702840997960000004': 75, '40702156997960000002': 12}
+        #exchange cources - deprecated
+        self.account_exch = {'40702840997960000004': 1, '40702156997960000002': 1}
         self.store_bal = 0
         self.good = {}
         self.stocks = {}
@@ -32,7 +33,7 @@ class serman_balance():
         self.custm_bal = []
         self.final_list = []
         self.data_string = []
-        self.cont_transport = ['ПАО "ТРАНСКОНТЕЙНЕР"', 'ФТС России', 'ООО "ТРАСКО"']
+        self.cont_transport = ['ПАО "ТРАНСКОНТЕЙНЕР"', 'ФТС России', 'ООО "ТРАСКО"', 'ООО "МЕДИТЕРРАНЕАН ШИППИНГ КОМПАНИ РУСЬ"']
 
         #arrange method for customers
         self.customers_shape = ['поставщики', 'новосибирскконтрагенты', 'москваконтрагенты', 'покупатели пфо', 'транспорт', 'офис поставщики']

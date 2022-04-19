@@ -17,6 +17,7 @@ except IndexError:
 
 def get_account_summ():
     """'''this function gets account remains'''"""
+
     try:
         acc_req = requests.get(url=url_money, headers=header_for_token_auth)
 #        with open('money_req_list.json', 'w') as ff:
@@ -24,8 +25,17 @@ def get_account_summ():
         accounts_list = [0]
         for acc in acc_req.json()['rows']:
             accounts_list.append(acc['balance']/100)
+            # try:
+            #     print(acc['account']['name'], acc['balance']/100)
+            # except:
+            #     pass
         return sum(accounts_list)
     except IndexError:
         print('Cant read account data', Exception)
         return 0
     print(f'finance report ready')
+
+
+
+if __name__ == '__main__':
+    print(int(get_account_summ()), 'RUR')
