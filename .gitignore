@@ -1,4 +1,6 @@
 
+bot_log.txt
+
 *.json
 *.ini
 *.xls
