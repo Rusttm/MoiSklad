@@ -109,7 +109,11 @@ class serman_balance():
             #     json.dump(acc_req.json(), ff, ensure_ascii=False)
             for good in acc_req.json()['rows']:
                 good_name = good['meta']['href']
-                good_price = self.good[good_name]
+                try:
+                    good_price = self.good[good_name]
+                except:
+                    good_price = 0
+                    print(f'{good_name} is not in json all')
                 for stock in good['stockByStore']:
                     stock_name = stock['name']
                     stock_num = stock['stock']
