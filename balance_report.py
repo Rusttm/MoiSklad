@@ -49,6 +49,7 @@ class serman_balance():
             print('balance hadnt send to Goggle Books:', m)
 
     def get_balance(self):
+
         self.account_summ()
         self.store_remains()
         self.customers_bal()
@@ -59,7 +60,7 @@ class serman_balance():
         for name, summ in self.final_list:
             summary_balance += summ
         today = datetime.datetime.now()
-        today_date = str(today.strftime("%d.%m.%y_%H:%M"))
+        today_date = str(today.strftime("%d.%m.%y %H:%M"))
         self.final_list = [['Дата', today_date], ['Итог', int(summary_balance)]] + self.final_list
         for title, summ in self.final_list:
             self.data_string.append(summ)
@@ -67,6 +68,7 @@ class serman_balance():
 
     def account_summ(self):
         """'''this function gets bank account remains'''"""
+        # выает сумму на счетах компании
         try:
             acc_req = requests.get(url=url_money, headers=header_for_token_auth)
             # with open('money_req_list.json', 'w') as ff:
@@ -136,7 +138,9 @@ class serman_balance():
                 customer_name = customer['counterparty']['name']
                 customer_bal = customer['balance']/100
                 customer_href = customer['counterparty']['meta']['href']
+                # запрашиваем данные по клиенту
                 sub_req = requests.get(url=customer_href, headers=header_for_token_auth)
+                # будем формировать список групп для клиента
                 customer_groups = []
                 try:
                     for group in sub_req.json()['tags']:
@@ -147,7 +151,9 @@ class serman_balance():
                     if len(customer_groups) > 1:
                         print(f'{customer_name} have {len(customer_groups)} groups')
                     else:
+                        # исключаем офисных и лишний транспорт кроме контейнерных
                         if group not in ['транспорт', 'офис поставщики'] or customer_name in self.cont_transport:
+                            # прибавляем баланс клиента к общей сумме
                             self.customers_groups[customer_groups[0]] += int(customer_bal)
 
                 except:
