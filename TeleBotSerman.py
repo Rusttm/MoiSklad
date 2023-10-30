@@ -165,13 +165,13 @@ def send_report():
             c_debt = customers_debt.get_customers_balance()
             all_cusomers_debt = c_debt['Покупатели']['Итого']
             message_component += f'Отчеты на {form_date}:\n'
-            message_component += f'<b>Задолженность</b> по клиентам {all_cusomers_debt}руб.\n'
+            message_component += f'<b>Задолженность</b> по клиентам {int(all_cusomers_debt)}руб.\n'
             #отчет по продажам меньше 30
             sales_list = sales_control.get_sales_list()
             if len(sales_list) > 0:
                 message_component += f'Низкая <b>рентабельность</b>:\n'
                 for sale in sales_control.get_sales_list():
-                    message_component += f'{sale[0]} {sale[1]}руб. {int(sale[2])}%;\n'
+                    message_component += f'{sale[0]} {int(sale[1])}руб. {int(sale[2])}%;\n'
             else:
                 message_component += f'Отгрузок с рентабельностью ниже 30 проц. не обнаружено.\n'
             #прибыль по месяцу
@@ -186,6 +186,7 @@ def send_report():
         #сформирован -отпправляем
         try:
             bot.send_message(chat_id, message_component, parse_mode='html')
+            bot.send_message(my_chat_id, message_component, parse_mode='html')
         except Exception as m:
             print('Cant send daily report!!!', m)
             bot.send_message(my_chat_id, message_component, parse_mode='html')
@@ -193,6 +194,7 @@ def send_report():
         bot.send_message(chat_id, 'Хороших Вам выходных!')
 
     print(f'daily report formed {str(datetime.now().strftime("%d:%m:%y"))}')
+
 
 def daily_report():
     schedule.every().day.at("17:00").do(send_report)
