@@ -8,7 +8,8 @@ from datetime import date
 import configparser
 
 conf = configparser.ConfigParser()
-conf.read('config.ini')
+conf.optionxform = str
+conf.read('config/config.ini')
 
 URL = conf['MoiSklad']['URL']
 URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
@@ -20,8 +21,14 @@ url_outinvoices_list = conf['MoiSklad']['url_outinvoices_list']
 url_ininvoices_list = conf['MoiSklad']['url_ininvoices_list']
 url_priemka_list = conf['MoiSklad']['url_priemka_list']
 
-header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
-
+# header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
+# эта часть кода позволяет использовать несколько заголовков
+url_headers = conf['API_HEADERS']
+headers_dict = dict()
+for header in url_headers:
+    headers_dict[header] = url_headers[header]
+header_for_token_auth = headers_dict
+#
 def auth_api():
 
     userAndPass = b64encode(conf['MoiSklad']['log_pass']).decode("ascii") #b"user@outlook.com:12345"
