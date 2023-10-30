@@ -6,11 +6,22 @@ import os
 try:
     # get data from in file
     conf = configparser.ConfigParser()
+
     #conf.read('config.ini')
     conf.read(os.path.join(os.path.dirname(__file__), 'config/config.ini'))
     url_money = conf['MoiSklad']['url_money']
     my_access_token = conf['MoiSklad']['access_token']
-    header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token}
+    header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token, 'Accept-Encoding': 'gzip'}
+
+    # эта часть кода позволяет использовать несколько заголовков
+    conf.optionxform = str
+    url_headers = conf['API_HEADERS']
+    headers_dict = dict()
+    for header in url_headers:
+        headers_dict[header] = url_headers[header]
+    header_for_token_auth = headers_dict
+    #
+
 except IndexError:
     print('Error, cant read .ini file')
 

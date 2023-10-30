@@ -9,6 +9,7 @@ import SermanGB
 try:
     # get data from ini file
     conf = configparser.ConfigParser()
+    conf.optionxform = str
     conf.read(os.path.join(os.path.dirname(__file__), 'config/config.ini'))
     url_money = conf['MoiSklad']['url_money']
     url_store_all = conf['MoiSklad']['url_store_all']
@@ -16,6 +17,13 @@ try:
     url_customers2 = conf['MoiSklad']['url_customers2']
     my_access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token}
+    # эта часть кода позволяет использовать несколько заголовков
+    url_headers = conf['API_HEADERS']
+    headers_dict = dict()
+    for header in url_headers:
+        headers_dict[header] = url_headers[header]
+    header_for_token_auth = headers_dict
+    #
 except Exception as m:
     print('Error, cant read .ini file', m)
 

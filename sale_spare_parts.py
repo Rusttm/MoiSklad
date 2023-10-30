@@ -12,7 +12,7 @@ import xlsxwriter
 try:
     # get data from in file
     conf = configparser.ConfigParser()
-    #conf.read('config.ini')
+    conf.optionxform = str
     conf.read(os.path.join(os.path.dirname(__file__), 'config/config.ini'))
     URL = conf['MoiSklad']['URL']
     URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
@@ -20,6 +20,13 @@ try:
     url_money = conf['MoiSklad']['url_money']
     my_access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % my_access_token}
+    # эта часть кода позволяет использовать несколько заголовков
+    url_headers = conf['API_HEADERS']
+    headers_dict = dict()
+    for header in url_headers:
+        headers_dict[header] = url_headers[header]
+    header_for_token_auth = headers_dict
+    #
     url_customers = conf['MoiSklad']['url_customers']
     url_sales_list = conf['MoiSklad']['url_sales_list']
     url_nsk_group = conf['TAGS']['Nsk']

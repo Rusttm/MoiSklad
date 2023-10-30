@@ -11,16 +11,24 @@ import os
 
 try:
     conf = configparser.ConfigParser()
-    #conf.read('sp_books.ini')
+    conf.optionxform = str
     conf.read(os.path.join(os.path.dirname(__file__), 'config/sp_books.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 
 try:
-    URL = conf['MoiSklad']['URL']
-    URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
+    URL = conf['MoiSklad']['url']
+    URL_TOKEN = conf['MoiSklad']['url_token']
     access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
+    # эта часть кода позволяет использовать несколько заголовков
+    url_headers = conf['API_HEADERS']
+    headers_dict = dict()
+    for header in url_headers:
+        headers_dict[header] = url_headers[header]
+    header_for_token_auth = headers_dict
+    #
+    conf.optionxform = str
     url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
     url_priemka_list = conf['MoiSklad']['url_priemka_list']
     url_customers = conf['MoiSklad']['url_customers']
@@ -31,6 +39,7 @@ try:
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     work_book = conf['GOOGLE']['work_book']
+
 except IndexError:
     print('cant load data from .ini file', Exception)
 

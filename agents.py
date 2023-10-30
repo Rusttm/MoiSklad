@@ -13,15 +13,23 @@ import os
 try:
     conf = configparser.ConfigParser()
     #conf.read('agents.ini')
+    conf.optionxform = str
     conf.read(os.path.join(os.path.dirname(__file__), 'config/agents.ini'))
 except IndexError:
     print('cant find .ini file'), Exception
 
 try:
     URL = conf['MoiSklad']['url']
-    URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
+    URL_TOKEN = conf['MoiSklad']['url_token']
     access_token = conf['MoiSklad']['access_token']
     header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
+    # эта часть кода позволяет использовать несколько заголовков
+    url_headers = conf['API_HEADERS']
+    headers_dict = dict()
+    for header in url_headers:
+        headers_dict[header] = url_headers[header]
+    header_for_token_auth = headers_dict
+    #
     url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
     url_customers = conf['MoiSklad']['url_customers']
     url_payments_list = conf['MoiSklad']['url_payments_list']
@@ -31,7 +39,7 @@ try:
     temp_book = conf['GOOGLE']['temp_book']
     saratov_link = conf['GOOGLE']['saratov_link']
     nsk_link = conf['GOOGLE']['nsk_link']
-    CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE_MACOS']
+    CREDENTIALS_FILE = conf['GOOGLE']['CREDENTIALS_FILE']
     CREDENTIALS_FILE = os.path.join(os.path.dirname(__file__), f'config/{CREDENTIALS_FILE}')
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
@@ -54,7 +62,7 @@ toda_y_date = str(datetime.now().strftime("%Y-%m-%d"))
 
 class agents_books():
     """new class for sales and purchases books"""
-    def __init__(self, agent_name = "Саратов"):
+    def __init__(self, agent_name="Саратов"):
         self.bookName = 'Отчет агента'
         self.email = 'rustammazhatov@gmail.com'
         self.sheets = []
@@ -426,7 +434,7 @@ def get_pfo_agent_report(start_day='2021-05-01', end_day='2021-05-31'):
     print(f'report pfo from {start_day} to {end_day} ready')
 
 
-def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-05-31'):
+def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-04-05'):
     """Считаем агентские Новосибирска
     """
     nsk_report = moi_sklad(agent_name = 'Новосибирск', start_day=start_day, end_day=end_day)
@@ -446,3 +454,7 @@ def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-05-31'):
     print(f'report nsk from {start_day} to {end_day} ready')
 #get_nsk_agent_report()
 #get_pfo_agent_report()
+if __name__ == '__main__':
+    # new_report = agents_books()
+    # res = new_report.
+    print(get_nsk_agent_report())

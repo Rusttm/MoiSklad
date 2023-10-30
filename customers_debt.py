@@ -10,10 +10,18 @@ import google_books
 import os
 
 conf = configparser.ConfigParser()
-# conf.read('c_debdt.ini')
+conf.optionxform = str
+
 conf.read(os.path.join(os.path.dirname(__file__), 'config/c_debdt.ini'))
 access_token = conf['MoiSklad']['access_token']
 header_for_token_auth = {'Authorization': 'Bearer %s' % access_token}
+# эта часть кода позволяет использовать несколько заголовков
+url_headers = conf['API_HEADERS']
+headers_dict = dict()
+for header in url_headers:
+    headers_dict[header] = url_headers[header]
+header_for_token_auth = headers_dict
+#
 url_customers = conf['MoiSklad']['url_customers']
 
 
