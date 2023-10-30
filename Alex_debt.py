@@ -11,13 +11,21 @@ import os
 
 
 conf = configparser.ConfigParser()
-#conf.read('alex.ini')
+conf.optionxform = str
+
 conf.read(os.path.join(os.path.dirname(__file__), 'config/alex.ini'))
-URL = conf['MoiSklad']['URL']
-URL_TOKEN = conf['MoiSklad']['URL_TOKEN']
+URL = conf['MoiSklad']['url']
+URL_TOKEN = conf['MoiSklad']['url_token']
 url_otgruzka_list = conf['MoiSklad']['url_otgruzka_list']
 alex_access_token = conf['MoiSklad']['alex_access_token']
 header_for_token_auth = {'Authorization': 'Bearer %s' % alex_access_token}
+# эта часть кода позволяет использовать несколько заголовков
+url_headers = conf['API_HEADERS']
+headers_dict = dict()
+for header in url_headers:
+    headers_dict[header] = url_headers[header]
+header_for_token_auth = headers_dict
+#
 url_customers = conf['MoiSklad']['url_customers']
 
 
