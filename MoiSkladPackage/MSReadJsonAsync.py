@@ -10,10 +10,20 @@ class MSReadJsonAsync(MSMainClass):
     """read and return data from json file"""
     logger_name = "jsonreaderasync"
     dir_name = "data"
+    file_name = None
+
+    def __init__(self, dir_name=None, file_name=None):
+        super().__init__()
+        if file_name:
+            self.file_name = file_name
+        if dir_name:
+            self.dir_name = dir_name
 
     async def get_config_json_data_async(self, file_name=None) -> dict:
         """ extract data from MS json file
         return dict """
+        if not file_name:
+            file_name = self.file_name
         data = dict()
         if file_name:
             try:
