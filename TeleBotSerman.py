@@ -72,6 +72,9 @@ def send_text(message):
             for group in c_debt['Покупатели']:
                 bot.send_message(message.chat.id, f'{group} : {int(c_debt["Покупатели"][group])}руб.')
         # account remains
+        elif message.text.lower() in ['daily']:
+            """ runs daily report"""
+            send_report()
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()
             markdown = f"<b>Остаток денег</b> на рублевых счетах {int(account_sum)}руб."
@@ -163,9 +166,9 @@ def send_report():
         #отчет по задолженности покупателей
         try:
             c_debt = customers_debt.get_customers_balance()
-            all_cusomers_debt = c_debt['Покупатели']['Итого']
+            all_customers_debt = c_debt['Покупатели']['Итого']
             message_component += f'Отчеты на {form_date}:\n'
-            message_component += f'<b>Задолженность</b> по клиентам {int(all_cusomers_debt)}руб.\n'
+            message_component += f'<b>Задолженность</b> по клиентам {int(all_customers_debt)}руб.\n'
             #отчет по продажам меньше 30
             sales_list = sales_control.get_sales_list()
             if len(sales_list) > 0:
@@ -180,7 +183,8 @@ def send_report():
             # баланс по месяцу
             balance_sum = balance_report.new_balance_report()
             message_component += f'Текущий <b>Баланс</b> {balance_sum[0]}руб.'
-        except:
+        except Exception as e:
+            print(f'Ошибка при формировании баланса!!!\n {e}')
             message_component += f'Ошибка при формировании баланса!!!\n'
             bot.send_message(my_chat_id, message_component, parse_mode='html')
         #сформирован -отпправляем

@@ -196,4 +196,4 @@ def new_balance_report():
 
 
 if __name__ == "__main__":
-    new_balance_report()
+    print(new_balance_report())
