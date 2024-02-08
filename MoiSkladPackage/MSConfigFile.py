@@ -41,8 +41,9 @@ class MSConfigFile(MSMainClass):
             self.header_dict = d.get(self.headers_key)
         return d
 
-    def get_req_headers(self) -> str:
+    def get_req_headers(self) -> dict:
         return self.header_dict
+
 
 if __name__ == '__main__':
     connector = MSConfigFile()
