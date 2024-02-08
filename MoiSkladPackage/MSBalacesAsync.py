@@ -29,7 +29,7 @@ class MSBalacesAsync(MSMainClass):
             self.logger.error(msg)
         return res_accounts
 
-    async def get_stocks_cost(self) -> dict:
+    async def get_stocks_cost_async(self) -> dict:
         """ return sum of all stores without excluded"""
         res_costs = dict({'stores_sum': 0})
         try:
@@ -45,7 +45,9 @@ class MSBalacesAsync(MSMainClass):
             self.logger.error(msg)
         return res_costs
 
+    async def get_customers_balances_async(self):
+        return False
 
 if __name__ == "__main__":
     connect = MSBalacesAsync()
-    print(connect.get_stocks_cost())
+    print(connect.get_stocks_cost_async())
