@@ -4,7 +4,6 @@ from MSMainClass import MSMainClass
 class MSAccountSum(MSMainClass):
     """ clas get accounts remains"""
     logger_name = "accounting"
-    ms_urls_key = "ms_urls"
     url_key = "url_money"
 
     def __init__(self):
@@ -15,16 +14,12 @@ class MSAccountSum(MSMainClass):
         account_bal = int()
         # get account sum
         try:
-            import MSConfigFile
-            ini_dict = MSConfigFile.MSConfigFile()
-            req_url = ini_dict.get_ini_json_file().get(self.ms_urls_key).get(self.url_key)
-            header_for_token_auth = ini_dict.get_req_headers()
-            import requests
-            acc_req = requests.get(url=req_url, headers=header_for_token_auth)
-            # with open('money_req_list.json', 'w') as ff:
-            #     json.dump(acc_req.json(), ff, ensure_ascii=False)
+            import MSRequester
+            requester = MSRequester.MSRequester()
+            requester.set_config(self.url_key)
+            acc_req = requester.get_api_data(to_file=True)
             account_bal = int()
-            for account in acc_req.json()['rows']:
+            for account in acc_req['rows'][1:]:
                 account_bal += int(account['balance']/100)
         except Exception as e:
             msg = f"module {__class__.__name__} can't read account data, error: {e}"
@@ -36,17 +31,13 @@ class MSAccountSum(MSMainClass):
         accounts_bal = dict({'accounts_sum': 0, 'accounts': dict()})
         # get account sum
         try:
-            import MSConfigFile
-            ini_dict = MSConfigFile.MSConfigFile()
-            req_url = ini_dict.get_ini_json_file().get(self.ms_urls_key).get(self.url_key)
-            header_for_token_auth = ini_dict.get_req_headers()
-            import requests
-            acc_req = requests.get(url=req_url, headers=header_for_token_auth)
-            # with open('money_req_list.json', 'w') as ff:
-            #     json.dump(acc_req.json(), ff, ensure_ascii=False)
+            import MSRequester
+            requester = MSRequester.MSRequester()
+            requester.set_config(self.url_key)
+            acc_req = requester.get_api_data(to_file=True)
             new_dict = dict()
             accounts_sum = int()
-            for account_elem in acc_req.json()['rows'][1:]:
+            for account_elem in acc_req['rows'][1:]:
                 account_num = account_elem['account']['name']
                 account_sum = account_elem['balance']/100
                 new_dict[account_num] = int(account_sum)

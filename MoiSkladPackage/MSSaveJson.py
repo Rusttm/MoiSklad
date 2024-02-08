@@ -18,7 +18,7 @@ class MSSaveJson(MSMainClass):
             # if dir_name == "config":
             if dir_name:
                 self.dir_name = dir_name
-            dir_file = os.path.dirname(os.path.dirname(__file__))
+            dir_file = os.path.dirname(__file__)
             dir_path = os.path.join(dir_file, self.dir_name)
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
