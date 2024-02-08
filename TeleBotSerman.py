@@ -74,7 +74,9 @@ def send_text(message):
         # account remains
         elif message.text.lower() in ['daily']:
             """ runs daily report"""
+            bot.send_message(message.chat.id, f'Файл дневной отчетности формируется, подождите!')
             send_report()
+            bot.delete_message(message.chat.id, message.message_id + 1)
         elif message.text.lower() in ['остатки на счетах', 'остатки']:
             account_sum = finance.get_account_summ()
             markdown = f"<b>Остаток денег</b> на рублевых счетах {int(account_sum)}руб."
