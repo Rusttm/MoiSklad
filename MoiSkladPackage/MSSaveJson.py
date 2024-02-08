@@ -48,12 +48,6 @@ class MSSaveJson(MSMainClass):
             return f"{file_name}.json"
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
     connector = MSSaveJson()
     print(connector.save_data_json_file(data_dict={"data": "some data"}, file_name="temporary_file"))
