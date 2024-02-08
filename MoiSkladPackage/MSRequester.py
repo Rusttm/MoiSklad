@@ -7,6 +7,7 @@ class MSRequester(MSMainClass):
     logger_name = "requester"
     ms_urls_key = "ms_urls"
     ms_api_header = "ms_api_headers"
+    offset = 1000
     __api_url = str()
     __api_header = dict()
     __api_param_line = "?"
@@ -97,7 +98,6 @@ class MSRequester(MSMainClass):
         """ if there are more than 1000 positions
         needs to form request for getting full data"""
         self.__to_file = to_file
-        offset = 1000
         # starts first request
         data = dict(self.get_single_req_data())
         delta = 0
@@ -108,10 +108,10 @@ class MSRequester(MSMainClass):
             # if there is no data in data['meta']['size']
             self.logger.warning(f"{__class__.__name__} cant find key {e} for data['meta']['size'] ")
         # if there is more than 1000 positions in row
-        if delta > offset:
+        if delta > self.offset:
             # self.logger.info(f"{pathlib.PurePath(__file__).name} request contains more than 1000rows")
             self.logger.info(f"{__class__.__name__} request contains more than 1000rows")
-            requests_num = delta // offset
+            requests_num = delta // self.offset
             for i in range(requests_num):
                 # .. request data until it ends
                 self.add_api_param_line(f"offset={(i + 1) * 1000}")
