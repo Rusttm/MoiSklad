@@ -6,7 +6,7 @@ import asyncio
 
 class MSRequesterAsync(MSMainClass):
     """ clas request to moisklad api"""
-    logger_name = "requester"
+    logger_name = "requesterasync"
     ms_urls_key = "ms_urls"
     ms_api_header = "ms_api_headers"
     offset = 1000
@@ -16,8 +16,10 @@ class MSRequesterAsync(MSMainClass):
     __to_file = False
     __file_name = "requested_data.json"
 
-    def __init__(self):
+    def __init__(self, url_conf_key=None):
         super().__init__()
+        if url_conf_key:
+            self.set_config(url_conf_key)
 
     def set_config(self, url_conf_key=None):
         """it sets requested url and token in configuration """
@@ -75,7 +77,7 @@ class MSRequesterAsync(MSMainClass):
         try:
             # self.logger.info(f"{pathlib.PurePath(__file__).name} make request")
             self.logger.info(f"{__class__.__name__} make request")
-            acc_req = await asyncio.to_thread(requests.get(url=api_url, headers=self.__api_header))
+            acc_req = await asyncio.to_thread(requests.get, url=api_url, headers=self.__api_header)
             req_data = dict(acc_req.json())
             req_err = req_data.get('errors', False)
             if req_err:
@@ -96,7 +98,7 @@ class MSRequesterAsync(MSMainClass):
             self.logger.critical(f"{__class__.__name__} cant connect to request data: {e}")
             return None
 
-    async def get_api_data(self, to_file=False):
+    async def get_api_data_async(self, to_file=False):
         """ if there are more than 1000 positions
         needs to form request for getting full data"""
         self.__to_file = to_file
@@ -121,10 +123,16 @@ class MSRequesterAsync(MSMainClass):
                 data['rows'] += next_data['rows']
 
         if self.__to_file:
-            self.save_requested_data_2file(data_dict=data)
+            await self.save_requested_data_2file_async(data_dict=data)
         return data
 
-    async def save_requested_data_2file(self, data_dict=None, file_name=None):
+    def get_api_data_sync(self, to_file=False) -> dict:
+        # loop = asyncio.get_event_loop()
+        # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
+        result = asyncio.run(self.get_api_data_async(to_file=to_file))
+        return result
+
+    async def save_requested_data_2file_async(self, data_dict=None, file_name=None):
         """ method save dict data to file in class ConnMSSaveFile"""
         from MSSaveJsonAsync import MSSaveJsonAsync
         if file_name:
@@ -141,6 +149,5 @@ class MSRequesterAsync(MSMainClass):
             self.logger.error(f"{__class__.__name__} request wasn't wrote to file {self.__file_name}")
 
 if __name__ == "__main__":
-    connect = MSRequesterAsync()
-    connect.set_config("url_stock_all")
-    connect.get_api_data(to_file=True)
+    connect = MSRequesterAsync("url_stock_all")
+    connect.get_api_data_sync(to_file=True)
