@@ -49,7 +49,7 @@ class serman_balance():
     def send_balance_to_GB(self):
         self.get_balance()
         try:
-            x=[self.data_string]
+            x = [self.data_string]
             book = SermanGB.ServiceGoogleBook(work_book='balance_book')
             req = book.append_string(work_array=x, sheetId=0)
             return [self.data_string[1], req]

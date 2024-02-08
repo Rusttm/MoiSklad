@@ -1,17 +1,17 @@
 from MSMainClass import MSMainClass
 
 
-class MSAccountSum(MSMainClass):
-    """ clas get accounts remains"""
-    logger_name = "accounting"
+class MSStoresSum(MSMainClass):
+    """ clas get sum of stores"""
+    logger_name = "stores"
     ms_urls_key = "ms_urls"
-    url_key = "url_money"
+    url_key = "url_stores"
 
     def __init__(self):
         super().__init__()
 
-    def get_account_summ(self) -> int:
-        """this function gets sum of bank accounts remains"""
+    def get_stores_good_price(self) -> int:
+        """this function gets sum of stores remains"""
         account_bal = int()
         # get account sum
         try:
@@ -60,7 +60,7 @@ class MSAccountSum(MSMainClass):
 
 
 if __name__ == "__main__":
-    connect = MSAccountSum()
-    print(connect.get_account_summ())
+    connect = MSStoresSum()
+    # print(connect.get_account_summ())
     print(connect.get_account_remains())
     connect.logger.debug("accounting class initialized")
