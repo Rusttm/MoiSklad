@@ -143,3 +143,4 @@ dmypy.json
 pkg_env/.DS_Store
 .idea/.DS_Store
 .DS_Store
+*.xml
