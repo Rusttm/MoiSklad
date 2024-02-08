@@ -5,6 +5,7 @@ class MSAccountSum(MSMainClass):
     """ clas get accounts remains"""
     logger_name = "accounting"
     url_key = "url_money"
+    save_2file = False
 
     def __init__(self):
         super().__init__()
@@ -17,7 +18,7 @@ class MSAccountSum(MSMainClass):
             import MSRequester
             requester = MSRequester.MSRequester()
             requester.set_config(self.url_key)
-            acc_req = requester.get_api_data(to_file=True)
+            acc_req = requester.get_api_data(to_file=self.save_2file)
             account_bal = int()
             for account in acc_req['rows'][1:]:
                 account_bal += int(account['balance']/100)
@@ -34,7 +35,7 @@ class MSAccountSum(MSMainClass):
             import MSRequester
             requester = MSRequester.MSRequester()
             requester.set_config(self.url_key)
-            acc_req = requester.get_api_data(to_file=True)
+            acc_req = requester.get_api_data(to_file=self.save_2file)
             new_dict = dict()
             accounts_sum = int()
             for account_elem in acc_req['rows'][1:]:
