@@ -81,9 +81,7 @@ class MSCustBalAsync(MSMainClass):
                 customer_bal = customers_bal.get(customer_href)[0]
                 customer_name = customers_bal.get(customer_href)[1]
                 if customer_in_groups:
-                    groups_len = len(customers_show_groups)
-                    for i in range(1, groups_len + 1):
-                        show_group = customers_show_groups[str(i)]
+                    for show_group in list(customers_show_groups):
                         customer_groups = customers_groups.get(customer_href)
                         if show_group in customer_groups:
                             cust_groups_sum[show_group] = cust_groups_sum.get(show_group, 0) + int(customer_bal)

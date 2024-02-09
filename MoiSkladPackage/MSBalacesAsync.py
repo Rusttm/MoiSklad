@@ -1,7 +1,10 @@
+import datetime
+
 from MSMainClass import MSMainClass
 
 import time
 import asyncio
+from datetime import datetime
 
 
 class MSBalacesAsync(MSMainClass):
@@ -22,11 +25,11 @@ class MSBalacesAsync(MSMainClass):
         return True
 
     async def get_accounts_sum_async(self) -> dict:
-        res_accounts = dict({'accounts_sum': 0})
+        res_accounts = dict({'деньги на счетах': 0})
         try:
             import MSAccountSumAsync
             ini_dict = MSAccountSumAsync.MSAccountSumAsync()
-            res_accounts['accounts_sum'] = await ini_dict.get_account_summ_async()
+            res_accounts['деньги на счетах'] = await ini_dict.get_account_summ_async()
         except Exception as e:
             msg = f"module {__class__.__name__} can't read account data, error: {e}"
             self.logger.error(msg)
@@ -34,7 +37,7 @@ class MSBalacesAsync(MSMainClass):
 
     async def get_stocks_cost_async(self) -> dict:
         """ return sum of all stores without excluded"""
-        res_costs = dict({'stores_sum': 0})
+        res_costs = dict({'склад себестоимость': 0})
         await self.load_conf_data()
         try:
             import MSStoresSumAsync
@@ -43,7 +46,7 @@ class MSBalacesAsync(MSMainClass):
             excluded_stores_list = list(self.config_data.values())
             for store_name, store_sum in stores_dict.items():
                 if store_name not in excluded_stores_list:
-                    res_costs['stores_sum'] = res_costs.get('stores_sum', 0) + int(store_sum)
+                    res_costs['склад себестоимость'] = res_costs.get('склад себестоимость', 0) + int(store_sum)
         except Exception as e:
             msg = f"module {__class__.__name__} can't read stores data, error: {e}"
             self.logger.error(msg)
@@ -63,13 +66,18 @@ class MSBalacesAsync(MSMainClass):
         return cust_groups
 
     async def form_balance_dict_async(self) -> dict:
-        result_dict = dict()
+        result_dict = dict({"Дата": datetime.now().strftime("%d.%m.%y %H:%M")})
+        balance_sum = int()
         accounts_money_sum = await self.get_accounts_sum_async()
+        balance_sum += sum([int(value) for value in accounts_money_sum.values()])
         result_dict.update(accounts_money_sum)
         stocks_sum = await self.get_stocks_cost_async()
+        balance_sum += sum([int(value) for value in stocks_sum.values()])
         result_dict.update(stocks_sum)
         cust_groups_bal = await self.get_customers_groups_sum_async()
+        balance_sum += sum([int(value) for value in cust_groups_bal.values()])
         result_dict.update(cust_groups_bal)
+        result_dict.update({"Итог": balance_sum})
         return result_dict
 
 
