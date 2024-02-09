@@ -3,6 +3,8 @@
 import csv
 import aiofiles
 import gspread.utils
+import nest_asyncio
+nest_asyncio.apply()
 
 from MSMainClass import MSMainClass
 import asyncio
@@ -27,7 +29,7 @@ class MSConnGSAsync(MSMainClass):
     def __init__(self):
         super().__init__()
         self.load_conf_data()
-        self.create_gs_client_manager()
+
 
     def load_conf_data(self) -> dict:
         import MSReadJsonAsync
@@ -49,6 +51,12 @@ class MSConnGSAsync(MSMainClass):
     def create_gs_client_manager(self):
         # gc = gspread.authorize(credentials)
         self.async_gspread_client_manager = gspread_asyncio.AsyncioGspreadClientManager(self.get_credentials)
+
+    async def create_gs_client_async(self) -> gspread_asyncio.AsyncioGspreadClient:
+        self.create_gs_client_manager()
+        self.async_gc = await self.async_gspread_client_manager.authorize()
+        # print(type(self.async_gc))
+        return self.async_gc
 
     async def create_gsheet_and_full_permission(self,
                                                 spread_sheet_name=None) -> gspread_asyncio.AsyncioGspreadSpreadsheet:
@@ -72,48 +80,6 @@ class MSConnGSAsync(MSMainClass):
             print(f"Не указан spread_sheet для добавления листа")
             return None
 
-    async def save_spreadsheet_csv_async(self, spread_sheet: gspread_asyncio.AsyncioGspreadSpreadsheet = None,
-                                         spread_sheet_id: str = None):
-        if spread_sheet or spread_sheet_id:
-            if not spread_sheet_id: spread_sheet_id = spread_sheet.id
-            binary_file_data = await self.async_gc.export(spread_sheet_id, format=gspread.utils.ExportFormat.CSV)
-            print(f"{binary_file_data=}")
-            # with open("test_csv_file", 'wb') as new_file:
-            #     new_file.write(binary_file_data)
-            file_name = spread_sheet.title + ".csv"
-            file_path = os.path.join(self.data_dir_name, file_name)
-            async with aiofiles.open(file_path, 'wb') as ff:
-                await ff.write(binary_file_data)
-
-            return file_path
-        else:
-            msg = f"{__class__.__name__} cant convert to csv, "
-            self.logger.warning(msg)
-            print(msg)
-            return None
-
-    async def save_spreadsheet_xlsx_async(self, spread_sheet: gspread_asyncio.AsyncioGspreadSpreadsheet = None,
-                                          spread_sheet_id: str = None):
-        # spread_sheet = await self.create_gsheet_and_full_permission()
-        # zero_work_sheet = await spread_sheet.get_worksheet(0)
-        # for row in range(1, 10):
-        #     for col in range(1, 10):
-        #         await zero_work_sheet.update_cell(row, col, str(col + row))
-        if spread_sheet or spread_sheet_id:
-            if not spread_sheet_id: spread_sheet_id = spread_sheet.id
-            binary_file_data = await self.async_gc.export(spread_sheet_id, format=gspread.utils.ExportFormat.EXCEL)
-            print(f"{binary_file_data=}")
-            file_name = spread_sheet.title + ".xlsx"
-            file_path = os.path.join(self.data_dir_name, file_name)
-            async with aiofiles.open(file_path, 'wb') as ff:
-                await ff.write(binary_file_data)
-            return file_path
-        else:
-            msg = f"{__class__.__name__} cant convert to xlsx"
-            self.logger.warning(msg)
-            print(msg)
-            return None
-
 
 if __name__ == "__main__":
     import time
@@ -124,7 +90,7 @@ if __name__ == "__main__":
     # loop = asyncio.get_event_loop()
     # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
     # print(connect.load_conf_data())
-    print(asyncio.run(connect.save_spreadsheet_csv_async()))
+    print(asyncio.run(connect.create_gs_client_async()))
     # ws = asyncio.run(connect.add_worksheet_2spreadsheet(spread_sheet=ss))
     # print(ws)
     print(f"report done in {int(start_time - time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
