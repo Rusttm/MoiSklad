@@ -3,6 +3,8 @@
 import csv
 import aiofiles
 import gspread.utils
+
+# from https://stackoverflow.com/questions/46827007/runtimeerror-this-event-loop-is-already-running-in-python
 import nest_asyncio
 nest_asyncio.apply()
 
