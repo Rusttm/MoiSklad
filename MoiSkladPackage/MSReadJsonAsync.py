@@ -51,5 +51,7 @@ class MSReadJsonAsync(MSMainClass):
         return result
 
 if __name__ == '__main__':
-    connector = MSReadJsonAsync()
-    print(connector.get_config_json_data_sync(file_name='url_money.json'))
+    # connector = MSReadJsonAsync()
+    # print(connector.get_config_json_data_sync(file_name='url_money.json'))
+    connector2 = MSReadJsonAsync(dir_name="config", file_name="ms_balances_config.json")
+    print(connector2.get_config_json_data_sync())
