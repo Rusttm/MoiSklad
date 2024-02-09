@@ -13,7 +13,7 @@ class MSCustBalAsync(MSMainClass):
     main_key = "ms_balance"
     customers_columns_key = "customers_bal_columns"
     excluded_groups_key = "excluded_groups"
-    include_excluded_groups_companies_key = "include_excluded_groups_companies"
+    include_other_companies_key = "include_other_companies"
     dir_name = "config"
     config_file_name = "ms_balances_config.json"
     config_data = None
@@ -73,7 +73,7 @@ class MSCustBalAsync(MSMainClass):
             customers_groups = await self.get_customers_dict_async()
             customers_bal = await self.get_customers_bal_async()
             customers_show_groups = self.config_data[self.main_key][self.customers_columns_key]
-            customers_inc_excluded_groups = self.config_data[self.main_key][self.include_excluded_groups_companies_key]
+            customers_inc_excluded_groups = self.config_data[self.main_key][self.include_other_companies_key]
             other_customers = list(customers_inc_excluded_groups.values())
             for customer_href in customers_bal:
                 customer_in_groups = customers_groups.get(customer_href, None)
