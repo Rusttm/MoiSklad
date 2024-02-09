@@ -31,6 +31,7 @@ class MSCustBalAsync(MSMainClass):
         import MSReadJsonAsync
         reader = MSReadJsonAsync.MSReadJsonAsync(dir_name=self.dir_name, file_name=self.config_file_name)
         result = await reader.get_config_json_data_async()
+        # print(f"{result=}")
         return result
 
     async def get_customers_dict_async(self):
@@ -70,18 +71,24 @@ class MSCustBalAsync(MSMainClass):
     async def get_cust_groups_sum_async(self) -> dict:
         cust_groups_sum = dict()
         try:
-            self.config_data =  await self.load_conf_data()
+            self.config_data = await self.load_conf_data()
+            # print(f"{self.config_data=}")
+            # {customer_href: customer_group_list}
             customers_groups = await self.get_customers_dict_async()
+            # {customer_href: [customer_bal, customer_name]}
             customers_bal = await self.get_customers_bal_async()
-            customers_show_groups = self.config_data[self.main_key][self.customers_columns_key]
-            customers_inc_excluded_groups = self.config_data[self.main_key][self.include_other_companies_key]
-            other_customers = list(customers_inc_excluded_groups.values())
+            # ["поставщики", "новосибирскконтрагенты", "москваконтрагенты", "покупатели пфо", "другие"]
+            customers_show_groups = list(self.config_data[self.main_key][self.customers_columns_key])
+            # ["ПАО \"ТРАНСКОНТЕЙНЕР\"","ФТС России","ООО \"ТРАСКО\"", "ООО \"МЕДИТЕРРАНЕАН ШИППИНГ КОМПАНИ РУСЬ\""],
+            customers_inc_excluded_groups = list(self.config_data[self.main_key][self.include_other_companies_key])
+
+            other_customers = customers_inc_excluded_groups
             for customer_href in customers_bal:
                 customer_in_groups = customers_groups.get(customer_href, None)
                 customer_bal = customers_bal.get(customer_href)[0]
                 customer_name = customers_bal.get(customer_href)[1]
                 if customer_in_groups:
-                    for show_group in list(customers_show_groups):
+                    for show_group in customers_show_groups:
                         customer_groups = customers_groups.get(customer_href)
                         if show_group in customer_groups:
                             cust_groups_sum[show_group] = cust_groups_sum.get(show_group, 0) + int(customer_bal)
