@@ -24,7 +24,7 @@ class MSCustBalAsync(MSMainClass):
             self.to_file = to_file
         import MSRequesterAsync
         self.async_requester = MSRequesterAsync.MSRequesterAsync()
-        self.config_data = asyncio.run(self.load_conf_data())
+
         # print(self.config_data)
 
     async def load_conf_data(self) -> dict:
@@ -70,6 +70,7 @@ class MSCustBalAsync(MSMainClass):
     async def get_cust_groups_sum_async(self) -> dict:
         cust_groups_sum = dict()
         try:
+            self.config_data =  await self.load_conf_data()
             customers_groups = await self.get_customers_dict_async()
             customers_bal = await self.get_customers_bal_async()
             customers_show_groups = self.config_data[self.main_key][self.customers_columns_key]
