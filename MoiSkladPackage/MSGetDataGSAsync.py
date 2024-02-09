@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-# from https://gspread-asyncio.readthedocs.io/en/latest/
-import csv
-import aiofiles
-import gspread.utils
-
 from MSMainClass import MSMainClass
 import asyncio
-from aiogoogle import Aiogoogle
-import aiohttp
-import os
-from google.oauth2.service_account import Credentials
 import gspread_asyncio
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+import pandas as pd
 
 
 class MSGetDataGSAsync(MSMainClass):
@@ -39,31 +35,33 @@ class MSGetDataGSAsync(MSMainClass):
                 return None
         return self.async_gc
 
-    async def get_spreadsheet_metadata_async(self, spread_sheet_id: str) -> dict:
-        spread_sheet_metadata = dict()
+    async def get_ws_data_range_async(self, spread_sheet_id: str, ws_name: str, cells_range: tuple) -> pd.DataFrame:
+        """ return values from sheet in range (A1, C5)"""
+        ws_data = list()
         try:
+            import MSGetInfoGSAsync
+            connector = MSGetInfoGSAsync.MSGetInfoGSAsync()
+            name_is_in_ws = await connector.check_ws_name_is_exist(spread_sheet_id, ws_name)
+            if not name_is_in_ws: raise AttributeError
+            range_str = f"{ws_name}!{cells_range[0]}:{cells_range[1]}"
             await self.create_gc_async()
             spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
-            spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
-        except Exception as e:
-            msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
+            ws_data = await spread_sheet.values_get(
+                range_str)  # dict {'majorDimension': 'ROWS', 'range': "'My new sheet'!A1:C5", 'values': [[], ['1', '2'], ['', '34'], ['', '5'], ['4', '8', '9']]}
+        except AttributeError:
+            msg = f"{__class__.__name__} worksheet {ws_name} not in spreadsheet {spread_sheet_id} "
             self.logger.warning(msg)
             print(msg)
-        return spread_sheet_metadata
-
-    async def get_spreadsheet_ws_names_async(self, spread_sheet_id: str) -> list:
-        worksheets_metadata = list()
-
-        try:
-            await self.create_gc_async()
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
-            spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
-            worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
         except Exception as e:
             msg = f"{__class__.__name__} cant get spreadsheet lists metadata, Error: \n {e} "
             self.logger.warning(msg)
             print(msg)
-        return worksheets_metadata
+        else:
+            # df = pd.DataFrame(ws_data.get("values"))
+            values_list = ws_data.get("values")
+            df = pd.DataFrame(values_list[1:], columns=values_list[0])
+            return df
+        return None
 
 
 if __name__ == "__main__":
@@ -72,16 +70,9 @@ if __name__ == "__main__":
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
     connect = MSGetDataGSAsync()
-    # loop = asyncio.get_event_loop()
-    # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
-    # print(connect.load_conf_data())
-    # print(asyncio.run(connect.save_spreadsheet_csv_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
-    # print(
-    #     asyncio.run(connect.get_spreadsheet_metadata_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
-    print(
-        asyncio.run(
-            connect.get_spreadsheet_ws_names_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
+    print(asyncio.run(
+        connect.get_ws_data_range_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
+                                        ws_name="My new sheet",
+                                        cells_range=("A1", "C5"))))
 
-    # ws = asyncio.run(connect.add_worksheet_2spreadsheet(spread_sheet=ss))
-    # print(ws)
-    print(f"report done in {int(start_time - time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
+    print(f"report done in {int(time.time() - start_time )}sec at {time.strftime('%H:%M:%S', time.localtime())}")

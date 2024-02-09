@@ -89,7 +89,7 @@ if __name__ == "__main__":
     # print(connect.load_conf_data())
     # print(asyncio.run(connect.create_gsheet_and_full_permission(spread_sheet_name="Temporary spreadsheet")))
     print(asyncio.run(connect.add_worksheet_2spreadsheet(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
-                                                         work_sheet_name="My new sheet")))
+                                                         work_sheet_name="My new sheet2")))
     # ws = asyncio.run(connect.add_worksheet_2spreadsheet(spread_sheet=ss))
     # print(ws)
     print(f"report done in {int(start_time - time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")

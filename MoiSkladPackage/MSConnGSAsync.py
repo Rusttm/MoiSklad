@@ -19,7 +19,7 @@ import gspread_asyncio
 
 class MSConnGSAsync(MSMainClass):
     """ google sheet asynchronous writer"""
-    logger_name = "requesterasync"
+    logger_name = "gsconnectorasync"
     dir_name = "config"
     data_dir_name = "data"
     config_file_name = "gs_main_config.json"
@@ -60,28 +60,6 @@ class MSConnGSAsync(MSMainClass):
         # print(type(self.async_gc))
         return self.async_gc
 
-    async def create_gsheet_and_full_permission(self,
-                                                spread_sheet_name=None) -> gspread_asyncio.AsyncioGspreadSpreadsheet:
-        """ create new sheet, give full access permission and return obj spread_sheet"""
-        if not spread_sheet_name: spread_sheet_name = "Test spread sheet"
-        self.async_gc = await self.async_gspread_client_manager.authorize()
-        spread_sheet = await self.async_gc.create(spread_sheet_name)
-        spread_sheet_href = f"https://docs.google.com/spreadsheets/d/{spread_sheet.id}"
-        # Allow anyone with the URL to write to this spreadsheet.
-        await self.async_gc.insert_permission(spread_sheet.id, None, perm_type="anyone", role="writer")
-        # print(f"{type(spread_sheet)=}") # <class 'gspread_asyncio.AsyncioGspreadSpreadsheet'>
-        return spread_sheet
-
-    async def add_worksheet_2spreadsheet(self, spread_sheet=None, work_sheet_name=None) -> object:
-        if spread_sheet:
-            self.async_gc = await self.async_gspread_client_manager.authorize()
-            if not work_sheet_name: work_sheet_name = "Test sheet"
-            work_sheet = await spread_sheet.add_worksheet(work_sheet_name, 10, 5)
-            return work_sheet
-        else:
-            print(f"Не указан spread_sheet для добавления листа")
-            return None
-
 
 if __name__ == "__main__":
     import time
@@ -93,6 +71,4 @@ if __name__ == "__main__":
     # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
     # print(connect.load_conf_data())
     print(asyncio.run(connect.create_gs_client_async()))
-    # ws = asyncio.run(connect.add_worksheet_2spreadsheet(spread_sheet=ss))
-    # print(ws)
-    print(f"report done in {int(start_time - time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
+    print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

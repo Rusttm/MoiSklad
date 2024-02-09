@@ -34,7 +34,7 @@ class MSReadJsonAsync(MSMainClass):
                 async with aiofiles.open(CONF_FILE_PATH, 'r') as json_file:
                     json_data = await json_file.read()
                 data = json.loads(json_data)
-                self.logger.debug(f"{__class__.__name__} got data from json file")
+                # self.logger.debug(f"{__class__.__name__} got data from json file")
             except Exception as e:
                 # print(e)
                 self.logger.error(f"{__class__.__name__} can't read json file!{e}")
