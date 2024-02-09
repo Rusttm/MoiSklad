@@ -1,23 +1,16 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-import csv
-import aiofiles
-import gspread.utils
 
 from MSMainClass import MSMainClass
 import asyncio
-from aiogoogle import Aiogoogle
-import aiohttp
-import os
-from google.oauth2.service_account import Credentials
 import gspread_asyncio
 
 
-class MSSaveDataGSAsync(MSMainClass):
+class MSGetInfoGSAsync(MSMainClass):
     """ google sheet asynchronous writer"""
     logger_name = "gsexporter"
-    dir_name = "config"
-    data_dir_name = "data"
+    dir_name = "../MoiSkladPackage/config"
+    data_dir_name = "../MoiSkladPackage/data"
     async_gc = None
 
     def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):
@@ -26,7 +19,7 @@ class MSSaveDataGSAsync(MSMainClass):
             self.async_gc = async_gspread_client
 
     async def create_gc_async(self):
-        # asyncio.get_event_loop().is_close()
+        # asyncio.get_event_loop().close()
         if not self.async_gc:
             try:
                 import MSConnGSAsync
@@ -39,19 +32,19 @@ class MSSaveDataGSAsync(MSMainClass):
                 return None
         return self.async_gc
 
-    async def upd_spreadsheet_title_async(self, spread_sheet_id: str, new_title: str) -> bool:
+    async def get_spreadsheet_metadata_async(self, spread_sheet_id: str) -> dict:
+        spread_sheet_metadata = dict()
         try:
             await self.create_gc_async()
             spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
-            await spread_sheet.update_title(new_title)
-            return True
+            spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
         except Exception as e:
-            msg = f"{__class__.__name__} cant get rename spreadsheet, Error: \n {e} "
+            msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
             self.logger.warning(msg)
             print(msg)
-            return False
+        return spread_sheet_metadata
 
-    async def get_dat_ws_names_async(self, spread_sheet_id: str) -> list:
+    async def get_spreadsheet_ws_metadata_async(self, spread_sheet_id: str) -> list:
         worksheets_metadata = list()
 
         try:
@@ -65,23 +58,50 @@ class MSSaveDataGSAsync(MSMainClass):
             print(msg)
         return worksheets_metadata
 
+    async def get_spreadsheet_ws_names_list_async(self, spread_sheet_id: str) -> list:
+        worksheets_names_list = list()
+
+        try:
+            await self.create_gc_async()
+            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
+            worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
+        except Exception as e:
+            msg = f"{__class__.__name__} cant get spreadsheet lists metadata, Error: \n {e} "
+            self.logger.warning(msg)
+            print(msg)
+        else:
+            for ws in worksheets_metadata:
+                worksheets_names_list.append(ws["properties"]["title"])
+        return worksheets_names_list
+
+    async def check_ws_name_is_exist(self, spread_sheet_id: str, ws_name: str) -> bool:
+        names_list = await self.get_spreadsheet_ws_names_list_async(spread_sheet_id=spread_sheet_id)
+        if ws_name in names_list:
+            return True
+        else:
+            return False
+
+
 
 if __name__ == "__main__":
     import time
 
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
-    connect = MSSaveDataGSAsync()
+    connect = MSGetInfoGSAsync()
     # loop = asyncio.get_event_loop()
     # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
     # print(connect.load_conf_data())
     # print(asyncio.run(connect.save_spreadsheet_csv_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
     # print(
     #     asyncio.run(connect.get_spreadsheet_metadata_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
-    print(
-        asyncio.run(
-            connect.upd_spreadsheet_title_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE", new_title="Переименовано ")))
+    # print(asyncio.run(
+    #         connect.get_spreadsheet_ws_metadata_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
+    print(asyncio.run(
+        connect.check_ws_name_is_exist(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
+                                        ws_name="My new sheet")))
 
     # ws = asyncio.run(connect.add_worksheet_2spreadsheet(spread_sheet=ss))
     # print(ws)
-    print(f"report done in {int(start_time - time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
+    print(f"report done in {int(time.time() - start_time )}sec at {time.strftime('%H:%M:%S', time.localtime())}")

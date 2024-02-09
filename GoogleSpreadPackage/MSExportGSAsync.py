@@ -1,23 +1,19 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-import csv
 import aiofiles
 import gspread.utils
 
 from MSMainClass import MSMainClass
 import asyncio
-from aiogoogle import Aiogoogle
-import aiohttp
 import os
-from google.oauth2.service_account import Credentials
 import gspread_asyncio
 
 
 class MSExportGSAsync(MSMainClass):
     """ google sheet asynchronous writer"""
     logger_name = "gsexporter"
-    dir_name = "config"
-    data_dir_name = "data"
+    dir_name = "../MoiSkladPackage/config"
+    data_dir_name = "../MoiSkladPackage/data"
     async_gc = None
 
     def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):

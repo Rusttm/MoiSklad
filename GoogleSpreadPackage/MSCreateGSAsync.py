@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-import csv
-import aiofiles
-import gspread.utils
 
 from MSMainClass import MSMainClass
 import asyncio
-from aiogoogle import Aiogoogle
-import aiohttp
-import os
-from google.oauth2.service_account import Credentials
 import gspread_asyncio
 
 

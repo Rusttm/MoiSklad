@@ -12,8 +12,8 @@ import pandas as pd
 class MSGetDataGSAsync(MSMainClass):
     """ google sheet asynchronous writer"""
     logger_name = "gsexporter"
-    dir_name = "config"
-    data_dir_name = "data"
+    dir_name = "../MoiSkladPackage/config"
+    data_dir_name = "../MoiSkladPackage/data"
     async_gc = None
 
     def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):

@@ -20,8 +20,8 @@ import gspread_asyncio
 class MSConnGSAsync(MSMainClass):
     """ google sheet asynchronous writer"""
     logger_name = "gsconnectorasync"
-    dir_name = "config"
-    data_dir_name = "data"
+    dir_name = "../MoiSkladPackage/config"
+    data_dir_name = "../MoiSkladPackage/data"
     config_file_name = "gs_main_config.json"
     gs_json_credentials_key = "gs_json_credentials"
     gs_scopes_key = "gs_scopes"
