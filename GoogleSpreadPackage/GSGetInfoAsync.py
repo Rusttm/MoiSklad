@@ -60,7 +60,6 @@ class GSGetInfoAsync(GSMainClass):
 
     async def get_spreadsheet_ws_names_list_async(self, spread_sheet_id: str) -> list:
         worksheets_names_list = list()
-
         try:
             await self.create_gc_async()
             spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
@@ -81,6 +80,23 @@ class GSGetInfoAsync(GSMainClass):
             return True
         else:
             return False
+
+    async def get_ws_id_by_name_async(self, spread_sheet_id: str, ws_name:str) -> list:
+        worksheet_id = None
+        try:
+            await self.create_gc_async()
+            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
+            worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
+        except Exception as e:
+            msg = f"{__class__.__name__} cant get spreadsheet lists metadata, Error: \n {e} "
+            self.logger.warning(msg)
+            print(msg)
+        else:
+            for ws in worksheets_metadata:
+                if ws["properties"]["title"] == ws_name:
+                    worksheet_id = ws["properties"]["sheetId"]
+        return worksheet_id
 
 
 if __name__ == "__main__":
