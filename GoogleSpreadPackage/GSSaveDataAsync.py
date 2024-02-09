@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
 
-from MSMainClass import MSMainClass
+from GSMainClass import GSMainClass
 import asyncio
 import gspread_asyncio
+import os
 
 
-class MSSaveDataGSAsync(MSMainClass):
+class GSSaveDataAsync(GSMainClass):
     """ google sheet asynchronous writer"""
-    logger_name = "gsexporter"
-    dir_name = "../MoiSkladPackage/config"
-    data_dir_name = "../MoiSkladPackage/data"
+    logger_name = f"{os.path.basename(__file__)}"
+    dir_name = "config"
+    data_dir_name = "data"
     async_gc = None
 
     def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):
@@ -22,8 +23,8 @@ class MSSaveDataGSAsync(MSMainClass):
         # asyncio.get_event_loop().is_close()
         if not self.async_gc:
             try:
-                import MSConnGSAsync
-                connector = MSConnGSAsync.MSConnGSAsync()
+                import GSConnAsync
+                connector = GSConnAsync.GSConnAsync()
                 self.async_gc = await connector.create_gs_client_async()
             except Exception as e:
                 msg = f"{__class__.__name__} cant create async_gc, Error: \n {e}"
@@ -44,27 +45,13 @@ class MSSaveDataGSAsync(MSMainClass):
             print(msg)
             return False
 
-    async def get_dat_ws_names_async(self, spread_sheet_id: str) -> list:
-        worksheets_metadata = list()
-
-        try:
-            await self.create_gc_async()
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
-            spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
-            worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
-        except Exception as e:
-            msg = f"{__class__.__name__} cant get spreadsheet lists metadata, Error: \n {e} "
-            self.logger.warning(msg)
-            print(msg)
-        return worksheets_metadata
-
 
 if __name__ == "__main__":
     import time
 
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
-    connect = MSSaveDataGSAsync()
+    connect = GSSaveDataAsync()
     # loop = asyncio.get_event_loop()
     # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
     # print(connect.load_conf_data())

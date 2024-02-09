@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
 
-from MSMainClass import MSMainClass
+from GSMainClass import GSMainClass
 import asyncio
 import gspread_asyncio
 
 
-class MSGetInfoGSAsync(MSMainClass):
+class GSGetInfoAsync(GSMainClass):
     """ google sheet asynchronous writer"""
-    logger_name = "gsexporter"
+    logger_name = "gsgetinfo"
     dir_name = "../MoiSkladPackage/config"
     data_dir_name = "../MoiSkladPackage/data"
     async_gc = None
@@ -22,8 +22,8 @@ class MSGetInfoGSAsync(MSMainClass):
         # asyncio.get_event_loop().close()
         if not self.async_gc:
             try:
-                import MSConnGSAsync
-                connector = MSConnGSAsync.MSConnGSAsync()
+                import GSConnAsync
+                connector = GSConnAsync.GSConnAsync()
                 self.async_gc = await connector.create_gs_client_async()
             except Exception as e:
                 msg = f"{__class__.__name__} cant create async_gc, Error: \n {e}"
@@ -44,7 +44,7 @@ class MSGetInfoGSAsync(MSMainClass):
             print(msg)
         return spread_sheet_metadata
 
-    async def get_spreadsheet_ws_metadata_async(self, spread_sheet_id: str) -> list:
+    async def get_ws_list_metadata_async(self, spread_sheet_id: str) -> list:
         worksheets_metadata = list()
 
         try:
@@ -83,13 +83,12 @@ class MSGetInfoGSAsync(MSMainClass):
             return False
 
 
-
 if __name__ == "__main__":
     import time
 
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
-    connect = MSGetInfoGSAsync()
+    connect = GSGetInfoAsync()
     # loop = asyncio.get_event_loop()
     # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
     # print(connect.load_conf_data())
@@ -100,8 +99,6 @@ if __name__ == "__main__":
     #         connect.get_spreadsheet_ws_metadata_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
     print(asyncio.run(
         connect.check_ws_name_is_exist(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
-                                        ws_name="My new sheet")))
+                                       ws_name="My new sheet")))
 
-    # ws = asyncio.run(connect.add_worksheet_2spreadsheet(spread_sheet=ss))
-    # print(ws)
-    print(f"report done in {int(time.time() - start_time )}sec at {time.strftime('%H:%M:%S', time.localtime())}")
+    print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

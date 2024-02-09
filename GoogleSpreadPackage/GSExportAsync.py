@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-# from https://gspread-asyncio.readthedocs.io/en/latest/
+
+# https://stackoverflow.com/questions/41790750/writing-files-asynchronously
 import aiofiles
 import gspread.utils
 
-from MSMainClass import MSMainClass
+from GSMainClass import GSMainClass
 import asyncio
 import os
+# from https://gspread-asyncio.readthedocs.io/en/latest/
 import gspread_asyncio
 
 
-class MSExportGSAsync(MSMainClass):
+class GSExportAsync(GSMainClass):
     """ google sheet asynchronous writer"""
-    logger_name = "gsexporter"
-    dir_name = "../MoiSkladPackage/config"
-    data_dir_name = "../MoiSkladPackage/data"
+    logger_name = f"{os.path.basename(__file__)}"
+    dir_name = "config"
+    data_dir_name = "data"
     async_gc = None
 
     def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):
@@ -22,11 +24,10 @@ class MSExportGSAsync(MSMainClass):
             self.async_gc = async_gspread_client
 
     async def create_gc_async(self):
-        # asyncio.get_event_loop().close()
         if not self.async_gc:
             try:
-                import MSConnGSAsync
-                connector = MSConnGSAsync.MSConnGSAsync()
+                import GSConnAsync
+                connector = GSConnAsync.GSConnAsync()
                 self.async_gc = await connector.create_gs_client_async()
             except Exception as e:
                 msg = f"{__class__.__name__} cant create async_gc, Error: \n {e}"
@@ -44,8 +45,6 @@ class MSExportGSAsync(MSMainClass):
             else:
                 spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
             binary_file_data = await self.async_gc.export(spread_sheet_id, format=gspread.utils.ExportFormat.CSV)
-            print(f"{binary_file_data=}")
-            # spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
             file_name = spread_sheet.title + ".csv"
             file_path = os.path.join(self.data_dir_name, file_name)
             async with aiofiles.open(file_path, 'wb') as ff:
@@ -66,9 +65,7 @@ class MSExportGSAsync(MSMainClass):
                 spread_sheet_id = spread_sheet.id
             else:
                 spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
-            print(f"{asyncio.get_event_loop().is_closed()=}")
             binary_file_data = await self.async_gc.export(spread_sheet_id, format=gspread.utils.ExportFormat.EXCEL)
-            print(f"{binary_file_data=}")
             file_name = spread_sheet.title + ".xlsx"
             file_path = os.path.join(self.data_dir_name, file_name)
             async with aiofiles.open(file_path, 'wb') as ff:
@@ -86,7 +83,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
-    connect = MSExportGSAsync()
+    connect = GSExportAsync()
     # loop = asyncio.get_event_loop()
     # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
     # print(connect.load_conf_data())

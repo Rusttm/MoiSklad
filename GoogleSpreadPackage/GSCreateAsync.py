@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-# from https://gspread-asyncio.readthedocs.io/en/latest/
 
-from MSMainClass import MSMainClass
+import os
+from GSMainClass import GSMainClass
 import asyncio
+# from https://gspread-asyncio.readthedocs.io/en/latest/
 import gspread_asyncio
 
 
-class MSCreateGSAsync(MSMainClass):
+class GSCreateAsync(GSMainClass):
     """ google sheet asynchronous writer"""
-    logger_name = "gscreateasync"
+    logger_name = f"{os.path.basename(__file__)}"
     async_gc = None
 
     def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):
@@ -19,9 +20,9 @@ class MSCreateGSAsync(MSMainClass):
     async def create_gc_async(self):
         if not self.async_gc:
             try:
-                import MSConnGSAsync
+                import GSConnAsync
                 print(f"")
-                connector = MSConnGSAsync.MSConnGSAsync()
+                connector = MSConnGSAsync.GSConnAsync()
                 self.async_gc = await connector.create_gs_client_async()
             except Exception as e:
                 msg = f"{__class__.__name__} cant create async_gc, Error: \n {e}"
@@ -76,7 +77,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
-    connect = MSCreateGSAsync()
+    connect = GSCreateAsync()
     # loop = asyncio.get_event_loop()
     # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
     # print(connect.load_conf_data())

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-from MSMainClass import MSMainClass
+import os
+
+from GSMainClass import GSMainClass
 import asyncio
 import gspread_asyncio
+# from https://stackoverflow.com/questions/879173/how-to-ignore-deprecation-warnings-in-python
 def warn(*args, **kwargs):
     pass
 import warnings
@@ -9,11 +12,11 @@ warnings.warn = warn
 import pandas as pd
 
 
-class MSGetDataGSAsync(MSMainClass):
+class GSGetDataAsync(GSMainClass):
     """ google sheet asynchronous writer"""
-    logger_name = "gsexporter"
-    dir_name = "../MoiSkladPackage/config"
-    data_dir_name = "../MoiSkladPackage/data"
+    logger_name = f"{os.path.basename(__file__)}"
+    dir_name = "config"
+    data_dir_name = "data"
     async_gc = None
 
     def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):
@@ -25,8 +28,8 @@ class MSGetDataGSAsync(MSMainClass):
         # asyncio.get_event_loop().close()
         if not self.async_gc:
             try:
-                import MSConnGSAsync
-                connector = MSConnGSAsync.MSConnGSAsync()
+                import GSConnAsync
+                connector = GSConnAsync.GSConnAsync()
                 self.async_gc = await connector.create_gs_client_async()
             except Exception as e:
                 msg = f"{__class__.__name__} cant create async_gc, Error: \n {e}"
@@ -39,8 +42,8 @@ class MSGetDataGSAsync(MSMainClass):
         """ return values from sheet in range (A1, C5)"""
         ws_data = list()
         try:
-            import MSGetInfoGSAsync
-            connector = MSGetInfoGSAsync.MSGetInfoGSAsync()
+            import GSGetInfoAsync
+            connector = GSGetInfoAsync.GSGetInfoAsync()
             name_is_in_ws = await connector.check_ws_name_is_exist(spread_sheet_id, ws_name)
             if not name_is_in_ws: raise AttributeError
             range_str = f"{ws_name}!{cells_range[0]}:{cells_range[1]}"
@@ -69,7 +72,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
-    connect = MSGetDataGSAsync()
+    connect = GSGetDataAsync()
     print(asyncio.run(
         connect.get_ws_data_range_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
                                         ws_name="My new sheet",
