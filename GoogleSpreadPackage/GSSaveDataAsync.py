@@ -24,6 +24,33 @@ class GSSaveDataAsync(GSConnAsync):
             self.logger.warning(msg)
             print(msg)
             return False
+    # async def upd_worksheet_title_async(self, spread_sheet_id: str, ws_name: str, new_ws_name: str) -> bool:
+    #     try:
+    #         import GSGetInfoAsync
+    #         connector = GSGetInfoAsync.GSGetInfoAsync()
+    #         name_is_in_ws = await connector.check_ws_name_is_exist(spread_sheet_id, new_ws_name)
+    #         if not name_is_in_ws: raise AttributeError
+    #         ws_id = await connector.get_ws_id_by_name_async(spread_sheet_id, ws_name)
+    #         spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+    #         work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
+    #         ws_names_list = await connector.get_spreadsheet_ws_names_list_async(spread_sheet_id)
+    #         while new_ws_name in ws_names_list:
+    #             last_symbol = new_ws_name[-1:]
+    #             if last_symbol in [str(n) for n in range(10)]:
+    #                 last_symbol = str(int(last_symbol) + 1)
+    #             else:
+    #                 last_symbol = '1'
+    #             new_ws_name = new_ws_name[:-1] + last_symbol
+    #         await work_sheet.update_title(title=new_ws_name)
+    #         return True
+    #     except AttributeError:
+    #         msg = f"{__class__.__name__} cant rename worksheet in {spread_sheet_id=}, please write a name"
+    #         self.logger.error(msg)
+    #         return False
+    #     except Exception as e:
+    #         msg = f"{__class__.__name__} cant rename worksheet in {spread_sheet_id=}, Error: \n {e}"
+    #         self.logger.error(msg)
+    #         return False
 
     async def clear_ws_all_async(self, spread_sheet_id: str, ws_name: str) -> bool:
         """ clear all data in spreadsheet"""
