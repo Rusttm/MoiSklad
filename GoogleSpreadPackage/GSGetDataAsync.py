@@ -4,10 +4,15 @@ import os
 from GSMainClass import GSMainClass
 import asyncio
 import gspread_asyncio
+
+
 # from https://stackoverflow.com/questions/879173/how-to-ignore-deprecation-warnings-in-python
 def warn(*args, **kwargs):
     pass
+
+
 import warnings
+
 warnings.warn = warn
 import pandas as pd
 
@@ -104,6 +109,6 @@ if __name__ == "__main__":
     #                                        cells_range=("A1", "C5"))))
     print(asyncio.run(
         connect.get_all_ws_data_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
-                                           ws_name="My new sheet")))
+                                      ws_name="My new sheet")))
 
-    print(f"report done in {int(time.time() - start_time )}sec at {time.strftime('%H:%M:%S', time.localtime())}")
+    print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

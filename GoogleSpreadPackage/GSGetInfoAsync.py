@@ -81,7 +81,7 @@ class GSGetInfoAsync(GSMainClass):
         else:
             return False
 
-    async def get_ws_id_by_name_async(self, spread_sheet_id: str, ws_name:str) -> list:
+    async def get_ws_id_by_name_async(self, spread_sheet_id: str, ws_name: str) -> int:
         worksheet_id = None
         try:
             await self.create_gc_async()
@@ -113,8 +113,10 @@ if __name__ == "__main__":
     #     asyncio.run(connect.get_spreadsheet_metadata_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
     # print(asyncio.run(
     #         connect.get_spreadsheet_ws_metadata_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
+    # print(asyncio.run(
+    #     connect.check_ws_name_is_exist(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
+    #                                    ws_name="My new sheet")))
     print(asyncio.run(
-        connect.check_ws_name_is_exist(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
-                                       ws_name="My new sheet")))
-
+        connect.get_ws_id_by_name_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
+                                        ws_name="My new sheet")))
     print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")
