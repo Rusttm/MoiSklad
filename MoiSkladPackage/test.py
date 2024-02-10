@@ -1,13 +1,5 @@
-import json
-import os
-import re
-import asyncio
-import aiofiles
 
+test_string = "aldsjfasdf3"
+print(test_string[-1:] in [str(n) for n in range(10)])
 
-async def test():
-    async with aiofiles.open("/Users/johnlennon/RusttmGDrive/Python/MoiSklad_v2/MoiSkladPackage/data/temporary_file.json", 'r') as json_file:
-        json_data = await json_file.read()
-    data = json.loads(json_data)
-    return data
-print(asyncio.run(test()))
+print(test_string[-1:])

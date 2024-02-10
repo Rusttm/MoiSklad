@@ -49,6 +49,7 @@ class GSReadJsonAsync(GSMainClass):
         # result = asyncio.run(self.get_config_json_data_async(file_name=file_name))
         return result
 
+
 if __name__ == '__main__':
     # connector = MSReadJsonAsync()
     # print(connector.get_config_json_data_sync(file_name='url_money.json'))

@@ -2,40 +2,24 @@
 # from https://gspread-asyncio.readthedocs.io/en/latest/
 
 from GSMainClass import GSMainClass
+from GSConnAsync import GSConnAsync
 import asyncio
 import gspread_asyncio
+import os
 
 
-class GSGetInfoAsync(GSMainClass):
+class GSGetInfoAsync(GSConnAsync):
     """ google sheet asynchronous writer"""
-    logger_name = "gsgetinfo"
-    dir_name = "../MoiSkladPackage/config"
-    data_dir_name = "../MoiSkladPackage/data"
-    async_gc = None
+    logger_name = f"{os.path.basename(__file__)}"
+    dir_name = "config"
+    data_dir_name = "data"
 
-    def __init__(self, async_gspread_client: gspread_asyncio.AsyncioGspreadClient = None):
+    def __init__(self):
         super().__init__()
-        if async_gspread_client:
-            self.async_gc = async_gspread_client
-
-    async def create_gc_async(self):
-        # asyncio.get_event_loop().close()
-        if not self.async_gc:
-            try:
-                import GSConnAsync
-                connector = GSConnAsync.GSConnAsync()
-                self.async_gc = await connector.create_gs_client_async()
-            except Exception as e:
-                msg = f"{__class__.__name__} cant create async_gc, Error: \n {e}"
-                self.logger.warning(msg)
-                print(msg)
-                return None
-        return self.async_gc
 
     async def get_spreadsheet_metadata_async(self, spread_sheet_id: str) -> dict:
         spread_sheet_metadata = dict()
         try:
-            await self.create_gc_async()
             spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
         except Exception as e:
@@ -48,7 +32,6 @@ class GSGetInfoAsync(GSMainClass):
         worksheets_metadata = list()
 
         try:
-            await self.create_gc_async()
             spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
             worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
@@ -61,7 +44,6 @@ class GSGetInfoAsync(GSMainClass):
     async def get_spreadsheet_ws_names_list_async(self, spread_sheet_id: str) -> list:
         worksheets_names_list = list()
         try:
-            await self.create_gc_async()
             spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
             worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
@@ -84,7 +66,6 @@ class GSGetInfoAsync(GSMainClass):
     async def get_ws_id_by_name_async(self, spread_sheet_id: str, ws_name: str) -> int:
         worksheet_id = None
         try:
-            await self.create_gc_async()
             spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
             worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
@@ -116,7 +97,9 @@ if __name__ == "__main__":
     # print(asyncio.run(
     #     connect.check_ws_name_is_exist(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
     #                                    ws_name="My new sheet")))
+    # print(asyncio.run(
+    #     connect.get_ws_id_by_name_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
+    #                                     ws_name="My new sheet")))
     print(asyncio.run(
-        connect.get_ws_id_by_name_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
-                                        ws_name="My new sheet")))
+        connect.get_spreadsheet_ws_names_list_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE")))
     print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

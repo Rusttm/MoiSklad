@@ -11,7 +11,8 @@ nest_asyncio.apply()
 
 
 class GSConnAsync(GSMainClass):
-    """ google sheet asynchronous writer"""
+    """ google sheet asynchronous connector it creates google_spread_client 'async_gc'
+    that used in other classes"""
     logger_name = f"{os.path.basename(__file__)}"
     dir_name = "config"
     data_dir_name = "data"
@@ -24,6 +25,8 @@ class GSConnAsync(GSMainClass):
     def __init__(self):
         super().__init__()
         self.load_conf_data()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.create_gs_client_async())
 
 
     def load_conf_data(self) -> dict:
