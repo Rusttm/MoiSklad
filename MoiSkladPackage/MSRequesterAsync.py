@@ -10,6 +10,7 @@ class MSRequesterAsync(MSMainClass):
     ms_urls_key = "ms_urls"
     ms_api_header = "ms_api_headers"
     offset = 1000
+    _module_config = None
     __api_url = str()
     __api_header = dict()
     __api_param_line = "?"
@@ -17,39 +18,14 @@ class MSRequesterAsync(MSMainClass):
     __file_name = "requested_data.json"
     __dir_name = "data"
 
-    def __init__(self, url_conf_key=None):
+    def __init__(self):
         super().__init__()
-        if url_conf_key:
-            self.set_config(url_conf_key)
 
-    def set_config(self, url_conf_key=None):
-        """it sets requested url and token in configuration """
-        from MSConfigFile import MSConfigFile
-        try:
-            conf_connector = MSConfigFile()
-            configuration = conf_connector.get_ini_json_file()
-            self.__file_name = url_conf_key
-            config = self.module_config
-            self.set_api_url(configuration[self.ms_urls_key].get(url_conf_key))
-            self.set_api_header(configuration[self.ms_api_header])
-
-        except Exception as e:
-            self.logger.error("Cant read configuration!", e)
-
-    def set_api_config(self, api_url=None, api_header=None, api_param_line=None, to_file=False):
-        self.__api_url = api_url
-        self.__api_header = api_header
-        self.__api_param_line = api_param_line
-        self.__to_file = to_file
-
-    def set_api_header(self, api_token=None):
-        self.__api_header = api_token
-
-    def set_api_url(self, api_url=None):
-        self.__api_url = api_url
 
     def set_api_param_line(self, api_param_line=None):
-        """ set new request parameters in url line """
+        """ set new request parameters in url line
+        https://api.moysklad.ru/api/remap/1.2/entity/factureout?offset=2000
+        """
         if api_param_line:
             if self.__api_param_line == "?":
                 self.__api_param_line += api_param_line
@@ -59,20 +35,31 @@ class MSRequesterAsync(MSMainClass):
             self.__api_param_line = "?"
         # self.__api_param_line = api_param_line
 
-    def add_api_param_line(self, add_param_line=None):
-        """ add request parameters in current url line"""
+    def add_api_param_line(self, add_param_line:str = None):
+        """ add request parameters in current url line example:
+        https://api.moysklad.ru/api/remap/1.2/entity/factureout?offset=0&filter=moment%3C=2021-05-25
+        """
+        # if old line has '?'
         if self.__api_param_line == "?":
+            # just add new param line
             self.__api_param_line += add_param_line
+        # if param is empty
         elif self.__api_param_line == "":
+            # just add '?' and new param line
             self.__api_param_line += "?" + add_param_line
-        elif self.__api_param_line != "?":
-            # checking and exclude offset in request string
-            x = re.split("&offset", self.__api_param_line)
-            self.__api_param_line = x[0] + "&" + add_param_line
+        # if param line already with data ?offset=2000=filter=moment<=2022-02-22...
+        elif (len(self.__api_param_line) > 1) and (add_param_line.find("ffset=")):
+            first_splitter = self.__api_param_line[1:].split("&") # ['offset=0', 'filter=moment%3C=2021-05-25']
+            for line in first_splitter:
+                if line.find("ffset=") > 0:
+                    # delete offset
+                    first_splitter.remove(line)
+                    break
+            self.__api_param_line = "?" + "&".join(first_splitter) + "&" + add_param_line # ?filter=moment%3C=2021-05-25&offset=2000
         else:
             self.__api_param_line = ""
 
-    async def get_single_req_data(self):
+    async def get_single_req_data_async(self):
         """ api connect and get data in one request
         return dictionary!"""
         api_url = self.__api_url + self.__api_param_line
@@ -100,12 +87,25 @@ class MSRequesterAsync(MSMainClass):
             self.logger.critical(f"{__class__.__name__} cant connect to request data: {e}")
             return None
 
-    async def get_api_data_async(self, to_file=False):
-        """ if there are more than 1000 positions
+    async def get_api_data_async(self, url_conf_key: str, to_file=False):
+        """ takes url_key ("url_stock_all")
+        if there are more than 1000 positions
         needs to form request for getting full data"""
-        self.__to_file = to_file
+        if to_file:
+            self.__file_name = url_conf_key
+            self.__to_file = to_file
+        try:
+            # read configuration from file ms_main_config.json
+            configuration = self._module_config
+            test = configuration[self.ms_urls_key].get(url_conf_key)
+            self.__api_url = configuration[self.ms_urls_key].get(url_conf_key)
+            test2 = configuration[self.ms_api_header]
+            self.__api_header = configuration[self.ms_api_header]
+        except Exception as e:
+            msg = f"{__class__.__name__} cant read configuration file"
+            self.logger.error(msg)
         # starts first request
-        data = dict(await self.get_single_req_data())
+        data = dict(await self.get_single_req_data_async())
         delta = 0
         try:
             # check full length of data by data['meta']['size']
@@ -121,18 +121,12 @@ class MSRequesterAsync(MSMainClass):
             for i in range(requests_num):
                 # .. request data until it ends
                 self.add_api_param_line(f"offset={(i + 1) * 1000}")
-                next_data = await self.get_single_req_data()
+                next_data = await self.get_single_req_data_async()
                 data['rows'] += next_data['rows']
 
         if self.__to_file:
             await self.save_requested_data_2file_async(data_dict=data)
         return data
-
-    def get_api_data_sync(self, to_file=False) -> dict:
-        # loop = asyncio.get_event_loop()
-        # result = loop.run_until_complete(self.get_api_data_async(to_file=to_file))
-        result = asyncio.run(self.get_api_data_async(to_file=to_file))
-        return result
 
     async def save_requested_data_2file_async(self, data_dict=None, file_name=None):
         """ method save dict data to file in class ConnMSSaveFile"""
@@ -152,5 +146,5 @@ class MSRequesterAsync(MSMainClass):
             self.logger.error(f"{__class__.__name__} request wasn't wrote to file {self.__file_name}")
 
 if __name__ == "__main__":
-    connect = MSRequesterAsync("url_stock_all")
-    connect.get_api_data_sync(to_file=True)
+    connect = MSRequesterAsync()
+    print(asyncio.run(connect.get_api_data_async(url_conf_key="url_outinvoices_list", to_file=True)))

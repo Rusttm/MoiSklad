@@ -8,7 +8,7 @@ class MSMainClass(MSPkgLogger, MSReadJsonAsync):
 
     def __init__(self):
         # print("test class")
-        super().__init__()
+        MSPkgLogger.__init__(self)
         MSReadJsonAsync.__init__(self)
 
     def python_version_checker(self):

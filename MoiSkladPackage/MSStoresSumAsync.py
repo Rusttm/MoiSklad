@@ -26,9 +26,7 @@ class MSStoresSumAsync(MSMainClass):
         """this return dict {"position_href": cost}"""
         stock_price = dict()
         try:
-            self.async_requester.set_config(self.url_stock_all)
-            to_file = self.to_file
-            stock_dict = await self.async_requester.get_api_data_async(to_file=to_file)
+            stock_dict = await self.async_requester.get_api_data_async(url_conf_key=self.url_stock_all, to_file=self.to_file)
             for pos in stock_dict['rows']:
                 stock_price[pos['meta']['href']] = pos['price']/100
         except Exception as e:
@@ -40,9 +38,7 @@ class MSStoresSumAsync(MSMainClass):
         stores = dict()
 
         try:
-            self.async_requester.set_config(self.url_stores)
-            to_file = self.to_file
-            stores_dict = await self.async_requester.get_api_data_async(to_file=to_file)
+            stores_dict = await self.async_requester.get_api_data_async(url_conf_key=self.url_stores, to_file=self.to_file)
             for pos in stores_dict['rows']:
                 stores[pos['meta']['href']] = pos['name']
         except Exception as e:
@@ -55,8 +51,7 @@ class MSStoresSumAsync(MSMainClass):
         # request goods price
         goods_cost_dict = await self.get_goods_cost_async()
         try:
-            self.async_requester.set_config(self.url_stock_stores)
-            goods_by_stores_dict = await self.async_requester.get_api_data_async(to_file=True)
+            goods_by_stores_dict = await self.async_requester.get_api_data_async(url_conf_key=self.url_stock_stores, to_file=self.to_file)
             for pos in goods_by_stores_dict['rows']:
                 goods_href = pos['meta']['href']
                 goods_cost = goods_cost_dict.get(goods_href, 0)

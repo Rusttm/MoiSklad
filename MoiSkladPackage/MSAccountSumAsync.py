@@ -11,15 +11,14 @@ class MSAccountSumAsync(MSMainClass):
     def __init__(self):
         super().__init__()
         import MSRequesterAsync
-        self.async_requester = MSRequesterAsync.MSRequesterAsync(self.url_key)
+        self.async_requester = MSRequesterAsync.MSRequesterAsync()
 
     async def get_account_summ_async(self) -> int:
         """this function gets sum of bank accounts remains"""
         account_bal = int()
         # get account sum
         try:
-
-            acc_req = await self.async_requester.get_api_data_async(to_file=self.save_2file)
+            acc_req = await self.async_requester.get_api_data_async(url_conf_key=self.url_key, to_file=self.save_2file)
             account_bal = int()
             for account in acc_req['rows'][1:]:
                 account_bal += int(account['balance']/100)
@@ -33,7 +32,7 @@ class MSAccountSumAsync(MSMainClass):
         accounts_bal = dict({'accounts_sum': 0, 'accounts': dict()})
         # get account sum
         try:
-            acc_req = await self.async_requester.get_api_data_async(to_file=self.save_2file)
+            acc_req = await self.async_requester.get_api_data_async(url_conf_key=self.url_key, to_file=self.save_2file)
             new_dict = dict()
             accounts_sum = int()
             for account_elem in acc_req['rows'][1:]:
@@ -57,5 +56,5 @@ class MSAccountSumAsync(MSMainClass):
 
 if __name__ == "__main__":
     connect = MSAccountSumAsync()
-    print(connect.get_account_remains_sync())
+    print(asyncio.run(connect.get_account_summ_async()))
     connect.logger.debug("accounting class initialized")

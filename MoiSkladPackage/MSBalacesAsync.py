@@ -15,17 +15,17 @@ class MSBalacesAsync(MSMainClass):
     module_conf_dir = "config"
     module_conf_file = "ms_balances_config.json"
     result_bal_columns_key = "result_bal_columns"
-    module_config = None
+    _module_config = None
 
     def __init__(self):
         super().__init__()
         try:
             loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
+            self._module_config = loop.run_until_complete(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
         except Exception as e:
             print(e)
             loop = asyncio.new_event_loop()
-            self.module_config = loop.run_until_complete(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
+            self._module_config = loop.run_until_complete(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
 
         # self.module_config = asyncio.run(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
 
@@ -47,7 +47,7 @@ class MSBalacesAsync(MSMainClass):
             import MSStoresSumAsync
             ini_dict = MSStoresSumAsync.MSStoresSumAsync()
             stores_dict = await ini_dict.get_stores_cost_dict_async()
-            excluded_stores_list = list(self.module_config.values())
+            excluded_stores_list = list(self._module_config.values())
             for store_name, store_sum in stores_dict.items():
                 if store_name not in excluded_stores_list:
                     res_costs['склад себестоимость'] = res_costs.get('склад себестоимость', 0) + int(store_sum)
@@ -87,7 +87,7 @@ class MSBalacesAsync(MSMainClass):
         """ return data in format {"data": {balances_dict}, "sort_list": ["data", "summ" ..] }"""
         res_dict = dict({"data": {}, "col_list": []})
         res_dict["data"] = await self.form_balance_dict_async()
-        res_dict["col_list"] = list(self.module_config.get(self.main_key).get(self.result_bal_columns_key))
+        res_dict["col_list"] = list(self._module_config.get(self.main_key).get(self.result_bal_columns_key))
         return res_dict
 
 

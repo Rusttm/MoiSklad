@@ -11,21 +11,32 @@ class MSReadJsonAsync:
     dir_name = "data"
     config_dir_name = "config"
     config_file_name = "ms_main_config.json"
-    module_config = None
+    _module_config = None
 
     def __init__(self):
         super().__init__()
+        self.set_module_config_sync()
+
+    def set_module_config_sync(self):
+        self._module_config = self.get_json_data_sync(dir_name=self.config_dir_name, file_name=self.config_file_name)
+
+    def get_json_data_sync(self, dir_name, file_name) -> dict:
+        """ extract data from MS json file
+        return dict """
+        data = dict()
         try:
-            loop = asyncio.get_running_loop()
-            loop.create_task(self.get_json_data_async(dir_name=self.config_dir_name,
-                                                             file_name=self.config_file_name))
+            file_dir = os.path.dirname(__file__)
+            if not re.search('json', file_name):
+                file_name += '.json'
+            CONF_FILE_PATH = os.path.join(file_dir, dir_name, file_name)
+            with open(CONF_FILE_PATH, 'r') as json_file:
+                json_data = json_file.read()
+            data = json.loads(json_data)
+            # self.logger.debug(f"{__class__.__name__} got data from json file")
         except Exception as e:
-            print(e)
-            loop = asyncio.new_event_loop()
-            loop.run_until_complete(self.get_json_data_async(dir_name=self.config_dir_name,
-                                                                      file_name=self.config_file_name))
-        # self.module_config = asyncio.run(self.get_json_data_async(dir_name=self.config_dir_name,
-        #                                                               file_name=self.config_file_name))
+            print(f"{__class__.__name__} can't get json file!{e}")
+            # self.logger.error(f"{__class__.__name__} can't read json file!{e}")
+        return data
 
     async def get_json_data_async(self, dir_name, file_name) -> dict:
         """ extract data from MS json file
@@ -44,11 +55,6 @@ class MSReadJsonAsync:
             print(f"{__class__.__name__} can't get json file!{e}")
             # self.logger.error(f"{__class__.__name__} can't read json file!{e}")
         return data
-
-    # def get_json_data_sync(self) -> dict:
-    #     result = asyncio.run(self.get_json_data_async(dir_name=self.config_dir_name,
-    #                                                               file_name=self.config_file_name))
-    #     return result
 
 
 if __name__ == '__main__':

@@ -8,8 +8,7 @@ class MSCustBalAsync(MSMainClass):
     logger_name = f"{os.path.basename(__file__)}"
     url_customers_bal = "url_customers_bal"
     url_customers_list = "url_customers_list"
-    async_requester = None
-    to_file = False
+
     main_key = "ms_balance"
     other_companies_group_name = "другие поставщики"
     customers_columns_key = "customers_bal_columns"
@@ -18,6 +17,8 @@ class MSCustBalAsync(MSMainClass):
     dir_name = "config"
     config_file_name = "ms_balances_config.json"
     config_data = None
+    async_requester = None
+    to_file = False
 
     def __init__(self, to_file=False):
         super().__init__()
@@ -38,9 +39,7 @@ class MSCustBalAsync(MSMainClass):
     async def get_customers_dict_async(self):
         customers_dict = dict()
         try:
-            self.async_requester.set_config(self.url_customers_list)
-            to_file = self.to_file
-            customers_json = await self.async_requester.get_api_data_async(to_file=to_file)
+            customers_json = await self.async_requester.get_api_data_async(url_conf_key=self.url_customers_list, to_file=self.to_file)
             for customer in customers_json['rows']:
                 # customer_name = customer['name']
                 customer_href = customer['meta']['href']
@@ -55,10 +54,8 @@ class MSCustBalAsync(MSMainClass):
         """this return dict {"position_href": cost}"""
         customers_bal = dict()
         try:
-            self.async_requester.set_config(self.url_customers_bal)
             self.async_requester.set_api_param_line('filter=balance!=0')
-            to_file = self.to_file
-            cust_bal_dict = await self.async_requester.get_api_data_async(to_file=to_file)
+            cust_bal_dict = await self.async_requester.get_api_data_async(url_conf_key=self.url_customers_bal, to_file=self.to_file)
             for customer in cust_bal_dict['rows']:
                 customer_name = customer['counterparty']['name']
                 customer_bal = customer['balance'] / 100
@@ -79,9 +76,9 @@ class MSCustBalAsync(MSMainClass):
             # {customer_href: [customer_bal, customer_name]}
             customers_bal = await self.get_customers_bal_async()
             # ["поставщики", "новосибирскконтрагенты", "москваконтрагенты", "покупатели пфо", "другие"]
-            customers_show_groups = list(self.config_data[self.main_key][self.customers_columns_key])
+            customers_show_groups = list(self._module_config[self.main_key][self.customers_columns_key])
             # ["ПАО \"ТРАНСКОНТЕЙНЕР\"","ФТС России","ООО \"ТРАСКО\"", "ООО \"МЕДИТЕРРАНЕАН ШИППИНГ КОМПАНИ РУСЬ\""],
-            other_customers = list(self.config_data[self.main_key][self.include_other_companies_key])
+            other_customers = list(self._module_config[self.main_key][self.include_other_companies_key])
             for customer_href in customers_bal:
                 customer_in_groups = customers_groups.get(customer_href, None)
                 # get bal sum
