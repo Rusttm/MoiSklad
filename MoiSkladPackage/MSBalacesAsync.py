@@ -5,24 +5,29 @@ from MSMainClass import MSMainClass
 import time
 import asyncio
 from datetime import datetime
+import os
 
 
 class MSBalacesAsync(MSMainClass):
     """ gather balances in one jsonfile"""
-    logger_name = "balances"
+    logger_name = f"{os.path.basename(__file__)}"
     main_key = "ms_balance"
-    dir_name = "config"
-    config_file_name = "ms_balances_config.json"
-    config_data = None
+    module_conf_dir = "config"
+    module_conf_file = "ms_balances_config.json"
+    result_bal_columns_key = "result_bal_columns"
+    module_config = None
 
     def __init__(self):
         super().__init__()
+        try:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
+        except Exception as e:
+            print(e)
+            loop = asyncio.new_event_loop()
+            self.module_config = loop.run_until_complete(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
 
-    async def load_conf_data(self) -> bool:
-        import MSReadJsonAsync
-        reader = MSReadJsonAsync.MSReadJsonAsync(self.dir_name, self.config_file_name)
-        self.config_data = await reader.get_config_json_data_async()
-        return True
+        # self.module_config = asyncio.run(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
 
     async def get_accounts_sum_async(self) -> dict:
         res_accounts = dict({'деньги на счетах': 0})
@@ -38,12 +43,11 @@ class MSBalacesAsync(MSMainClass):
     async def get_stocks_cost_async(self) -> dict:
         """ return sum of all stores without excluded"""
         res_costs = dict({'склад себестоимость': 0})
-        await self.load_conf_data()
         try:
             import MSStoresSumAsync
             ini_dict = MSStoresSumAsync.MSStoresSumAsync()
             stores_dict = await ini_dict.get_stores_cost_dict_async()
-            excluded_stores_list = list(self.config_data.values())
+            excluded_stores_list = list(self.module_config.values())
             for store_name, store_sum in stores_dict.items():
                 if store_name not in excluded_stores_list:
                     res_costs['склад себестоимость'] = res_costs.get('склад себестоимость', 0) + int(store_sum)
@@ -54,7 +58,7 @@ class MSBalacesAsync(MSMainClass):
 
     async def get_customers_groups_sum_async(self) -> dict:
         """ return dict of groups with balances {'другие': 710918, 'москваконтрагенты': 450593, 'поставщики': 2984930}"""
-        cust_groups = dict({'другие': 0})
+        cust_groups = dict({'другие поставщики': 0})
         try:
             import MSCustBalAsync
             ini_dict = MSCustBalAsync.MSCustBalAsync()
@@ -79,13 +83,19 @@ class MSBalacesAsync(MSMainClass):
         result_dict.update(cust_groups_bal)
         result_dict.update({"Итог": balance_sum})
         return result_dict
+    async def get_balance_data_async(self) -> dict:
+        """ return data in format {"data": {balances_dict}, "sort_list": ["data", "summ" ..] }"""
+        res_dict = dict({"data": {}, "col_list": []})
+        res_dict["data"] = await self.form_balance_dict_async()
+        res_dict["col_list"] = list(self.module_config.get(self.main_key).get(self.result_bal_columns_key))
+        return res_dict
 
 
 if __name__ == "__main__":
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
     connect = MSBalacesAsync()
-    print(asyncio.run(connect.form_balance_dict_async()))
+    print(asyncio.run(connect.get_balance_data_async()))
     print(f"report done in {int(start_time-time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
 
 

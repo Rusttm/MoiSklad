@@ -1,4 +1,3 @@
-from MSMainClass import MSMainClass
 import json
 import os
 import re
@@ -6,52 +5,55 @@ import asyncio
 import aiofiles
 
 
-class MSReadJsonAsync(MSMainClass):
+class MSReadJsonAsync:
     """read and return data from json file"""
-    logger_name = "jsonreaderasync"
+    logger_name = f"{os.path.basename(__file__)}"
     dir_name = "data"
-    file_name = None
+    config_dir_name = "config"
+    config_file_name = "ms_main_config.json"
+    module_config = None
 
-    def __init__(self, dir_name=None, file_name=None):
+    def __init__(self):
         super().__init__()
-        if file_name:
-            self.file_name = file_name
-        if dir_name:
-            self.dir_name = dir_name
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(self.get_json_data_async(dir_name=self.config_dir_name,
+                                                             file_name=self.config_file_name))
+        except Exception as e:
+            print(e)
+            loop = asyncio.new_event_loop()
+            loop.run_until_complete(self.get_json_data_async(dir_name=self.config_dir_name,
+                                                                      file_name=self.config_file_name))
+        # self.module_config = asyncio.run(self.get_json_data_async(dir_name=self.config_dir_name,
+        #                                                               file_name=self.config_file_name))
 
-    async def get_config_json_data_async(self, file_name=None) -> dict:
+    async def get_json_data_async(self, dir_name, file_name) -> dict:
         """ extract data from MS json file
         return dict """
-        if not file_name:
-            file_name = self.file_name
         data = dict()
-        if file_name:
-            try:
-                file_dir = os.path.dirname(__file__)
-                if not re.search('json', file_name):
-                    file_name += '.json'
-                CONF_FILE_PATH = os.path.join(file_dir, self.dir_name, file_name)
-                async with aiofiles.open(CONF_FILE_PATH, 'r') as json_file:
-                    json_data = await json_file.read()
-                data = json.loads(json_data)
-                # self.logger.debug(f"{__class__.__name__} got data from json file")
-            except Exception as e:
-                # print(e)
-                self.logger.error(f"{__class__.__name__} can't read json file!{e}")
-        else:
-            import errno
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),
-                                    "Please, declare existing json file name with 'file_name='")
+        try:
+            file_dir = os.path.dirname(__file__)
+            if not re.search('json', file_name):
+                file_name += '.json'
+            CONF_FILE_PATH = os.path.join(file_dir, dir_name, file_name)
+            async with aiofiles.open(CONF_FILE_PATH, 'r') as json_file:
+                json_data = await json_file.read()
+            data = json.loads(json_data)
+            # self.logger.debug(f"{__class__.__name__} got data from json file")
+        except Exception as e:
+            print(f"{__class__.__name__} can't get json file!{e}")
+            # self.logger.error(f"{__class__.__name__} can't read json file!{e}")
         return data
 
-    def get_config_json_data_sync(self, file_name=None) -> dict:
-        loop = asyncio.get_event_loop()
-        result = loop.run_until_complete(self.get_config_json_data_async(file_name=file_name))
-        # result = asyncio.run(self.get_config_json_data_async(file_name=file_name))
-        return result
+    # def get_json_data_sync(self) -> dict:
+    #     result = asyncio.run(self.get_json_data_async(dir_name=self.config_dir_name,
+    #                                                               file_name=self.config_file_name))
+    #     return result
+
 
 if __name__ == '__main__':
     # connector = MSReadJsonAsync()
     # print(connector.get_config_json_data_sync(file_name='url_money.json'))
-    connector2 = MSReadJsonAsync(dir_name="config", file_name="ms_balances_config.json")
-    print(connector2.get_config_json_data_sync())
+    connector2 = MSReadJsonAsync()
+    # print(connector2.get_json_data_sync())
+    print(asyncio.run(connector2.get_json_data_async("config", "ms_balances_config.json")))

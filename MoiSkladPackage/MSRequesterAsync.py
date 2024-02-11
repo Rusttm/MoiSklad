@@ -2,11 +2,11 @@ from MSMainClass import MSMainClass
 import requests
 import re
 import asyncio
-
+import os
 
 class MSRequesterAsync(MSMainClass):
     """ clas request to moisklad api"""
-    logger_name = "requesterasync"
+    logger_name = f"{os.path.basename(__file__)}"
     ms_urls_key = "ms_urls"
     ms_api_header = "ms_api_headers"
     offset = 1000
@@ -15,6 +15,7 @@ class MSRequesterAsync(MSMainClass):
     __api_param_line = "?"
     __to_file = False
     __file_name = "requested_data.json"
+    __dir_name = "data"
 
     def __init__(self, url_conf_key=None):
         super().__init__()
@@ -28,6 +29,7 @@ class MSRequesterAsync(MSMainClass):
             conf_connector = MSConfigFile()
             configuration = conf_connector.get_ini_json_file()
             self.__file_name = url_conf_key
+            config = self.module_config
             self.set_api_url(configuration[self.ms_urls_key].get(url_conf_key))
             self.set_api_header(configuration[self.ms_api_header])
 
@@ -135,12 +137,13 @@ class MSRequesterAsync(MSMainClass):
     async def save_requested_data_2file_async(self, data_dict=None, file_name=None):
         """ method save dict data to file in class ConnMSSaveFile"""
         from MSSaveJsonAsync import MSSaveJsonAsync
+        saver = MSSaveJsonAsync()
         if file_name:
             self.__file_name = file_name
         self.logger.debug(f"{__name__} starts write request to file {self.__file_name}")
         result = False
         try:
-            result = await MSSaveJsonAsync().save_data_json_file_async(data_dict=data_dict, file_name=self.__file_name)
+            result = await saver.save_data_json_file_async(data_dict=data_dict, dir_name=self.__dir_name, file_name=self.__file_name)
         except Exception as e:
             self.logger.error(f"{__class__.__name__} request wasn't wrote to file {self.__file_name} exception {e}")
         if result:

@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-
-from GSMainClass import GSMainClass
 from GSConnAsync import GSConnAsync
 import asyncio
-import gspread_asyncio
 import os
 
 

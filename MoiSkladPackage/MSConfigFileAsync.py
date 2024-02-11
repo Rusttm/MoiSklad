@@ -10,7 +10,7 @@ import json
 
 class MSConfigFileAsync(MSMainClass):
     """ json configfile connector"""
-    logger_name = "configfile"
+    logger_name = f"{os.path.basename(__file__)}"
     dir_name = ["config"]
     file_name = "ms_main_config.json"
     file_path = os.path
@@ -58,5 +58,5 @@ class MSConfigFileAsync(MSMainClass):
 
 if __name__ == '__main__':
     connector = MSConfigFileAsync()
-    print(connector.get_ini_json_file_async())
-    print(connector.get_req_headers_async())
+    print(asyncio.run(connector.get_ini_json_file_async()))
+    # print(connector.get_req_headers_async())

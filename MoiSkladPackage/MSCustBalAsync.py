@@ -1,16 +1,17 @@
 import asyncio
-
+import os
 from MSMainClass import MSMainClass
 
 
 class MSCustBalAsync(MSMainClass):
     """ clas get sum of stores"""
-    logger_name = "custbalasync"
+    logger_name = f"{os.path.basename(__file__)}"
     url_customers_bal = "url_customers_bal"
     url_customers_list = "url_customers_list"
     async_requester = None
     to_file = False
     main_key = "ms_balance"
+    other_companies_group_name = "другие поставщики"
     customers_columns_key = "customers_bal_columns"
     excluded_groups_key = "excluded_groups"
     include_other_companies_key = "include_other_companies"
@@ -27,12 +28,12 @@ class MSCustBalAsync(MSMainClass):
 
         # print(self.config_data)
 
-    async def load_conf_data(self) -> dict:
-        import MSReadJsonAsync
-        reader = MSReadJsonAsync.MSReadJsonAsync(dir_name=self.dir_name, file_name=self.config_file_name)
-        result = await reader.get_config_json_data_async()
-        # print(f"{result=}")
-        return result
+    # async def load_conf_data(self) -> dict:
+    #     import MSReadJsonAsync
+    #     reader = MSReadJsonAsync.MSReadJsonAsync(dir_name=self.dir_name, file_name=self.config_file_name)
+    #     result = await reader.get_json_data_async()
+    #     # print(f"{result=}")
+    #     return result
 
     async def get_customers_dict_async(self):
         customers_dict = dict()
@@ -71,7 +72,7 @@ class MSCustBalAsync(MSMainClass):
     async def get_cust_groups_sum_async(self) -> dict:
         cust_groups_sum = dict()
         try:
-            self.config_data = await self.load_conf_data()
+            # self.config_data = await self.load_conf_data()
             # print(f"{self.config_data=}")
             # {customer_href: customer_group_list}
             customers_groups = await self.get_customers_dict_async()
@@ -80,21 +81,21 @@ class MSCustBalAsync(MSMainClass):
             # ["поставщики", "новосибирскконтрагенты", "москваконтрагенты", "покупатели пфо", "другие"]
             customers_show_groups = list(self.config_data[self.main_key][self.customers_columns_key])
             # ["ПАО \"ТРАНСКОНТЕЙНЕР\"","ФТС России","ООО \"ТРАСКО\"", "ООО \"МЕДИТЕРРАНЕАН ШИППИНГ КОМПАНИ РУСЬ\""],
-            customers_inc_excluded_groups = list(self.config_data[self.main_key][self.include_other_companies_key])
-
-            other_customers = customers_inc_excluded_groups
+            other_customers = list(self.config_data[self.main_key][self.include_other_companies_key])
             for customer_href in customers_bal:
                 customer_in_groups = customers_groups.get(customer_href, None)
+                # get bal sum
                 customer_bal = customers_bal.get(customer_href)[0]
+                # get name
                 customer_name = customers_bal.get(customer_href)[1]
                 if customer_in_groups:
                     for show_group in customers_show_groups:
-                        customer_groups = customers_groups.get(customer_href)
+                        customer_groups = customers_groups.get(customer_href, None)
                         if show_group in customer_groups:
                             cust_groups_sum[show_group] = cust_groups_sum.get(show_group, 0) + int(customer_bal)
                             break
                         elif customer_name in other_customers:
-                            cust_groups_sum['другие'] = cust_groups_sum.get('другие', 0) + int(customer_bal)
+                            cust_groups_sum[self.other_companies_group_name] = cust_groups_sum.get(self.other_companies_group_name, 0) + int(customer_bal)
                             break
 
         except Exception as e:

@@ -9,9 +9,12 @@ import asyncjson
 
 class MSSaveJsonAsync(MSMainClass):
     """ connector: save dictionary data file to json """
-    logger_name = "jsonsaveasync"
+    logger_name = f"{os.path.basename(__file__)}"
     dir_name = "data"
     file_name = "ms_requested_data.json"
+    
+    def __init__(self):
+        super().__init__()
 
     async def save_data_json_file_async(self, data_dict=None, file_name=None, dir_name=None) -> bool:
         """ save dictionary data file to json
@@ -51,8 +54,12 @@ class MSSaveJsonAsync(MSMainClass):
             return f"{file_name}.json"
 
     def save_data_json_file_sync(self, data_dict: dict, file_name: str) -> bool:
-        loop = asyncio.get_event_loop()
-        result = loop.run_until_complete(self.save_data_json_file_async(data_dict=data_dict, file_name=file_name))
+        try:
+            loop = asyncio.get_event_loop()
+            result = loop.run_until_complete(self.save_data_json_file_async(data_dict=data_dict, file_name=file_name))
+        except:
+            loop = asyncio.new_event_loop()
+            result = loop.run_until_complete(self.save_data_json_file_async(data_dict=data_dict, file_name=file_name))
         return result
 
 

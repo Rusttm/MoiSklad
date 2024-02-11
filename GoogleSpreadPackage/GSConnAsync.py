@@ -19,21 +19,12 @@ class GSConnAsync(GSMainClass):
     config_file_name = "gs_main_config.json"
     gs_json_credentials_key = "gs_json_credentials"
     gs_scopes_key = "gs_scopes"
-    config_data = None
     async_gc = None
 
     def __init__(self):
         super().__init__()
-        self.load_conf_data()
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.create_gs_client_async())
-
-
-    def load_conf_data(self) -> dict:
-        import GSReadJsonAsync
-        reader = GSReadJsonAsync.GSReadJsonAsync(self.config_dir_name, self.config_file_name)
-        self.config_data = reader.get_config_json_data_sync()
-        return self.config_data
 
     def get_credentials(self):
         local_path = os.path.dirname(__file__)
@@ -41,9 +32,7 @@ class GSConnAsync(GSMainClass):
         CREDENTIALS_FILE_PATH = os.path.join(local_path, self.config_dir_name, credentials_file_name)
         scopes = self.config_data.get(self.gs_scopes_key)
         credentials = Credentials.from_service_account_file(CREDENTIALS_FILE_PATH)
-        # scoped_cred = credentials.with_scopes(scopes)
         scoped_cred = credentials.with_scopes(scopes)
-        # print(f"{scopes=} \n {CREDENTIALS_FILE_PATH=}")
         return scoped_cred
 
     def create_gs_client_manager(self):

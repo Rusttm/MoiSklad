@@ -13,7 +13,6 @@ class GSContGetDataAsync(GSGetDataAsync):
     def __init__(self):
         super().__init__()
 
-
     async def get_ws_data_from_row_async(self, spread_sheet_id: str, ws_name: str, row_num: int) -> list:
         """ return list of data in row number"""
         values_list = list()
@@ -47,8 +46,6 @@ class GSContGetDataAsync(GSGetDataAsync):
         else:
             values_list = list(all_data[col_num])
         return values_list
-
-
 
 
 if __name__ == "__main__":
