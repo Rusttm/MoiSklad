@@ -19,12 +19,11 @@ import pandas as pd
 class GSGetDataAsync(GSConnAsync):
     """ google sheet asynchronous writer"""
     logger_name = f"{os.path.basename(__file__)}"
-    dir_name = "config"
+    config_dir_name = "config"
     data_dir_name = "data"
 
     def __init__(self):
         super().__init__()
-
 
     async def get_ws_data_in_range_async(self, spread_sheet_id: str, ws_name: str, cells_range: tuple) -> pd.DataFrame:
         """ return values from sheet in range (A1, C5)"""
@@ -84,14 +83,14 @@ if __name__ == "__main__":
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
     connect = GSGetDataAsync()
-    # print(asyncio.run(
+    # row = asyncio.run(
     #     connect.get_ws_data_in_range_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
     #                                        ws_name="My new sheet",
     #
-    #                                        cells_range=("A1", "C5"))))
-
-    print(asyncio.run(
-        connect.get_all_ws_data_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
-                                      ws_name="My new sheet")))
+    #                                        cells_range=("A1", "H1")))
+    # print(list(row.columns))
+    # print(asyncio.run(
+    #     connect.get_all_ws_data_async(spread_sheet_id="1YtCslaQVP06Mqxr4I2xYn3w62teS5qd6ndN_MEU_jeE",
+    #                                   ws_name="My new sheet")))
 
     print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

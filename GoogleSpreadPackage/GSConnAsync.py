@@ -14,7 +14,7 @@ class GSConnAsync(GSMainClass):
     """ google sheet asynchronous connector it creates google_spread_client 'async_gc'
     that used in other classes"""
     logger_name = f"{os.path.basename(__file__)}"
-    dir_name = "config"
+    config_dir_name = "config"
     data_dir_name = "data"
     config_file_name = "gs_main_config.json"
     gs_json_credentials_key = "gs_json_credentials"
@@ -31,14 +31,14 @@ class GSConnAsync(GSMainClass):
 
     def load_conf_data(self) -> dict:
         import GSReadJsonAsync
-        reader = GSReadJsonAsync.GSReadJsonAsync(self.dir_name, self.config_file_name)
+        reader = GSReadJsonAsync.GSReadJsonAsync(self.config_dir_name, self.config_file_name)
         self.config_data = reader.get_config_json_data_sync()
         return self.config_data
 
     def get_credentials(self):
         local_path = os.path.dirname(__file__)
         credentials_file_name = self.config_data.get(self.gs_json_credentials_key)
-        CREDENTIALS_FILE_PATH = os.path.join(local_path, self.dir_name, credentials_file_name)
+        CREDENTIALS_FILE_PATH = os.path.join(local_path, self.config_dir_name, credentials_file_name)
         scopes = self.config_data.get(self.gs_scopes_key)
         credentials = Credentials.from_service_account_file(CREDENTIALS_FILE_PATH)
         # scoped_cred = credentials.with_scopes(scopes)
