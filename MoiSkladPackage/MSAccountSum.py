@@ -1,9 +1,9 @@
 from MSMainClass import MSMainClass
-
+import os
 
 class MSAccountSum(MSMainClass):
     """ clas get accounts remains"""
-    logger_name = "accounting"
+    logger_name = f"{os.path.basename(__file__)}"
     url_key = "url_money"
     save_2file = False
 

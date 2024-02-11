@@ -6,7 +6,7 @@ import re
 
 class MSReadJson(MSMainClass):
     """read and return data from json file"""
-    logger_name = "jsonreader"
+    logger_name = f"{os.path.basename(__file__)}"
     dir_name = "data"
 
     def get_config_json_data(self, file_name=None) -> dict:

@@ -1,9 +1,11 @@
+import os
+
 from MSMainClass import MSMainClass
 
 
 class MSStoresSum(MSMainClass):
     """ clas get sum of stores"""
-    logger_name = "stores"
+    logger_name = f"{os.path.basename(__file__)}"
     url_stock_all = "url_stock_all"
     url_stores = "url_stores"
     url_stock_stores = "url_stock_stores"

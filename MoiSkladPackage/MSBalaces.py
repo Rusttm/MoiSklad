@@ -1,8 +1,8 @@
 from MSMainClass import MSMainClass
-
+import os
 class MSBalaces(MSMainClass):
     """ gather balances in one jsonfile"""
-    logger_name = "balances"
+    logger_name = f"{os.path.basename(__file__)}"
     main_key = "ms_balance"
     dir_name = "config"
     config_file_name = "ms_balances_config.json"

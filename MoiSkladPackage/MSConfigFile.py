@@ -6,7 +6,7 @@ import json
 
 class MSConfigFile(MSMainClass):
     """ json configfile connector"""
-    logger_name = "configfile"
+    logger_name = f"{os.path.basename(__file__)}"
     dir_name = ["config"]
     file_name = "ms_main_config.json"
     file_path = os.path

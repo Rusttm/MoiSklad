@@ -6,6 +6,7 @@ import re
 
 class MSSaveJson(MSMainClass):
     """ connector: save dictionary data file to json """
+    logger_name = f"{os.path.basename(__file__)}"
     dir_name = "data"
     file_name = "ms_requested_data.json"
 

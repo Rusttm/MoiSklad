@@ -1,9 +1,9 @@
 from MSMainClass import MSMainClass
 import asyncio
-
+import os
 class MSAccountSumAsync(MSMainClass):
     """ clas get accounts remains"""
-    logger_name = "accountingasync"
+    logger_name = f"{os.path.basename(__file__)}"
     url_key = "url_money"
     save_2file = False
     async_requester = None

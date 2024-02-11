@@ -1,10 +1,11 @@
 from MSMainClass import MSMainClass
 import requests
 import re
+import os
 
 class MSRequester(MSMainClass):
     """ clas request to moisklad api"""
-    logger_name = "requester"
+    logger_name = f"{os.path.basename(__file__)}"
     ms_urls_key = "ms_urls"
     ms_api_header = "ms_api_headers"
     offset = 1000
