@@ -11,10 +11,10 @@ import os
 class MSProfitAsync(MSMainClass):
     """ gather balances in one jsonfile"""
     logger_name = f"{os.path.basename(__file__)}"
-    _main_key = "ms_balance"
+    _main_key = "ms_profit"
     _module_conf_dir = "config"
-    _module_conf_file = "ms_balances_config.json"
-    _result_bal_columns_key = "result_bal_columns"
+    _module_conf_file = "ms_profit_config.json"
+    _result_bal_columns_key = "result_profit_columns" # list of result columns
     _module_config = None
 
     def __init__(self):
