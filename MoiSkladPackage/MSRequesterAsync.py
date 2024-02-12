@@ -35,7 +35,7 @@ class MSRequesterAsync(MSMainClass):
             self.__api_param_line = "?"
         # self.__api_param_line = api_param_line
 
-    def add_api_param_line(self, add_param_line:str = None):
+    def add_api_param_line(self, add_param_line: str = None):
         """ add request parameters in current url line example:
         https://api.moysklad.ru/api/remap/1.2/entity/factureout?offset=0&filter=moment%3C=2021-05-25
         """

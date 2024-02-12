@@ -10,7 +10,7 @@ class MSReadJsonAsync:
     logger_name = f"{os.path.basename(__file__)}"
     dir_name = "data"
     config_dir_name = "config"
-    config_file_name = "ms_main_config.json"
+    _config_file_name = "ms_main_config.json"
     _module_config = None
 
     def __init__(self):
@@ -18,7 +18,7 @@ class MSReadJsonAsync:
         self.set_module_config_sync()
 
     def set_module_config_sync(self):
-        self._module_config = self.get_json_data_sync(dir_name=self.config_dir_name, file_name=self.config_file_name)
+        self._module_config = self.get_json_data_sync(dir_name=self.config_dir_name, file_name=self._config_file_name)
 
     def get_json_data_sync(self, dir_name, file_name) -> dict:
         """ extract data from MS json file
