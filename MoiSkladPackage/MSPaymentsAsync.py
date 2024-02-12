@@ -11,8 +11,8 @@ class MSPaymentsAsync(MSMainClass):
     # _config_dir = "config"
     # _config_file_name = "ms_balances_config.json"
     # _config_data = None
-    _module_conf_dir = "config"
-    _module_conf_file = "ms_profit_config.json"
+    # _module_conf_dir = "config"
+    # _module_conf_file = "ms_profit_config.json"
     _to_file = False
     _unknown_purpose = "неизвестно"  # для неопределенных платежей
     async_requester = None
