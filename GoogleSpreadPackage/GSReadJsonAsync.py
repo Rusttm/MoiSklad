@@ -6,7 +6,8 @@ import aiofiles
 
 
 class GSReadJsonAsync(object):
-    """read and return data from json file"""
+    """read and return data from json file
+    configurator initialised"""
     logger_name = f"{os.path.basename(__file__)}"
     _dir_name = "data"
     _file_name = None

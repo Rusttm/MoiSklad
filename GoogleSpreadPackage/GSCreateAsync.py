@@ -20,6 +20,7 @@ class GSCreateAsync(GSConnAsync):
                                                 spread_sheet_name=None) -> gspread_asyncio.AsyncioGspreadSpreadsheet:
         """ create new sheet, give full access permission and return obj spread_sheet"""
         try:
+            self._async_gc = await self.create_gs_client_async()
             if not spread_sheet_name: spread_sheet_name = "Test spread sheet"
             spread_sheet = await self._async_gc.create(spread_sheet_name)
             spread_sheet_href = f"https://docs.google.com/spreadsheets/d/{spread_sheet.id}"
@@ -37,6 +38,7 @@ class GSCreateAsync(GSConnAsync):
 
     async def add_worksheet_2spreadsheet(self, spread_sheet_id=None, spread_sheet=None, work_sheet_name=None) -> object:
         try:
+            self._async_gc = await self.create_gs_client_async()
             if spread_sheet_id:
                 spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             if spread_sheet:
