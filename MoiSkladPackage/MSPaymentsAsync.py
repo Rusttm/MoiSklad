@@ -72,7 +72,7 @@ class MSPaymentsAsync(MSMainClass):
         try:
             purposes_dict = await self.get_purposes_dict_async()
             purpose_payments_sum_dict = await self.get_payments_purpose_dict_async(from_date=from_date, to_date=to_date, to_file=to_file)
-            purpose_sum_dict = {purposes_dict.get(href, self._unknown_purpose): summ for href, summ in purpose_payments_sum_dict.items()}
+            purpose_sum_dict = {purposes_dict.get(href, self._unknown_purpose): -summ for href, summ in purpose_payments_sum_dict.items()}
         except Exception as e:
             msg = f"module {__class__.__name__} can't read departments_list data, error: {e}"
             self.logger.error(msg)
