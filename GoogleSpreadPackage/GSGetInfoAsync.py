@@ -8,8 +8,8 @@ import os
 class GSGetInfoAsync(GSConnAsync):
     """ google sheet asynchronous writer"""
     logger_name = f"{os.path.basename(__file__)}"
-    dir_name = "config"
-    data_dir_name = "data"
+    _dir_name = "config"
+    _data_dir_name = "data"
 
     def __init__(self):
         super().__init__()
@@ -17,7 +17,8 @@ class GSGetInfoAsync(GSConnAsync):
     async def get_spreadsheet_metadata_async(self, spread_sheet_id: str) -> dict:
         spread_sheet_metadata = dict()
         try:
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            self._async_gc = await self.create_gs_client_async()
+            spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
         except Exception as e:
             msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
@@ -29,7 +30,8 @@ class GSGetInfoAsync(GSConnAsync):
         worksheets_metadata = list()
 
         try:
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            self._async_gc = await self.create_gs_client_async()
+            spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
             worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
         except Exception as e:
@@ -41,7 +43,8 @@ class GSGetInfoAsync(GSConnAsync):
     async def get_spreadsheet_ws_names_list_async(self, spread_sheet_id: str) -> list:
         worksheets_names_list = list()
         try:
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            self._async_gc = await self.create_gs_client_async()
+            spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
             worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
         except Exception as e:
@@ -63,7 +66,7 @@ class GSGetInfoAsync(GSConnAsync):
     async def get_ws_id_by_name_async(self, spread_sheet_id: str, ws_name: str) -> int:
         worksheet_id = None
         try:
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             spread_sheet_metadata = await spread_sheet.fetch_sheet_metadata()
             worksheets_metadata = dict(spread_sheet_metadata).get("sheets")
         except Exception as e:

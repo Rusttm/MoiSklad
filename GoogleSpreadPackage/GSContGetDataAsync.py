@@ -7,8 +7,8 @@ import asyncio
 class GSContGetDataAsync(GSGetDataAsync):
     """ controller for dataget from google spreads"""
     logger_name = f"{os.path.basename(__file__)}"
-    config_dir_name = "config"
-    data_dir_name = "data"
+    _config_dir_name = "config"
+    _data_dir_name = "data"
 
     def __init__(self):
         super().__init__()

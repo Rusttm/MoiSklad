@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-from .GSMainClass import GSMainClass
+from GSMainClass import GSMainClass
 import asyncio
 import os
 # from https://stackoverflow.com/questions/879173/how-to-ignore-deprecation-warnings-in-python
@@ -15,7 +15,7 @@ import pandas as pd
 class GSMSDataHandlerAsync(GSMainClass):
     """ data handler """
     logger_name = f"{os.path.basename(__file__)}"
-    dir_name = "config"
+    _dir_name = "config"
     data_dir_name = "data"
 
     def __init__(self):

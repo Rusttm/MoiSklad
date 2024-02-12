@@ -14,7 +14,7 @@ class GSSaveDataAsync(GSConnAsync):
     async def upd_spreadsheet_title_async(self, spread_sheet_id: str, new_title: str) -> bool:
         """ update title of spreadsheet"""
         try:
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             await spread_sheet.update_title(new_title)
             return True
         except Exception as e:
@@ -31,7 +31,7 @@ class GSSaveDataAsync(GSConnAsync):
             name_is_in_ws = await connector.check_ws_name_is_exist(spread_sheet_id, ws_name)
             if not name_is_in_ws: raise AttributeError
             ws_id = await connector.get_ws_id_by_name_async(spread_sheet_id, ws_name)
-            spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+            spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
             # clear data
             await work_sheet.clear()

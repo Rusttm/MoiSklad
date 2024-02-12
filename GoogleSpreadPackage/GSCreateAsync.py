@@ -21,10 +21,10 @@ class GSCreateAsync(GSConnAsync):
         """ create new sheet, give full access permission and return obj spread_sheet"""
         try:
             if not spread_sheet_name: spread_sheet_name = "Test spread sheet"
-            spread_sheet = await self.async_gc.create(spread_sheet_name)
+            spread_sheet = await self._async_gc.create(spread_sheet_name)
             spread_sheet_href = f"https://docs.google.com/spreadsheets/d/{spread_sheet.id}"
             # Allow anyone with the URL to write to this spreadsheet.
-            await self.async_gc.insert_permission(spread_sheet.id, None, perm_type="anyone", role="writer")
+            await self._async_gc.insert_permission(spread_sheet.id, None, perm_type="anyone", role="writer")
             # print(f"{type(spread_sheet)=}") # <class 'gspread_asyncio.AsyncioGspreadSpreadsheet'>
             msg = f"created spreadsheet {spread_sheet_href}"
             print(msg)
@@ -38,7 +38,7 @@ class GSCreateAsync(GSConnAsync):
     async def add_worksheet_2spreadsheet(self, spread_sheet_id=None, spread_sheet=None, work_sheet_name=None) -> object:
         try:
             if spread_sheet_id:
-                spread_sheet = await self.async_gc.open_by_key(spread_sheet_id)
+                spread_sheet = await self._async_gc.open_by_key(spread_sheet_id)
             if spread_sheet:
                 if not work_sheet_name:
                     work_sheet_name = "new_sheet"
