@@ -18,7 +18,6 @@ class MSGSControllerAsync(GSMSContAsync):
             from MSBalacesAsync import MSBalacesAsync
             connector = MSBalacesAsync()
             balances_data = await connector.get_balance_data_async()
-            print(balances_data)
             await self.save_balances_ms_gs_async(balances_data)
             msg = f"{__class__.__name__} saves balance data to spreadsheet. "
             self.logger.debug(msg)
