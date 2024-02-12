@@ -1,5 +1,5 @@
-from GSPkgLogger import GSPkgLogger
-from GSReadJsonAsync import GSReadJsonAsync
+from .GSPkgLogger import GSPkgLogger
+from .GSReadJsonAsync import GSReadJsonAsync
 import os
 
 class GSMainClass(GSPkgLogger, GSReadJsonAsync):

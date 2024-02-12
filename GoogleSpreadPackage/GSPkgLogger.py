@@ -3,7 +3,7 @@ from logging.handlers import RotatingFileHandler
 import os
 
 class GSPkgLogger(object):
-    logger_name = "googlespreads"
+    logger_name = f"{os.path.basename(__file__)}"
     logs_dir = "logs"
     logger = None
 

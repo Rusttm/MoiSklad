@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-from GSConnAsync import GSConnAsync
+from .GSConnAsync import GSConnAsync
 import asyncio
 import os
 # from https://stackoverflow.com/questions/879173/how-to-ignore-deprecation-warnings-in-python
@@ -25,6 +25,28 @@ class GSMSContAsync(GSConnAsync):
             ss_id = self.config_data.get(self.ss_names_key).get(gs_tag)
             import GSMSDataHandlerAsync
             handler = GSMSDataHandlerAsync.GSMSDataHandlerAsync()
+            df = await handler.convert_ms_dict_2df_async(ms_data=ms_data)
+            spread_sheet = await self.async_gc.open_by_key(ss_id)
+            work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
+            # df = pd.DataFrame(await work_sheet.get_all_values())
+            if insert:
+                await work_sheet.clear()
+                await work_sheet.insert_rows([df.columns.values.tolist()] + df.values.tolist())
+            else:
+                await work_sheet.append_rows(df.values.tolist())
+
+        except Exception as e:
+            msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
+            self.logger.warning(msg)
+            print(msg)
+        return df
+
+    async def save_balances_ms_gs_async(self, ms_data: dict, gs_tag="gs_balance", insert=False, ws_id=1349066460) -> pd.DataFrame:
+        df = pd.DataFrame()
+        try:
+            ss_id = self.config_data.get(self.ss_names_key).get(gs_tag)
+            from .GSMSDataHandlerAsync import GSMSDataHandlerAsync
+            handler = GSMSDataHandlerAsync()
             df = await handler.convert_ms_dict_2df_async(ms_data=ms_data)
             spread_sheet = await self.async_gc.open_by_key(ss_id)
             work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)

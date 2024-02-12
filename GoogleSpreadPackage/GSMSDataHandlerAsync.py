@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-from GSMainClass import GSMainClass
+from .GSMainClass import GSMainClass
 import asyncio
 import os
 # from https://stackoverflow.com/questions/879173/how-to-ignore-deprecation-warnings-in-python
