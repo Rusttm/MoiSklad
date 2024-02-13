@@ -6,6 +6,7 @@ import pandas as pd
 
 class MSGSControllerAsync(GSMSContAsync):
     logger_name = f"{os.path.basename(__file__)}"
+
     def __init__(self):
         super().__init__()
 
@@ -31,7 +32,8 @@ class MSGSControllerAsync(GSMSContAsync):
         try:
             from MoiSkladPackage.MSReports.MSReportProfitAsync import MSReportProfitAsync
             connector = MSReportProfitAsync()
-            profit_data = await connector.get_handled_expenses(from_date=from_date, to_date=to_date, report_type=report_type)
+            profit_data = await connector.get_handled_expenses(from_date=from_date, to_date=to_date,
+                                                               report_type=report_type)
             await self.save_data_ms_gs_async(profit_data, gs_tag="gs_profit", ws_id=539265374)
             msg = f"{__class__.__name__} saves custom profit report to spreadsheet. "
             self.logger.debug(msg)
@@ -41,7 +43,7 @@ class MSGSControllerAsync(GSMSContAsync):
             print(msg)
         return profit_data
 
-    async def save_profit_gs_daily_async(self, report_type="daily") -> pd.DataFrame:
+    async def save_profit_gs_daily_async(self) -> pd.DataFrame:
         """ saves profit ms data to google spread"""
         profit_data = pd.DataFrame()
         try:
@@ -72,7 +74,6 @@ class MSGSControllerAsync(GSMSContAsync):
             self.logger.warning(msg)
             print(msg)
         return profit_data
-
 
 
 if __name__ == "__main__":
