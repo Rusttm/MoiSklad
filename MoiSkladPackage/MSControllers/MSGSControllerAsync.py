@@ -33,7 +33,7 @@ class MSGSControllerAsync(GSMSContAsync):
             connector = MSReportProfitAsync()
             profit_data = await connector.get_handled_expenses(from_date=from_date, to_date=to_date, report_type=report_type)
             await self.save_data_ms_gs_async(profit_data, gs_tag="gs_profit", ws_id=539265374)
-            msg = f"{__class__.__name__} saves balance data to spreadsheet. "
+            msg = f"{__class__.__name__} saves custom profit report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
             msg = f"{__class__.__name__} cant custom profit report to spreadsheet, Error: \n {e} "
@@ -52,7 +52,7 @@ class MSGSControllerAsync(GSMSContAsync):
             msg = f"{__class__.__name__} saves daily profit report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
-            msg = f"{__class__.__name__} cant saves balance data to spreadsheet, Error: \n {e} "
+            msg = f"{__class__.__name__} cant saves daily profit repor to spreadsheet, Error: \n {e} "
             self.logger.warning(msg)
             print(msg)
         return profit_data
@@ -65,10 +65,10 @@ class MSGSControllerAsync(GSMSContAsync):
             connector = MSReportProfitAsync()
             profit_data = await connector.get_monthly_profit_report_async(to_year=to_year, to_month=to_month)
             await self.save_data_ms_gs_async(profit_data, gs_tag="gs_profit", ws_id=539265374)
-            msg = f"{__class__.__name__} saves daily profit report to spreadsheet. "
+            msg = f"{__class__.__name__} saves monthly profit report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
-            msg = f"{__class__.__name__} cant saves balance data to spreadsheet, Error: \n {e} "
+            msg = f"{__class__.__name__} cant save monthly profit report to spreadsheet, Error: \n {e} "
             self.logger.warning(msg)
             print(msg)
         return profit_data
