@@ -1,6 +1,6 @@
 import asyncio
 import os
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 
 
 class MSCustBalAsync(MSMainClass):
@@ -9,13 +9,13 @@ class MSCustBalAsync(MSMainClass):
     url_customers_bal = "url_customers_bal"
     url_customers_list = "url_customers_list"
 
-    main_key = "ms_balance"
+    _main_key = "ms_balance"
     other_companies_group_name = "другие поставщики"
     customers_columns_key = "customers_bal_columns"
     excluded_groups_key = "excluded_groups"
     include_other_companies_key = "include_other_companies"
-    dir_name = "config"
-    config_file_name = "ms_balances_config.json"
+    _dir_name = "config"
+    _config_file_name = "ms_balances_config.json"
     config_data = None
     async_requester = None
     to_file = False
@@ -24,19 +24,11 @@ class MSCustBalAsync(MSMainClass):
         super().__init__()
         if to_file:
             self.to_file = to_file
-        import MSRequesterAsync
-        self.async_requester = MSRequesterAsync.MSRequesterAsync()
-
-        # print(self.config_data)
-
-    # async def load_conf_data(self) -> dict:
-    #     import MSReadJsonAsync
-    #     reader = MSReadJsonAsync.MSReadJsonAsync(dir_name=self.dir_name, file_name=self.config_file_name)
-    #     result = await reader.get_json_data_async()
-    #     # print(f"{result=}")
-    #     return result
+        from MoiSkladPackage.MSConnectors.MSRequesterAsync import MSRequesterAsync
+        self.async_requester = MSRequesterAsync()
 
     async def get_customers_dict_async(self):
+        """ return customers dict {customer_href: customer_groups_list}"""
         customers_dict = dict()
         try:
             customers_json = await self.async_requester.get_api_data_async(url_conf_key=self.url_customers_list, to_file=self.to_file)
@@ -51,7 +43,7 @@ class MSCustBalAsync(MSMainClass):
         return customers_dict
 
     async def get_customers_bal_async(self) -> dict:
-        """this return dict {"position_href": cost}"""
+        """returns dict {customer_href: [customer_balance, customer_name]}"""
         customers_bal = dict()
         try:
             self.async_requester.set_api_param_line('filter=balance!=0')
@@ -67,6 +59,7 @@ class MSCustBalAsync(MSMainClass):
         return customers_bal
 
     async def get_cust_groups_sum_async(self) -> dict:
+        """ returns {customers_group: summ_balance}"""
         cust_groups_sum = dict()
         try:
             # self.config_data = await self.load_conf_data()
@@ -76,9 +69,9 @@ class MSCustBalAsync(MSMainClass):
             # {customer_href: [customer_bal, customer_name]}
             customers_bal = await self.get_customers_bal_async()
             # ["поставщики", "новосибирскконтрагенты", "москваконтрагенты", "покупатели пфо", "другие"]
-            customers_show_groups = list(self._module_config[self.main_key][self.customers_columns_key])
+            customers_show_groups = list(self._module_config[self._main_key][self.customers_columns_key])
             # ["ПАО \"ТРАНСКОНТЕЙНЕР\"","ФТС России","ООО \"ТРАСКО\"", "ООО \"МЕДИТЕРРАНЕАН ШИППИНГ КОМПАНИ РУСЬ\""],
-            other_customers = list(self._module_config[self.main_key][self.include_other_companies_key])
+            other_customers = list(self._module_config[self._main_key][self.include_other_companies_key])
             for customer_href in customers_bal:
                 customer_in_groups = customers_groups.get(customer_href, None)
                 # get bal sum

@@ -1,5 +1,5 @@
-from MSPkgLogger import MSPkgLogger
-from MSReadJsonAsync import MSReadJsonAsync
+from .MSPkgLogger import MSPkgLogger
+from .MSReadJsonAsync import MSReadJsonAsync
 import os
 
 

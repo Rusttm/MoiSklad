@@ -1,17 +1,16 @@
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 import os
 import json
 import re
 import aiofiles
 import asyncio
-import asyncjson
 
 
 class MSSaveJsonAsync(MSMainClass):
     """ connector: save dictionary data file to json """
     logger_name = f"{os.path.basename(__file__)}"
-    dir_name = "data"
-    file_name = "ms_requested_data.json"
+    _dir_name = "data"
+    _file_name = "ms_requested_data.json"
     
     def __init__(self):
         super().__init__()
@@ -21,15 +20,15 @@ class MSSaveJsonAsync(MSMainClass):
         return True or False"""
         try:
             if file_name:
-                self.file_name = await self.corrected_file_name(file_name)
+                self._file_name = await self.corrected_file_name(file_name)
             # if dir_name == "config":
             if dir_name:
-                self.dir_name = dir_name
-            dir_file = os.path.dirname(__file__)
-            dir_path = os.path.join(dir_file, self.dir_name)
+                self._dir_name = dir_name
+            up_dir_file = os.path.dirname(os.path.dirname(__file__))
+            dir_path = os.path.join(up_dir_file, self._dir_name)
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
-            DATA_FILE_PATH = os.path.join(dir_path, f"{self.file_name}")
+            DATA_FILE_PATH = os.path.join(dir_path, f"{self._file_name}")
             if not os.path.exists(DATA_FILE_PATH):
                 await aiofiles.open(DATA_FILE_PATH, 'x')
             if os.path.exists(DATA_FILE_PATH) and data_dict:

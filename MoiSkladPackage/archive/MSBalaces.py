@@ -4,7 +4,7 @@ class MSBalaces(MSMainClass):
     """ gather balances in one jsonfile"""
     logger_name = f"{os.path.basename(__file__)}"
     main_key = "ms_balance"
-    dir_name = "config"
+    dir_name = "../config"
     config_file_name = "ms_balances_config.json"
     config_data = None
 
@@ -16,13 +16,13 @@ class MSBalaces(MSMainClass):
     def load_conf_data(self) -> dict:
         import MSReadJson
         reader = MSReadJson.MSReadJson()
-        reader.dir_name = self.dir_name
+        reader._dir_name = self.dir_name
         return reader.get_config_json_data(self.config_file_name)
 
     def get_accounts_sum(self) -> dict:
         res_accounts = dict({'accounts_sum': 0})
         try:
-            import MSAccountSum
+            from MoiSkladPackage.archive import MSAccountSum
             ini_dict = MSAccountSum.MSAccountSum()
             res_accounts['accounts_sum'] = ini_dict.get_account_summ()
         except Exception as e:

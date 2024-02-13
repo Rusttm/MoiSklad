@@ -1,6 +1,5 @@
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 import requests
-import re
 import asyncio
 import os
 
@@ -9,6 +8,8 @@ class MSRequesterAsync(MSMainClass):
     logger_name = f"{os.path.basename(__file__)}"
     ms_urls_key = "ms_urls"
     ms_api_header = "ms_api_headers"
+    _module_conf_dir = "config"
+    _module_conf_file = "ms_main_config.json"
     offset = 1000
     _module_config = None
     __api_url = str()
@@ -20,7 +21,7 @@ class MSRequesterAsync(MSMainClass):
 
     def __init__(self):
         super().__init__()
-
+        self._module_config = self.set_module_config_sync(self._module_conf_dir, self._module_conf_file)
 
     def set_api_param_line(self, api_param_line=None):
         """ set new request parameters in url line
@@ -130,7 +131,7 @@ class MSRequesterAsync(MSMainClass):
 
     async def save_requested_data_2file_async(self, data_dict=None, file_name=None):
         """ method save dict data to file in class ConnMSSaveFile"""
-        from MSSaveJsonAsync import MSSaveJsonAsync
+        from MoiSkladPackage.MSConnectors.MSSaveJsonAsync import MSSaveJsonAsync
         saver = MSSaveJsonAsync()
         if file_name:
             self.__file_name = file_name
@@ -147,4 +148,4 @@ class MSRequesterAsync(MSMainClass):
 
 if __name__ == "__main__":
     connect = MSRequesterAsync()
-    print(asyncio.run(connect.get_api_data_async(url_conf_key="url_outinvoices_list", to_file=True)))
+    print(asyncio.run(connect.get_api_data_async(url_conf_key="url_money", to_file=True)))

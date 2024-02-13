@@ -1,6 +1,6 @@
 import asyncio
 import os
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 
 
 class MSCustDeptAsync(MSMainClass):
@@ -19,7 +19,7 @@ class MSCustDeptAsync(MSMainClass):
         super().__init__()
         if to_file:
             self.to_file = to_file
-        import MSRequesterAsync
+        from MoiSkladPackage.MSConnectors import MSRequesterAsync
         self.async_requester = MSRequesterAsync.MSRequesterAsync()
 
 

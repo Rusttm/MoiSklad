@@ -1,4 +1,4 @@
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 import requests
 import re
 import os
@@ -20,7 +20,7 @@ class MSRequester(MSMainClass):
 
     def set_config(self, url_conf_key=None):
         """it sets requested url and token in configuration """
-        from MSConfigFile import MSConfigFile
+        from MoiSkladPackage.archive.MSConfigFile import MSConfigFile
         try:
             conf_connector = MSConfigFile()
             configuration = conf_connector.get_ini_json_file()

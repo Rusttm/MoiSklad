@@ -13,7 +13,7 @@ class MSGSControllerAsync(GSMSContAsync):
         """ saves balances ms data to google spread"""
         balances_data = pd.DataFrame()
         try:
-            from MSBalacesAsync import MSBalacesAsync
+            from MoiSkladPackage.MSReports.MSBalacesAsync import MSBalacesAsync
             connector = MSBalacesAsync()
             balances_data = await connector.get_balance_data_async()
             await self.save_balances_ms_gs_async(balances_data)

@@ -1,4 +1,4 @@
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 import json
 import os
 import re
@@ -7,7 +7,7 @@ import re
 class MSReadJson(MSMainClass):
     """read and return data from json file"""
     logger_name = f"{os.path.basename(__file__)}"
-    dir_name = "data"
+    _dir_name = "../data"
 
     def get_config_json_data(self, file_name=None) -> dict:
         """ extract data from MS json file

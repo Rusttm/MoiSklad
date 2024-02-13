@@ -1,4 +1,4 @@
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 import asyncio
 import os
 class MSAccountSumAsync(MSMainClass):
@@ -10,8 +10,8 @@ class MSAccountSumAsync(MSMainClass):
 
     def __init__(self):
         super().__init__()
-        import MSRequesterAsync
-        self.async_requester = MSRequesterAsync.MSRequesterAsync()
+        from MoiSkladPackage.MSConnectors.MSRequesterAsync import MSRequesterAsync
+        self.async_requester = MSRequesterAsync()
 
     async def get_account_summ_async(self) -> int:
         """this function gets sum of bank accounts remains"""

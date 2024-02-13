@@ -2,13 +2,15 @@ import asyncio
 import os
 import datetime
 
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 
 
 class MSCustProfitAsync(MSMainClass):
     """gather customers profit dict filtered in month"""
     logger_name = f"{os.path.basename(__file__)}"
     _url_profit_by_cust_list = "url_profit_by_cust_list"
+    _module_conf_file = "ms_main_config.json"
+    _module_conf_dir = "config"
     _to_file = False
     async_requester = None
 
@@ -16,8 +18,8 @@ class MSCustProfitAsync(MSMainClass):
         super().__init__()
         if to_file:
             self.to_file = to_file
-        import MSRequesterAsync
-        self.async_requester = MSRequesterAsync.MSRequesterAsync()
+        from MoiSkladPackage.MSConnectors.MSRequesterAsync import MSRequesterAsync
+        self.async_requester = MSRequesterAsync()
 
     async def get_customers_sales_dict_async(self, from_date=None, to_date=None, to_file=True) -> dict:
         """ return dict {cust_href: [cust_name, cust_sales, cust_cost, cust_profit]}"""
@@ -32,6 +34,7 @@ class MSCustProfitAsync(MSMainClass):
         request_param_line = f"?momentFrom={from_date} 00:00:00&momentTo={to_date} 23:00:00"
         self.async_requester.set_api_param_line(request_param_line)
         try:
+            self.async_requester.set_module_config_sync(self._module_conf_dir, self._module_conf_file)
             customers_sales_json = await self.async_requester.get_api_data_async(
                 url_conf_key=self._url_profit_by_cust_list, to_file=self._to_file)
             for customer in customers_sales_json['rows']:
@@ -74,7 +77,7 @@ class MSCustProfitAsync(MSMainClass):
 
 if __name__ == "__main__":
     connect = MSCustProfitAsync()
-    # print(asyncio.run(connect.get_customers_sales_dict_async()))
+    print(asyncio.run(connect.get_customers_sales_dict_async()))
     # print(asyncio.run(connect.get_current_month_customers_sales_dict_async()))
-    print(asyncio.run(connect.get_last_month_customers_sales_dict_async()))
+    # print(asyncio.run(connect.get_last_month_customers_sales_dict_async()))
     connect.logger.debug("stock_all class initialized")

@@ -1,5 +1,7 @@
-from .MSPkgLogger import MSPkgLogger
-from .MSMainClass import MSMainClass
-from .MSConfigFile import MSConfigFile
-from .MSAccountSum import MSAccountSum
-from .MSBalacesAsync import MSBalacesAsync
+from MoiSkladPackage.MSConnectors.MSSaveJsonAsync import MSSaveJsonAsync
+from MoiSkladPackage.MSConnectors.MSPkgLogger import MSPkgLogger
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSRequesterAsync import MSRequesterAsync
+from MoiSkladPackage.MSConnectors.MSReadJsonAsync import MSReadJsonAsync
+
+
