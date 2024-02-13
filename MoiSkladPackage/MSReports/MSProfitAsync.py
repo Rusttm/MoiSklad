@@ -12,22 +12,14 @@ class MSProfitAsync(MSMainClass):
     """ gather balances in one jsonfile"""
     logger_name = f"{os.path.basename(__file__)}"
     _main_key = "ms_profit"
-    _module_conf_dir = "../config"
+    _module_conf_dir = "config"
     _module_conf_file = "ms_profit_config.json"
-    _result_bal_columns_key = "result_profit_columns" # list of result columns
+    _result_bal_columns_key = "result_profit_columns"  # list of result columns
     _module_config = None
 
     def __init__(self):
         super().__init__()
-        try:
-            loop = asyncio.get_event_loop()
-            self._module_config = loop.run_until_complete(self.get_json_data_async(self._module_conf_dir, self._module_conf_file))
-        except Exception as e:
-            print(e)
-            loop = asyncio.new_event_loop()
-            self._module_config = loop.run_until_complete(self.get_json_data_async(self._module_conf_dir, self._module_conf_file))
-
-        # self.module_config = asyncio.run(self.get_json_data_async(self.module_conf_dir, self.module_conf_file))
+        self._module_config = self.get_json_data_sync(self._module_conf_dir, self._module_conf_file)
 
     async def get_accounts_sum_async(self) -> dict:
         res_accounts = dict({'деньги на счетах': 0})
@@ -83,6 +75,7 @@ class MSProfitAsync(MSMainClass):
         result_dict.update(cust_groups_bal)
         result_dict.update({"Итог": balance_sum})
         return result_dict
+
     async def get_balance_data_async(self) -> dict:
         """ return data in format {"data": {balances_dict}, "sort_list": ["data", "summ" ..] }"""
         res_dict = dict({"data": {}, "col_list": []})
@@ -96,7 +89,4 @@ if __name__ == "__main__":
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
     connect = MSProfitAsync()
     print(asyncio.run(connect.get_balance_data_async()))
-    print(f"report done in {int(start_time-time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
-
-
-
+    print(f"report done in {int(start_time - time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
