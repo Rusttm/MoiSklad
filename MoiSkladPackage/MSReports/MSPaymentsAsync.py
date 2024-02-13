@@ -40,7 +40,7 @@ class MSPaymentsAsync(MSMainClass):
             self.logger.error(msg)
         return purposes_dict
 
-    async def get_payments_purpose_dict_async(self, from_date: str = None, to_date: str = None, to_file=False) -> dict:
+    async def get_payments_purpose_dict_async(self, from_date: str, to_date: str, report_type: str, to_file=False) -> dict:
         """ return dict
         {'date': {'date_from': '2024-01-01', 'date_to': '2024-02-13', 'report_type': 'daily'},
         'data':{purpose_name: payments_sum}}"""
@@ -51,7 +51,7 @@ class MSPaymentsAsync(MSMainClass):
         if not to_date:
             to_date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
         request_param_line = f"filter=moment>={from_date} 00:00:00&filter=moment<={to_date} 23:59:00"
-        date_dict = dict({"date_from": from_date, "date_to": to_date, "report_type": "custom"})
+        date_dict = dict({"date_from": from_date, "date_to": to_date, "report_type": report_type})
         payments_purpose_dict = dict()
         try:
             self.async_requester.set_api_param_line(request_param_line)
@@ -65,7 +65,7 @@ class MSPaymentsAsync(MSMainClass):
             self.logger.error(msg)
         return dict({"date": date_dict, "data": payments_purpose_dict})
 
-    async def get_purpose_sum_dict_async(self, from_date: str = None, to_date: str = None, to_file=False) -> dict:
+    async def get_purpose_sum_dict_async(self, from_date: str, to_date: str, report_type, to_file=False) -> dict:
         """ report returns
         {'date': {'date_from': '2024-01-01', 'date_to': '2024-02-13', 'report_type': 'daily'},
         'data': {'Зарплата': -215585.2, 'Перемещение': -1512690.0}} """
@@ -75,9 +75,9 @@ class MSPaymentsAsync(MSMainClass):
         purpose_date_dict = dict()
         try:
             purposes_dict = await self.get_purposes_dict_async()
-            purpose_payments_dict = await self.get_payments_purpose_dict_async(from_date=from_date, to_date=to_date, to_file=to_file)
+            purpose_payments_dict = await self.get_payments_purpose_dict_async(from_date=from_date, to_date=to_date, to_file=to_file, report_type=report_type)
             purpose_date_dict = dict({"date": purpose_payments_dict.get("date")})
-            purpose_date_dict["date"]["report_type"] = "custom"
+            purpose_date_dict["date"]["report_type"] = report_type
             purpose_payments_sum_dict = purpose_payments_dict.get("data")
             purpose_sum_dict = {purposes_dict.get(href, self._unknown_purpose): -summ for href, summ in purpose_payments_sum_dict.items()}
         except Exception as e:

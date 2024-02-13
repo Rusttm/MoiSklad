@@ -23,7 +23,7 @@ class MSCustSalesProfitAsync(MSMainClass):
         self.async_requester = MSRequesterAsync()
         self._module_config = self.async_requester.set_module_config_sync(self._module_conf_dir, self._module_conf_file)
 
-    async def get_customers_sales_dict_async(self, from_date=None, to_date=None, to_file=False) -> dict:
+    async def get_customers_sales_dict_async(self, from_date, to_date, to_file=False) -> dict:
         """ return dict {cust_href: [cust_name, cust_sales, cust_cost, cust_profit]}"""
         if to_file:
             self._to_file = to_file
@@ -33,7 +33,7 @@ class MSCustSalesProfitAsync(MSMainClass):
             to_date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
 
         customers_sales_dict = dict()
-        request_param_line = f"?momentFrom={from_date} 00:00:00&momentTo={to_date} 23:00:00"
+        request_param_line = f"momentFrom={from_date} 00:00:00&momentTo={to_date} 23:59:00"
         self.async_requester.set_api_param_line(request_param_line)
         try:
             customers_sales_json = await self.async_requester.get_api_data_async(
@@ -81,7 +81,7 @@ class MSCustSalesProfitAsync(MSMainClass):
 
 if __name__ == "__main__":
     connect = MSCustSalesProfitAsync()
-    # print(asyncio.run(connect.get_customers_sales_dict_async()))
+    print(asyncio.run(connect.get_customers_sales_dict_async("2023-12-01", "2023-12-31")))
     # print(asyncio.run(connect.get_current_month_customers_sales_dict_async()))
-    print(asyncio.run(connect.get_last_month_customers_sales_dict_async()))
+    # print(asyncio.run(connect.get_last_month_customers_sales_dict_async()))
     connect.logger.debug("stock_all class initialized")

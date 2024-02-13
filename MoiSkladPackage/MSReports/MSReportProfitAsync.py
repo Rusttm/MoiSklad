@@ -4,7 +4,7 @@ from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 
 import time
 import asyncio
-from datetime import datetime
+import datetime
 import os
 
 
@@ -90,19 +90,19 @@ class MSReportProfitAsync(MSMainClass):
         #     dep_dict["Отдел"] = dep
         return dep_sales
 
-    async def get_handled_expenses(self, from_date: str, to_date: str) -> dict:
+    async def get_handled_expenses(self, from_date: str, to_date: str, report_type="custom") -> dict:
         result_dict = dict()
         data_list = list()
         show_only_res_cols = list(["date_from", "date_to", "report_type"])
         try:
             from MoiSkladPackage.MSReports.MSPaymentsAsync import MSPaymentsAsync
             requester3 = MSPaymentsAsync()
-            general_expenses = await requester3.get_purpose_sum_dict_async(from_date=from_date, to_date=to_date)
+            general_expenses = await requester3.get_purpose_sum_dict_async(from_date=from_date, to_date=to_date, report_type=report_type)
             handled_dep_sales = await self.get_handled_dep_sales(from_date=from_date, to_date=to_date)
             # get info {"Новосибирск": {"Новосибирск склад": 1},"Москва": {"Москва склад": 1,"Аренда": 1}}
             additional_dep_expenses = self._module_config.get(self._main_key).get(self._dep_expenses_key)
             for dep_name, dep_dict in additional_dep_expenses.items():
-                temp_dict = handled_dep_sales[dep_name]
+                temp_dict = handled_dep_sales.get(dep_name, dict())
                 for exp_key, exp_mult in dep_dict.items():
                     dep_exp_sum = general_expenses["data"].get(exp_key, 0) * exp_mult
                     temp_dict[exp_key] = temp_dict.get(exp_key, 0) + dep_exp_sum
@@ -117,7 +117,7 @@ class MSReportProfitAsync(MSMainClass):
             'Всего': {'Выручка': 22, 'Себестоимость': 3, 'Валовая прибыль': 1, 'Выплаты Агенту': -2}}
 """
             # change "Выплаты Агенту"
-            general_expenses["data"]["Выплаты Агенту"] = handled_dep_sales['Всего']["Выплаты Агенту"]
+            general_expenses["data"]["Выплаты Агенту"] = handled_dep_sales['Всего'].get("Выплаты Агенту",0)
             handled_dep_sales['Всего'].update(general_expenses.get('data'))
             show_only_res_cols = self._module_config.get(self._main_key).get(self._result_profit_columns)
             # exclude not showed columns
@@ -145,6 +145,31 @@ class MSReportProfitAsync(MSMainClass):
         result_dict["col_list"] = show_only_res_cols
         return result_dict
 
+    async def get_daily_profit_report_async(self) -> dict:
+        """report to current day from 1 day of this month"""
+        cur_month = datetime.datetime.now().month
+        cur_year = datetime.datetime.now().year
+        from_date = f"{cur_year}-{cur_month}-01"
+        to_date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+        report_type = "daily"
+        result = await self.get_handled_expenses(from_date, to_date, report_type)
+        return result
+
+    async def get_monthly_profit_report_async(self, to_month: int, to_year: int) -> dict:
+        """report to current day from 1 day of this month"""
+        import calendar
+        month_first_day_datetime = datetime.datetime.strptime(f"{to_year}-{to_month}-01", "%Y-%m-%d")
+        month_last_day = calendar.monthrange(to_year, to_month)[1]
+        month_last_day_datetime = datetime.datetime.strptime(
+            f"{to_year}-{to_month}-{month_last_day}", "%Y-%m-%d")
+        from_date = month_first_day_datetime.strftime("%Y-%m-%d")
+        to_date = month_last_day_datetime.strftime("%Y-%m-%d")
+        report_type = "monthly"
+        result = await self.get_handled_expenses(from_date, to_date, report_type)
+        return result
+
+
+
 if __name__ == "__main__":
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
@@ -152,6 +177,7 @@ if __name__ == "__main__":
     # print(asyncio.run(connect.get_dep_sales_dict_async(from_date="2024-01-01", to_date="2024-01-31")))
     # print(asyncio.run(connect.get_outpayments_dict_async(from_date="2024-01-01", to_date="2024-01-31")))
     # print(asyncio.run(connect.get_handled_dep_sales(from_date="2024-01-01", to_date="2024-01-31")))
-    print(asyncio.run(connect.get_handled_expenses(from_date="2024-01-01", to_date="2024-01-31")))
-
+    print(asyncio.run(connect.get_handled_expenses(from_date="2024-01-01", to_date="2024-01-09")))
+    # print(asyncio.run(connect.get_daily_profit_report_async()))
+    # print(asyncio.run(connect.get_monthly_profit_report_async(to_year=2023, to_month=12)))
     print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

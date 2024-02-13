@@ -25,13 +25,13 @@ class MSGSControllerAsync(GSMSContAsync):
             print(msg)
         return balances_data
 
-    async def save_profit_gs_async(self, from_date, to_date) -> pd.DataFrame:
+    async def save_profit_gs_async(self, from_date, to_date, report_type="custom") -> pd.DataFrame:
         """ saves profit ms data to google spread"""
         profit_data = pd.DataFrame()
         try:
             from MoiSkladPackage.MSReports.MSReportProfitAsync import MSReportProfitAsync
             connector = MSReportProfitAsync()
-            profit_data = await connector.get_handled_expenses(from_date=from_date, to_date=to_date)
+            profit_data = await connector.get_handled_expenses(from_date=from_date, to_date=to_date, report_type=report_type)
             await self.save_data_ms_gs_async(profit_data, gs_tag="gs_profit", ws_id=539265374)
             msg = f"{__class__.__name__} saves balance data to spreadsheet. "
             self.logger.debug(msg)
@@ -48,6 +48,6 @@ if __name__ == "__main__":
     controller = MSGSControllerAsync()
     # print(connect.get_stores_good_price())
     # print(connect.get_stores_dict())
-    print(asyncio.run(controller.save_balance_gs_async()))
-    # print(asyncio.run(controller.save_profit_gs_async(from_date="2024-01-01", to_date="2024-01-31")))
+    # print(asyncio.run(controller.save_balance_gs_async()))
+    print(asyncio.run(controller.save_profit_gs_async(from_date="2024-01-01", to_date="2024-01-09")))
     controller.logger.debug("stock_all class initialized")
