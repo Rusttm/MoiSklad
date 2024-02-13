@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-from GSConnAsync import GSConnAsync
+from GoogleSpreadPackage.GSConnAsync import GSConnAsync
 import asyncio
 import os
+
+
 # from https://stackoverflow.com/questions/879173/how-to-ignore-deprecation-warnings-in-python
 # its hide pandas deprecation information
 def warn(*args, **kwargs):
     pass
+
+
 import warnings
+
 warnings.warn = warn
 import pandas as pd
+
 
 class GSMSContAsync(GSConnAsync):
     """ data handler """
@@ -25,30 +31,7 @@ class GSMSContAsync(GSConnAsync):
         try:
             self._async_gc = await self.create_gs_client_async()
             ss_id = self._config_data.get(self.ss_names_key).get(gs_tag)
-            import GSMSDataHandlerAsync
-            handler = GSMSDataHandlerAsync.GSMSDataHandlerAsync()
-            df = await handler.convert_ms_dict_2df_async(ms_data=ms_data)
-            spread_sheet = await self._async_gc.open_by_key(ss_id)
-            work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
-            # df = pd.DataFrame(await work_sheet.get_all_values())
-            if insert:
-                await work_sheet.clear()
-                await work_sheet.insert_rows([df.columns.values.tolist()] + df.values.tolist())
-            else:
-                await work_sheet.append_rows(df.values.tolist())
-
-        except Exception as e:
-            msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
-            self.logger.warning(msg)
-            print(msg)
-        return df
-
-    async def save_balances_ms_gs_async(self, ms_data: dict, gs_tag="gs_balance", insert=False, ws_id=1349066460) -> pd.DataFrame:
-        df = pd.DataFrame()
-        try:
-            self._async_gc = await self.create_gs_client_async()
-            ss_id = self._config_data.get(self.ss_names_key).get(gs_tag)
-            from GSMSDataHandlerAsync import GSMSDataHandlerAsync
+            from GoogleSpreadPackage.GSMSDataHandlerAsync import GSMSDataHandlerAsync
             handler = GSMSDataHandlerAsync()
             df = await handler.convert_ms_dict_2df_async(ms_data=ms_data)
             spread_sheet = await self._async_gc.open_by_key(ss_id)
@@ -66,6 +49,31 @@ class GSMSContAsync(GSConnAsync):
             print(msg)
         return df
 
+    async def save_balances_ms_gs_async(self, ms_data: list, gs_tag="gs_balance", insert=False,
+                                        ws_id=1349066460) -> pd.DataFrame:
+        df = pd.DataFrame()
+        try:
+            self._async_gc = await self.create_gs_client_async()
+            ss_id = self._config_data.get(self.ss_names_key).get(gs_tag)
+            from GoogleSpreadPackage.GSMSDataHandlerAsync import GSMSDataHandlerAsync
+            handler = GSMSDataHandlerAsync()
+            df = await handler.convert_ms_dict_2df_async(ms_data=ms_data)
+            spread_sheet = await self._async_gc.open_by_key(ss_id)
+            work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
+            # df = pd.DataFrame(await work_sheet.get_all_values())
+            if insert:
+                await work_sheet.clear()
+                await work_sheet.insert_rows([df.columns.values.tolist()] + df.values.tolist())
+            else:
+                await work_sheet.append_rows(df.values.tolist())
+
+
+        except Exception as e:
+            msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
+            self.logger.warning(msg)
+            print(msg)
+        return df
+
 
 
 if __name__ == "__main__":
@@ -74,14 +82,14 @@ if __name__ == "__main__":
     start_time = time.time()
     ms_data = {'data': {
         'Дата': '11.02.24 16:17',
-        'деньги на счетах': 1858546,
-        'склад себестоимость': 31512481,
-        'другие': 710918,
-        'москваконтрагенты': 450593,
-        'поставщики': 2984930,
-        'новосибирскконтрагенты': 698376,
+        'деньги на счетах': 1,
+        'склад себестоимость': 31,
+        'другие': 71,
+        'москваконтрагенты': 4593,
+        'поставщики': 20,
+        'новосибирскконтрагенты': 6986,
         'покупатели пфо': 0,
-        'Итог': 38215844},
+        'Итог': 384},
         'col_list':
             ['Дата',
              'Итог',
@@ -100,6 +108,6 @@ if __name__ == "__main__":
     #     connect.save_data_ms_gs_async(ms_data=ms_data, gs_tag="gs_test", insert=True)))
 
     print(asyncio.run(
-        connect.save_balances_ms_gs_async(ms_data=ms_data)))
+        connect.save_profit_ms_gs_async(ms_data=ms_data)))
 
     print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

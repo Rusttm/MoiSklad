@@ -1,5 +1,5 @@
-from GSPkgLogger import GSPkgLogger
-from GSReadJsonAsync import GSReadJsonAsync
+from GoogleSpreadPackage.GSPkgLogger import GSPkgLogger
+from GoogleSpreadPackage.GSReadJsonAsync import GSReadJsonAsync
 import os
 
 

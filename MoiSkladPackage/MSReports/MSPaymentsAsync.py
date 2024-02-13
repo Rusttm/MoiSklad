@@ -60,7 +60,6 @@ class MSPaymentsAsync(MSMainClass):
                 purpose_href = payment['expenseItem']['meta']['href']
                 payment_sum = payment['sum']/100
                 payments_purpose_dict[purpose_href] = payments_purpose_dict.get(purpose_href, 0) + payment_sum
-            print(payments_purpose_dict)
         except Exception as e:
             msg = f"module {__class__.__name__} can't read customers_list data, error: {e}"
             self.logger.error(msg)

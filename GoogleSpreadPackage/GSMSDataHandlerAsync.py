@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
-from GSMainClass import GSMainClass
+from GoogleSpreadPackage.GSMainClass import GSMainClass
 import asyncio
 import os
 # from https://stackoverflow.com/questions/879173/how-to-ignore-deprecation-warnings-in-python
@@ -10,6 +10,7 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 import pandas as pd
+import numpy as np
 
 
 class GSMSDataHandlerAsync(GSMainClass):
@@ -26,7 +27,8 @@ class GSMSDataHandlerAsync(GSMainClass):
         try:
             columns = ms_data.get("col_list")
             data = ms_data.get("data")
-            spread_sheet_df = pd.DataFrame([data], columns=columns)
+            spread_sheet_df = pd.DataFrame(data, columns=columns)
+            spread_sheet_df.replace({np.nan: 0}, inplace=True)
         except Exception as e:
             msg = f"{__class__.__name__} cant convert {ms_data} to Dataframe, Error: \n {e} "
             self.logger.warning(msg)

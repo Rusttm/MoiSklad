@@ -78,7 +78,7 @@ class MSReportBalacesAsync(MSMainClass):
     async def get_balance_data_async(self) -> dict:
         """ return data in format {"data": {balances_dict}, "col_list": ["data", "summ" ..] }"""
         res_dict = dict({"data": {}, "col_list": []})
-        res_dict["data"] = await self.form_balance_dict_async()
+        res_dict["data"] = [dict(await self.form_balance_dict_async())]
         res_dict["col_list"] = list(self._module_config.get(self.main_key).get(self.result_bal_columns_key))
         return res_dict
 

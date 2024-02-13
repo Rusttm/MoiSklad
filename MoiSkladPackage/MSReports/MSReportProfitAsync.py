@@ -13,11 +13,13 @@ class MSReportProfitAsync(MSMainClass):
     logger_name = f"{os.path.basename(__file__)}"
     _main_key = "ms_profit"
     _agent_payments_key = "agent_payments"
+    _dep_expenses_key = "dep_expences"
     _module_conf_dir = "config"
     _module_conf_file = "ms_profit_config.json"
     _result_bal_columns_key = "result_profit_columns"  # list of result columns
     _module_config = None
     _unknown_dep = "неизвестно"
+    _result_profit_columns = "result_profit_columns"
 
     def __init__(self):
         super().__init__()
@@ -67,11 +69,11 @@ class MSReportProfitAsync(MSMainClass):
 
     async def get_handled_dep_sales(self, from_date: str, to_date: str):
         """ handler for agent payments result:
-        {'Новосибирск': {'Выручка': 15, 'Себестоимость': 781, 'Валовая прибыль': 7, 'Выплаты Агенту': 97},
-        'Саратов': {'Выручка': 5, 'Себестоимость': 21, 'Валовая прибыль': 311},
-        'Основной': {'Выручка': 36840.0, 'Себестоимость': 7584.75, 'Валовая прибыль': 2},
-        'Москва': {'Выручка': 6, 'Себестоимость': 45, 'Валовая прибыль': 2, 'Выплаты Агенту': 6},
-        'Всего': {'Выручка': 23, 'Себестоимость': 12, 'Валовая прибыль': 10, 'Выплаты Агенту': 285}}
+        {'Новосибирск': {'Выручка': 15, 'Себестоимость': 781, 'Валовая прибыль': 7, 'Выплаты Агенту': -97},
+        'Саратов': {'Выручка': 5, 'Себестоимость': 21, 'Валовая прибыль': 31},
+        'Основной': {'Выручка': 30.0, 'Себестоимость': 7.75, 'Валовая прибыль': 2},
+        'Москва': {'Выручка': 6, 'Себестоимость': 45, 'Валовая прибыль': 2, 'Выплаты Агенту': -6},
+        'Всего': {'Выручка': 23, 'Себестоимость': 12, 'Валовая прибыль': 10, 'Выплаты Агенту': -285}}
         """
         dep_sales = await self.get_dep_sales_dict_async(from_date=from_date, to_date=to_date)
         # get info {'Новосибирск': {'Валовая прибыль': 0.28}, 'Москва': {'Выручка': 0.11}}
@@ -88,23 +90,60 @@ class MSReportProfitAsync(MSMainClass):
         #     dep_dict["Отдел"] = dep
         return dep_sales
 
-
-    async def get_outpayments_dict_async(self, from_date: str, to_date: str):
-        """returns dict
-        {'date_from': '2024-01-01', 'date_to': '2024-01-31', 'report_type': 'custom',
-        'Зарплата': -65.0, 'Перемещение': -50.0}"""
-        res_expences_dict = dict()
+    async def get_handled_expenses(self, from_date: str, to_date: str) -> dict:
+        result_dict = dict()
+        data_list = list()
+        show_only_res_cols = list(["date_from", "date_to", "report_type"])
         try:
             from MoiSkladPackage.MSReports.MSPaymentsAsync import MSPaymentsAsync
             requester3 = MSPaymentsAsync()
-            res_expences = await requester3.get_purpose_sum_dict_async(from_date=from_date, to_date=to_date)
-            res_expences_dict.update(res_expences.get("date"))
-            res_expences_dict.update(res_expences.get("data"))
-        except Exception as e:
-            msg = f"module {__class__.__name__} can't read expences data, error: {e}"
-            self.logger.error(msg)
-        return res_expences_dict
+            general_expenses = await requester3.get_purpose_sum_dict_async(from_date=from_date, to_date=to_date)
+            handled_dep_sales = await self.get_handled_dep_sales(from_date=from_date, to_date=to_date)
+            # get info {"Новосибирск": {"Новосибирск склад": 1},"Москва": {"Москва склад": 1,"Аренда": 1}}
+            additional_dep_expenses = self._module_config.get(self._main_key).get(self._dep_expenses_key)
+            for dep_name, dep_dict in additional_dep_expenses.items():
+                temp_dict = handled_dep_sales[dep_name]
+                for exp_key, exp_mult in dep_dict.items():
+                    dep_exp_sum = general_expenses["data"].get(exp_key, 0) * exp_mult
+                    temp_dict[exp_key] = temp_dict.get(exp_key, 0) + dep_exp_sum
+                handled_dep_sales[dep_name] = temp_dict
 
+
+            """ handled_dep_sales like 
+            {'Новосибирск': {'Выручка': 17, 'Себестоимость': 71, 'Валовая прибыль': 8, 'Выплаты Агенту': -2, 'Новосибирск склад': -2}, 
+            'Саратов': {'Выручка': 5, 'Себестоимость': 2, 'Валовая прибыль': 1, 'Выплаты Агенту': 0.0}, 
+            'Основной': {'Выручка': 30, 'Себестоимость': 7, 'Валовая прибыль': 2}, 
+            'Москва': {'Выручка': 6, 'Себестоимость': 4, 'Валовая прибыль': 2, 'Москва склад': -6, 'Аренда': -4}, 
+            'Всего': {'Выручка': 22, 'Себестоимость': 3, 'Валовая прибыль': 1, 'Выплаты Агенту': -2}}
+"""
+            # change "Выплаты Агенту"
+            general_expenses["data"]["Выплаты Агенту"] = handled_dep_sales['Всего']["Выплаты Агенту"]
+            handled_dep_sales['Всего'].update(general_expenses.get('data'))
+            show_only_res_cols = self._module_config.get(self._main_key).get(self._result_profit_columns)
+            # exclude not showed columns
+            for dep_name, dep_dict in handled_dep_sales.items():
+                temp_dict = dict()
+                for expenses_key in show_only_res_cols:
+                    temp_dict[expenses_key] = handled_dep_sales[dep_name].get(expenses_key, 0)
+                handled_dep_sales[dep_name] = temp_dict
+
+            # count summary in each department
+            for dep_name, dep_dict in handled_dep_sales.items():
+                summary = 0
+                for exp, exp_sum in dep_dict.items():
+                    if exp not in ['Выручка', 'Себестоимость']:
+                        summary += exp_sum
+                dep_dict['Чистая прибыль'] = summary
+                dep_dict['Отдел'] = dep_name
+                dep_dict.update(general_expenses.get('date'))
+                data_list.append(dep_dict)
+
+        except Exception as e:
+            msg = f"module {__class__.__name__} can't handle expenses data, error: {e}"
+            self.logger.error(msg)
+        result_dict["data"] = data_list
+        result_dict["col_list"] = show_only_res_cols
+        return result_dict
 
 if __name__ == "__main__":
     start_time = time.time()
@@ -112,6 +151,7 @@ if __name__ == "__main__":
     connect = MSReportProfitAsync()
     # print(asyncio.run(connect.get_dep_sales_dict_async(from_date="2024-01-01", to_date="2024-01-31")))
     # print(asyncio.run(connect.get_outpayments_dict_async(from_date="2024-01-01", to_date="2024-01-31")))
-    print(asyncio.run(connect.get_handled_dep_sales(from_date="2024-01-01", to_date="2024-01-31")))
+    # print(asyncio.run(connect.get_handled_dep_sales(from_date="2024-01-01", to_date="2024-01-31")))
+    print(asyncio.run(connect.get_handled_expenses(from_date="2024-01-01", to_date="2024-01-31")))
 
     print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")

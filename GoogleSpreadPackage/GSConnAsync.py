@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
 import gspread_asyncio
-from GSMainClass import GSMainClass
+from GoogleSpreadPackage.GSMainClass import GSMainClass
 import asyncio
 import os
 from google.oauth2.service_account import Credentials
