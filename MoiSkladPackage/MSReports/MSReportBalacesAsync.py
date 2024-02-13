@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 
 
-class MSBalacesAsync(MSMainClass):
+class MSReportBalacesAsync(MSMainClass):
     """ gather balances in one jsonfile"""
     logger_name = f"{os.path.basename(__file__)}"
     main_key = "ms_balance"
@@ -86,7 +86,7 @@ class MSBalacesAsync(MSMainClass):
 if __name__ == "__main__":
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
-    connect = MSBalacesAsync()
+    connect = MSReportBalacesAsync()
     print(asyncio.run(connect.get_balance_data_async()))
     print(f"report done in {int(start_time-time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
 

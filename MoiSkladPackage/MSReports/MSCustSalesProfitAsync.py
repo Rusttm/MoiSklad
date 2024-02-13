@@ -5,7 +5,7 @@ import datetime
 from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 
 
-class MSCustProfitAsync(MSMainClass):
+class MSCustSalesProfitAsync(MSMainClass):
     """gather customers profit dict filtered in month"""
     logger_name = f"{os.path.basename(__file__)}"
     _url_profit_by_cust_list = "url_profit_by_cust_list"
@@ -13,6 +13,7 @@ class MSCustProfitAsync(MSMainClass):
     _module_conf_dir = "config"
     _to_file = False
     async_requester = None
+    _module_config = None
 
     def __init__(self, to_file=False):
         super().__init__()
@@ -20,8 +21,9 @@ class MSCustProfitAsync(MSMainClass):
             self.to_file = to_file
         from MoiSkladPackage.MSConnectors.MSRequesterAsync import MSRequesterAsync
         self.async_requester = MSRequesterAsync()
+        self._module_config = self.async_requester.set_module_config_sync(self._module_conf_dir, self._module_conf_file)
 
-    async def get_customers_sales_dict_async(self, from_date=None, to_date=None, to_file=True) -> dict:
+    async def get_customers_sales_dict_async(self, from_date=None, to_date=None, to_file=False) -> dict:
         """ return dict {cust_href: [cust_name, cust_sales, cust_cost, cust_profit]}"""
         if to_file:
             self._to_file = to_file
@@ -34,7 +36,6 @@ class MSCustProfitAsync(MSMainClass):
         request_param_line = f"?momentFrom={from_date} 00:00:00&momentTo={to_date} 23:00:00"
         self.async_requester.set_api_param_line(request_param_line)
         try:
-            self.async_requester.set_module_config_sync(self._module_conf_dir, self._module_conf_file)
             customers_sales_json = await self.async_requester.get_api_data_async(
                 url_conf_key=self._url_profit_by_cust_list, to_file=self._to_file)
             for customer in customers_sales_json['rows']:
@@ -43,7 +44,10 @@ class MSCustProfitAsync(MSMainClass):
                 customer_sales = customer['sellSum'] / 100
                 customer_cost = customer['sellCostSum'] / 100
                 customer_profit = customer['profit'] / 100
-                customers_sales_dict[customer_href] = [customer_name, customer_sales, customer_cost, customer_profit]
+                customers_sales_dict[customer_href] = dict({"cust_name": customer_name,
+                                                            "cust_sales": customer_sales,
+                                                            "cust_cost": customer_cost,
+                                                            "cust_profit": customer_profit})
         except Exception as e:
             msg = f"module {__class__.__name__} can't read profit by customers data, error: {e}"
             self.logger.error(msg)
@@ -76,8 +80,8 @@ class MSCustProfitAsync(MSMainClass):
 
 
 if __name__ == "__main__":
-    connect = MSCustProfitAsync()
-    print(asyncio.run(connect.get_customers_sales_dict_async()))
+    connect = MSCustSalesProfitAsync()
+    # print(asyncio.run(connect.get_customers_sales_dict_async()))
     # print(asyncio.run(connect.get_current_month_customers_sales_dict_async()))
-    # print(asyncio.run(connect.get_last_month_customers_sales_dict_async()))
+    print(asyncio.run(connect.get_last_month_customers_sales_dict_async()))
     connect.logger.debug("stock_all class initialized")

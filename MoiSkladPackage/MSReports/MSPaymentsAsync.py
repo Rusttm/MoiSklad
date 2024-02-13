@@ -1,6 +1,6 @@
 import asyncio
 import os
-from MSMainClass import MSMainClass
+from MoiSkladPackage.MSConnectors.MSMainClass import MSMainClass
 import datetime
 
 class MSPaymentsAsync(MSMainClass):
@@ -11,8 +11,8 @@ class MSPaymentsAsync(MSMainClass):
     # _config_dir = "config"
     # _config_file_name = "ms_balances_config.json"
     # _config_data = None
-    # _module_conf_dir = "config"
-    # _module_conf_file = "ms_profit_config.json"
+    _module_conf_dir = "config"
+    _module_conf_file = "ms_profit_config.json"
     _to_file = False
     _unknown_purpose = "неизвестно"  # для неопределенных платежей
     async_requester = None
@@ -21,8 +21,8 @@ class MSPaymentsAsync(MSMainClass):
         super().__init__()
         if to_file:
             self.to_file = to_file
-        import MSRequesterAsync
-        self.async_requester = MSRequesterAsync.MSRequesterAsync()
+        from MoiSkladPackage.MSConnectors.MSRequesterAsync import  MSRequesterAsync
+        self.async_requester = MSRequesterAsync()
 
     async def get_purposes_dict_async(self, to_file=False) -> dict:
         """ purposes dict {purpose_href: purpose_name}"""
@@ -40,7 +40,7 @@ class MSPaymentsAsync(MSMainClass):
             self.logger.error(msg)
         return purposes_dict
 
-    async def get_payments_purpose_dict_async(self, from_date=None, to_date=None, to_file=False) -> dict:
+    async def get_payments_purpose_dict_async(self, from_date: str = None, to_date: str = None, to_file=False) -> dict:
         """ return dict
         {'date': {'date_from': '2024-01-01', 'date_to': '2024-02-13', 'report_type': 'daily'},
         'data':{purpose_name: payments_sum}}"""
@@ -66,7 +66,7 @@ class MSPaymentsAsync(MSMainClass):
             self.logger.error(msg)
         return dict({"date": date_dict, "data": payments_purpose_dict})
 
-    async def get_purpose_sum_dict_async(self, from_date=None, to_date=None, to_file=False) -> dict:
+    async def get_purpose_sum_dict_async(self, from_date: str = None, to_date: str = None, to_file=False) -> dict:
         """ report returns
         {'date': {'date_from': '2024-01-01', 'date_to': '2024-02-13', 'report_type': 'daily'},
         'data': {'Зарплата': -215585.2, 'Перемещение': -1512690.0}} """
