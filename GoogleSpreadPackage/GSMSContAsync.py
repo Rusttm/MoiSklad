@@ -26,7 +26,7 @@ class GSMSContAsync(GSConnAsync):
     def __init__(self):
         super().__init__()
 
-    async def save_data_ms_gs_async(self, ms_data: dict, gs_tag: str, insert=True, ws_id=0) -> pd.DataFrame:
+    async def save_data_ms_gs_async(self, ms_data: dict, gs_tag: str, insert=False, ws_id=0) -> pd.DataFrame:
         df = pd.DataFrame()
         try:
             self._async_gc = await self.create_gs_client_async()

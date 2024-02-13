@@ -48,6 +48,6 @@ if __name__ == "__main__":
     controller = MSGSControllerAsync()
     # print(connect.get_stores_good_price())
     # print(connect.get_stores_dict())
-    # print(asyncio.run(controller.save_balance_gs_async()))
-    print(asyncio.run(controller.save_profit_gs_async(from_date="2024-01-01", to_date="2024-01-31")))
+    print(asyncio.run(controller.save_balance_gs_async()))
+    # print(asyncio.run(controller.save_profit_gs_async(from_date="2024-01-01", to_date="2024-01-31")))
     controller.logger.debug("stock_all class initialized")

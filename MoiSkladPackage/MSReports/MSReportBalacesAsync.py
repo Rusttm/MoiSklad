@@ -36,7 +36,7 @@ class MSReportBalacesAsync(MSMainClass):
         """ return sum of all stores without excluded"""
         res_costs = dict({'склад себестоимость': 0})
         try:
-            from MSStoresSumAsync import MSStoresSumAsync
+            from MoiSkladPackage.MSReports.MSStoresSumAsync import MSStoresSumAsync
             ini_dict = MSStoresSumAsync()
             stores_dict = await ini_dict.get_stores_cost_dict_async()
             excluded_stores_list = list(self._module_config.values())
@@ -52,7 +52,7 @@ class MSReportBalacesAsync(MSMainClass):
         """ return dict of groups with balances {'другие': 710918, 'москваконтрагенты': 450593, 'поставщики': 2984930}"""
         cust_groups = dict({'другие поставщики': 0})
         try:
-            from MSCustBalAsync import MSCustBalAsync
+            from MoiSkladPackage.MSReports.MSCustBalAsync import MSCustBalAsync
             ini_dict = MSCustBalAsync()
             cust_groups = await ini_dict.get_cust_groups_sum_async()
             cust_groups = {key: -value for key, value in cust_groups.items()}
@@ -78,8 +78,16 @@ class MSReportBalacesAsync(MSMainClass):
     async def get_balance_data_async(self) -> dict:
         """ return data in format {"data": {balances_dict}, "col_list": ["data", "summ" ..] }"""
         res_dict = dict({"data": {}, "col_list": []})
-        res_dict["data"] = [dict(await self.form_balance_dict_async())]
-        res_dict["col_list"] = list(self._module_config.get(self.main_key).get(self.result_bal_columns_key))
+        show_col_list = list(self._module_config.get(self.main_key).get(self.result_bal_columns_key))
+        data_list = [await self.form_balance_dict_async()]
+        # handling empty dict values
+        for d in data_list:
+            new_dict = dict()
+            for col_name in show_col_list:
+                new_dict[col_name] = d.get(col_name, 0)
+            d = new_dict
+        res_dict["data"] = data_list
+        res_dict["col_list"] = show_col_list
         return res_dict
 
 
