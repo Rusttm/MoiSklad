@@ -24,7 +24,7 @@ class MSCustSalesProfitAsync(MSMainClass):
         self._module_config = self.async_requester.set_module_config_sync(self._module_conf_dir, self._module_conf_file)
 
     async def get_customers_sales_dict_async(self, from_date, to_date, to_file=False) -> dict:
-        """ return dict {cust_href: [cust_name, cust_sales, cust_cost, cust_profit]}"""
+        """ return dict {{cust_href: [cust_name, cust_sales, cust_cost, cust_profit]}}"""
         if to_file:
             self._to_file = to_file
         if not from_date:
