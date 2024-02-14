@@ -22,8 +22,9 @@ class MSReportDebtControlAsync(MSMainClass):
         super().__init__()
         self._module_config = self.set_module_config_sync(self._module_conf_dir, self._module_conf_file)
 
-    async def get_customers_groups_sum_async(self) -> dict:
-        """ return dict of groups with balances {'другие': 710918, 'москваконтрагенты': 450593, 'поставщики': 2984930}"""
+    async def get_customers_debt_sum_async(self) -> dict:
+        """ sum only negative!!! (debt) balances in client group
+        return dict of groups with balances {'другие': 710918, 'москваконтрагенты': 450593, 'поставщики': 2984930}"""
         res_debt = dict({'data': [], 'cols_list': [], 'info': {'total': 0}})
         cust_groups = dict()
         try:
@@ -32,7 +33,7 @@ class MSReportDebtControlAsync(MSMainClass):
             # {customer_href: customer_group_list}
             customers_groups = await requester.get_customers_dict_async()
             # {customer_href: [customer_bal, customer_name]}
-            customers_bal = await requester.get_customers_bal_async()
+            customers_bal = await requester.get_customers_bal_async(balance_filter="balance<0")
             # ["поставщики", "новосибирскконтрагенты", "москваконтрагенты", "покупатели пфо", "другие клиенты"]
             customers_show_groups = list(self._module_config[self._main_key][self._group_columns_key])
             other_customers = list(self._module_config[self._main_key][self._include_other_companies_key])
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     start_time = time.time()
     print(f"report starts at {time.strftime('%H:%M:%S', time.localtime())}")
     connect = MSReportDebtControlAsync()
-    print(asyncio.run(connect.get_customers_groups_sum_async()))
+    print(asyncio.run(connect.get_customers_debt_sum_async()))
     print(f"report done in {int(start_time-time.time())}sec at {time.strftime('%H:%M:%S', time.localtime())}")
 
 

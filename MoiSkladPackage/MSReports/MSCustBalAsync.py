@@ -42,11 +42,11 @@ class MSCustBalAsync(MSMainClass):
             self.logger.error(msg)
         return customers_dict
 
-    async def get_customers_bal_async(self) -> dict:
+    async def get_customers_bal_async(self, balance_filter="balance!=0") -> dict:
         """returns dict {customer_href: [customer_balance, customer_name]}"""
         customers_bal = dict()
         try:
-            self.async_requester.set_api_param_line('filter=balance!=0')
+            self.async_requester.set_api_param_line(f'filter={balance_filter}')
             cust_bal_dict = await self.async_requester.get_api_data_async(url_conf_key=self.url_customers_bal, to_file=self.to_file)
             for customer in cust_bal_dict['rows']:
                 customer_name = customer['counterparty']['name']
