@@ -23,6 +23,7 @@ class GSMSDataHandlerAsync(GSMainClass):
         super().__init__()
 
     async def convert_ms_dict_2df_async(self, ms_data: dict) -> pd.DataFrame:
+        """ gets data {data:[], col_list: [] }"""
         spread_sheet_df = pd.DataFrame()
         try:
             columns = ms_data.get("col_list")

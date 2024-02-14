@@ -80,8 +80,8 @@ if __name__ == "__main__":
     controller = MSGSControllerAsync()
     # print(connect.get_stores_good_price())
     # print(connect.get_stores_dict())
-    # print(asyncio.run(controller.save_balance_gs_async()))
-    print(asyncio.run(controller.save_profit_gs_custom_async(from_date="2023-01-01", to_date="2023-12-31")))
+    print(asyncio.run(controller.save_balance_gs_async()))
+    # print(asyncio.run(controller.save_profit_gs_custom_async(from_date="2023-01-01", to_date="2023-12-31")))
     # print(asyncio.run(controller.save_profit_gs_daily_async()))
     # print(asyncio.run(controller.save_profit_gs_monthly_async(to_year=2021, to_month=9)))
     # for year in range(2021,2024):

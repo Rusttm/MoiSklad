@@ -9,7 +9,8 @@ import os
 class MSReportBalacesAsync(MSMainClass):
     """ gather balances in one jsonfile"""
     logger_name = f"{os.path.basename(__file__)}"
-    main_key = "ms_balance"
+    _main_key = "ms_balance"
+    _info_key = "info"
     _module_conf_dir = "config"
     _module_conf_file = "ms_balances_config.json"
     _conf_dir = "config"
@@ -77,14 +78,18 @@ class MSReportBalacesAsync(MSMainClass):
         return result_dict
     async def get_balance_data_async(self) -> dict:
         """ return data in format {"data": {balances_dict}, "col_list": ["data", "summ" ..] }"""
-        res_dict = dict({"data": {}, "col_list": []})
-        show_col_list = list(self._module_config.get(self.main_key).get(self.result_bal_columns_key))
+        res_dict = dict({"data": {}, "col_list": [], "info": {}})
+        res_dict["info"] = self._module_config.get(self._main_key).get(self._info_key)
+        show_col_list = list(self._module_config.get(self._main_key).get(self.result_bal_columns_key))
         data_list = [await self.form_balance_dict_async()]
         # handling empty dict values
         for d in data_list:
             new_dict = dict()
             for col_name in show_col_list:
-                new_dict[col_name] = d.get(col_name, 0)
+                value = d.get(col_name, 0)
+                new_dict[col_name] = value
+                if col_name == 'Итог':
+                    res_dict["info"]["total"] = value
             d = new_dict
         res_dict["data"] = data_list
         res_dict["col_list"] = show_col_list

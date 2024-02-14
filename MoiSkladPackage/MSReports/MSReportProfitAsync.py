@@ -12,6 +12,7 @@ class MSReportProfitAsync(MSMainClass):
     """ gather profit report in one dict"""
     logger_name = f"{os.path.basename(__file__)}"
     _main_key = "ms_profit"
+    _info_key = "info"
     _agent_payments_key = "agent_payments"
     _agent_payments_purpose = "Выплаты Агенту"
     _dep_expenses_key = "dep_expences"
@@ -93,6 +94,7 @@ class MSReportProfitAsync(MSMainClass):
 
     async def get_handled_expenses(self, from_date: str, to_date: str, report_type="custom") -> dict:
         result_dict = dict()
+        result_dict["info"] = self._module_config.get(self._main_key).get(self._info_key)
         data_list = list()
         show_only_res_cols = list(["date_from", "date_to", "report_type"])
         try:
@@ -135,6 +137,8 @@ class MSReportProfitAsync(MSMainClass):
                     if exp not in ['Выручка', 'Себестоимость']:
                         summary += exp_sum
                 dep_dict['Чистая прибыль'] = summary
+                if dep_name == "Всего":
+                    result_dict["info"]["total"] = summary
                 dep_dict['Отдел'] = dep_name
                 dep_dict.update(general_expenses.get('date'))
                 data_list.append(dep_dict)
@@ -144,6 +148,7 @@ class MSReportProfitAsync(MSMainClass):
             self.logger.error(msg)
         result_dict["data"] = data_list
         result_dict["col_list"] = show_only_res_cols
+
         return result_dict
 
     async def get_daily_profit_report_async(self) -> dict:
@@ -178,7 +183,7 @@ if __name__ == "__main__":
     # print(asyncio.run(connect.get_dep_sales_dict_async(from_date="2024-01-01", to_date="2024-01-31")))
     # print(asyncio.run(connect.get_outpayments_dict_async(from_date="2024-01-01", to_date="2024-01-31")))
     # print(asyncio.run(connect.get_handled_dep_sales(from_date="2024-01-01", to_date="2024-01-31")))
-    print(asyncio.run(connect.get_handled_expenses(from_date="2024-01-01", to_date="2024-01-09")))
+    print(asyncio.run(connect.get_handled_expenses(from_date="2024-01-01", to_date="2024-01-31")))
     # print(asyncio.run(connect.get_daily_profit_report_async()))
     # print(asyncio.run(connect.get_monthly_profit_report_async(to_year=2023, to_month=12)))
     print(f"report done in {int(time.time() - start_time)}sec at {time.strftime('%H:%M:%S', time.localtime())}")
