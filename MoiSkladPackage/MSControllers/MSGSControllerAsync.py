@@ -81,7 +81,10 @@ if __name__ == "__main__":
     # print(connect.get_stores_good_price())
     # print(connect.get_stores_dict())
     # print(asyncio.run(controller.save_balance_gs_async()))
-    # print(asyncio.run(controller.save_profit_gs_custom_async(from_date="2024-01-01", to_date="2024-01-09")))
+    print(asyncio.run(controller.save_profit_gs_custom_async(from_date="2023-01-01", to_date="2023-12-31")))
     # print(asyncio.run(controller.save_profit_gs_daily_async()))
-    print(asyncio.run(controller.save_profit_gs_monthly_async(to_year=2022, to_month=12)))
+    # print(asyncio.run(controller.save_profit_gs_monthly_async(to_year=2021, to_month=9)))
+    # for year in range(2021,2024):
+    #     for month in range(1,13):
+    #         asyncio.run(controller.save_profit_gs_monthly_async(to_year=year, to_month=month))
     controller.logger.debug("stock_all class initialized")

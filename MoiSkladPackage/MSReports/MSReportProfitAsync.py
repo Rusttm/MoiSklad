@@ -13,6 +13,7 @@ class MSReportProfitAsync(MSMainClass):
     logger_name = f"{os.path.basename(__file__)}"
     _main_key = "ms_profit"
     _agent_payments_key = "agent_payments"
+    _agent_payments_purpose = "Выплаты Агенту"
     _dep_expenses_key = "dep_expences"
     _module_conf_dir = "config"
     _module_conf_file = "ms_profit_config.json"
@@ -75,6 +76,7 @@ class MSReportProfitAsync(MSMainClass):
         'Москва': {'Выручка': 6, 'Себестоимость': 45, 'Валовая прибыль': 2, 'Выплаты Агенту': -6},
         'Всего': {'Выручка': 23, 'Себестоимость': 12, 'Валовая прибыль': 10, 'Выплаты Агенту': -285}}
         """
+
         dep_sales = await self.get_dep_sales_dict_async(from_date=from_date, to_date=to_date)
         # get info {'Новосибирск': {'Валовая прибыль': 0.28}, 'Москва': {'Выручка': 0.11}}
         additional_dep_expences = self._module_config.get(self._main_key).get(self._agent_payments_key)
@@ -84,11 +86,10 @@ class MSReportProfitAsync(MSMainClass):
             if agent_payments_dict:
                 for key, mult in agent_payments_dict.items():
                     agent_sum = dep_dict.get(key, 0) * mult
-                    dep_dict["Выплаты Агенту"] = dep_dict.get("Выплаты Агенту", 0) - agent_sum
-                    dep_sales["Всего"]["Выплаты Агенту"] = dep_sales["Всего"].get("Выплаты Агенту", 0) - agent_sum
-        # for dep, dep_dict in dep_sales.items():
-        #     dep_dict["Отдел"] = dep
+                    dep_dict[self._agent_payments_purpose] = dep_dict.get(self._agent_payments_purpose, 0) - agent_sum
+                    # dep_sales["Всего"]["Выплаты Агенту"] = dep_sales["Всего"].get("Выплаты Агенту", 0) - agent_sum
         return dep_sales
+
 
     async def get_handled_expenses(self, from_date: str, to_date: str, report_type="custom") -> dict:
         result_dict = dict()
@@ -116,8 +117,8 @@ class MSReportProfitAsync(MSMainClass):
             'Москва': {'Выручка': 6, 'Себестоимость': 4, 'Валовая прибыль': 2, 'Москва склад': -6, 'Аренда': -4}, 
             'Всего': {'Выручка': 22, 'Себестоимость': 3, 'Валовая прибыль': 1, 'Выплаты Агенту': -2}}
 """
-            # change "Выплаты Агенту"
-            general_expenses["data"]["Выплаты Агенту"] = handled_dep_sales['Всего'].get("Выплаты Агенту",0)
+            # change "Выплаты Агенту" from dep to 'Всего'
+            # general_expenses["data"][self._agent_payments_purpose] = handled_dep_sales['Всего'].get(self._agent_payments_purpose,0)
             handled_dep_sales['Всего'].update(general_expenses.get('data'))
             show_only_res_cols = self._module_config.get(self._main_key).get(self._result_profit_columns)
             # exclude not showed columns
