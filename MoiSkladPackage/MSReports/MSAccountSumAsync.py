@@ -37,7 +37,9 @@ class MSAccountSumAsync(MSMainClass):
     async def get_account_remains_async(self) -> dict:
         """this function gets sum of bank accounts remains"""
         res_accounts = dict({'data': [], 'cols_list': [], 'info': {'total': 0}})
+        res_accounts[self._info_key] = self._module_config.get(self._main_key).get(self._info_key)
         accounts_cols_list = self._module_config.get(self._main_key).get(self._accounts_columns_key)
+
         # get account sum
         try:
             acc_req = await self.async_requester.get_api_data_async(url_conf_key=self.url_key, to_file=self.save_2file)

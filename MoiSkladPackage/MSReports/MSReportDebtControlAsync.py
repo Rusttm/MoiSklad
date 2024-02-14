@@ -37,6 +37,7 @@ class MSReportDebtControlAsync(MSMainClass):
             # ["поставщики", "новосибирскконтрагенты", "москваконтрагенты", "покупатели пфо", "другие клиенты"]
             customers_show_groups = list(self._module_config[self._main_key][self._group_columns_key])
             other_customers = list(self._module_config[self._main_key][self._include_other_companies_key])
+            res_debt[self._info_key] = self._module_config[self._main_key][self._info_key]
             total_sum = 0
             for cust_href, cust_list in customers_bal.items():
                 cust_sum = cust_list[0]

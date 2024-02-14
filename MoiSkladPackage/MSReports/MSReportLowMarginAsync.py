@@ -24,6 +24,7 @@ class MSReportLowMarginAsync(MSMainClass):
         """ return dict low margin clients"""
         res_margins = dict({'data': [], 'cols_list': ['name', 'profitability'], 'info': {'total': 0}})
         profit_margin = self._module_config.get(self._main_key).get(self._profit_margin_key)
+        res_margins["info"] = self._module_config.get(self._main_key).get(self._info_key)
         try:
             from MoiSkladPackage.MSReports.MSCustSalesProfitAsync import MSCustSalesProfitAsync
             requester = MSCustSalesProfitAsync()
