@@ -1,12 +1,6 @@
 # -*- coding: utf8 -*-
 import requests
-import json
-from base64 import b64encode
-from datetime import datetime
-import xlsxwriter
-from datetime import date
 import configparser
-import google_books
 import os
 
 conf = configparser.ConfigParser()
@@ -25,7 +19,7 @@ header_for_token_auth = headers_dict
 url_customers = conf['MoiSklad']['url_customers']
 
 
-def get_customer_tag(link='https://online.moysklad.ru/api/remap/1.2/entity/counterparty/aea8eed7-5738-11eb-0a80-06ec00ac6c64'):
+def get_customer_tag(link='https://api.moysklad.ru/api/remap/1.2/entity/counterparty/aea8eed7-5738-11eb-0a80-06ec00ac6c64'):
     """gets link and returns tag"""
     try:
         req = requests.get(url=link, headers=header_for_token_auth)
@@ -42,6 +36,7 @@ def get_customers_balance():
 
     try:
         filtered_url = f'{url_customers}?filter=balance<0'
+        # filtered_url = f'{url_customers}?filter=balance!=0'
         req = requests.get(url=filtered_url, headers=header_for_token_auth)
         #with open('customer_balance_list.json', 'w') as ff:
         #    json.dump(req.json(), ff, ensure_ascii=False)
@@ -60,3 +55,7 @@ def get_customers_balance():
 
 
     return {'Покупатели': sales_group_customers, 'Поставщики': support_group_customers}
+
+
+if __name__ == "__main__":
+    print(get_customers_balance())
