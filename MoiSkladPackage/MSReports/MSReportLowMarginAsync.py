@@ -22,7 +22,7 @@ class MSReportLowMarginAsync(MSMainClass):
 
     async def get_low_margin_cust_list_async(self, from_date, to_date) -> dict:
         """ return dict low margin clients"""
-        res_margins = dict({'data': [], 'cols_list': ['name', 'profitability'], 'info': {'total': 0}})
+        res_margins = dict({'data': [], 'col_list': ['name', 'profitability'], 'info': {'total': 0}})
         profit_margin = self._module_config.get(self._main_key).get(self._profit_margin_key)
         res_margins["info"] = self._module_config.get(self._main_key).get(self._info_key)
         try:
@@ -44,7 +44,7 @@ class MSReportLowMarginAsync(MSMainClass):
                         name_dict['profitability'] = profitability
                         counter += 1
                         names_list.append(name_dict)
-            res_margins["data"] = names_list
+            res_margins["data"] = [names_list]
             res_margins["info"]["total"] = counter
 
         except Exception as e:
@@ -53,7 +53,7 @@ class MSReportLowMarginAsync(MSMainClass):
         return res_margins
 
     async def get_today_low_margin_clients_async(self) -> dict:
-        # res_margins = dict({'data': [], 'cols_list': ['name', 'profitability'], 'info': {'total': 0}})
+        # res_margins = dict({'data': [], 'col_list': ['name', 'profitability'], 'info': {'total': 0}})
         today = datetime.datetime.now().strftime("%Y-%m-%d")
         req_data = await self.get_low_margin_cust_list_async(from_date=today, to_date=today)
         return req_data

@@ -36,7 +36,7 @@ class MSAccountSumAsync(MSMainClass):
 
     async def get_account_remains_async(self) -> dict:
         """this function gets sum of bank accounts remains"""
-        res_accounts = dict({'data': [], 'cols_list': [], 'info': {'total': 0}})
+        res_accounts = dict({'data': ['итого'], 'col_list': [], 'info': {'total': 0}})
         res_accounts[self._info_key] = self._module_config.get(self._main_key).get(self._info_key)
         accounts_cols_list = self._module_config.get(self._main_key).get(self._accounts_columns_key)
 
@@ -52,7 +52,7 @@ class MSAccountSumAsync(MSMainClass):
                 account_sum = account_elem['balance']/100
                 new_dict[account_num] = int(account_sum)
                 accounts_sum += int(account_sum)
-
+            new_dict['итого'] = accounts_sum
             # accounts_bal['accounts'] = dict(sorted(new_dict.items(), key=lambda x: x[1], reverse=True))
             # accounts_bal['accounts_sum'] = accounts_sum
 
@@ -63,13 +63,11 @@ class MSAccountSumAsync(MSMainClass):
                     msg = f" attention!!! account {account} is not in config list {self._module_conf_file}, please declare it!"
                     print(msg)
                     self.logger.warning(msg)
-
-
-            res_accounts["cols_list"] = accounts_cols_list
+            res_accounts["col_list"] = accounts_cols_list
             for account in accounts_cols_list:
                 new_dict[account] = new_dict.get(account, 0)
-
             res_accounts["data"] = [new_dict]
+
             res_accounts["info"]["total"] = accounts_sum
 
         except Exception as e:

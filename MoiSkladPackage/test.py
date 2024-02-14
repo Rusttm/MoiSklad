@@ -1,4 +1,2 @@
-import os
-
-_dir_name = ["..", "data"]
-print(os.path.join(*_dir_name))
+import datetime
+print(datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # from https://gspread-asyncio.readthedocs.io/en/latest/
+import datetime
+
 from GoogleSpreadPackage.GSConnAsync import GSConnAsync
 import asyncio
 import os
@@ -42,13 +44,35 @@ class GSMSContAsync(GSConnAsync):
                 await work_sheet.insert_rows([df.columns.values.tolist()] + df.values.tolist())
             else:
                 await work_sheet.append_rows(df.values.tolist())
-
         except Exception as e:
             msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
             self.logger.warning(msg)
             print(msg)
         return df
 
+    async def save_data_ms_gs_id_async(self, ms_data: dict, gs_id: str, insert=False, ws_id=0, time_col=False) -> pd.DataFrame:
+        df = pd.DataFrame()
+        try:
+            self._async_gc = await self.create_gs_client_async()
+            from GoogleSpreadPackage.GSMSDataHandlerAsync import GSMSDataHandlerAsync
+            handler = GSMSDataHandlerAsync()
+            df = await handler.convert_ms_dict_2df_async(ms_data=ms_data)
+            if time_col:
+                # df["rep_time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                df.insert(0, "rep_time", datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+            spread_sheet = await self._async_gc.open_by_key(gs_id)
+            work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
+            # df = pd.DataFrame(await work_sheet.get_all_values())
+            if insert:
+                await work_sheet.clear()
+                await work_sheet.insert_rows([df.columns.values.tolist()] + df.values.tolist())
+            else:
+                await work_sheet.append_rows(df.values.tolist())
+        except Exception as e:
+            msg = f"{__class__.__name__} cant get spreadsheet metadata, Error: \n {e} "
+            self.logger.warning(msg)
+            print(msg)
+        return df
 
 if __name__ == "__main__":
     import time

@@ -52,11 +52,12 @@ class MSReportDebtControlAsync(MSMainClass):
                         cust_groups[self._other_companies_group_name] = cust_groups.get(self._other_companies_group_name, 0) + int(cust_sum)
                         total_sum += cust_sum
                         break
-            res_debt["cols_list"] = customers_show_groups
+            res_debt["col_list"] = customers_show_groups
+            cust_groups["итого"] = total_sum
             # handle groups
             for group in customers_show_groups:
                 cust_groups[group] = cust_groups.get(group, 0)
-            res_debt["data"] = cust_groups
+            res_debt["data"] = [cust_groups]
             res_debt["info"]["total"] = total_sum
 
         except Exception as e:
