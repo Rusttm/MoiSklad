@@ -3,7 +3,7 @@ import logging
 from aiogram import types, Router, F
 from aiogram.filters import CommandStart, Command, or_f
 from AiogramPackage.TGFilters.BOTFilterChats import BOTFilterChat
-from AiogramPackage.TGKeyboards import TGKeybReply
+from AiogramPackage.TGKeyboards import TGKeybReply as my_reply_kbds
 
 
 user_router = Router()
@@ -12,12 +12,12 @@ user_router.message.filter(BOTFilterChat(["private"]))
 @user_router.message(CommandStart())
 @user_router.message(F.text.lower() == "start")
 async def start_cmd(message: types.Message):
-    await message.answer(f"{message.from_user.first_name}, welcome to bot!", reply_markup=TGKeybReply.my_reply_kb)
+    await message.answer(f"{message.from_user.first_name}, welcome to bot!", reply_markup=my_reply_kbds.my_reply_kb)
 
 
 @user_router.message(or_f(Command("menu", "men", ignore_case=True), (F.text.lower().contains("меню"))))
 async def menu_cmd(message: types.Message):
-    await message.answer(f"{message.from_user.first_name}, welcome to main menu!")
+    await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kbds.del_kb)
 
 
 @user_router.message(Command("about", "abou", ignore_case=True))
