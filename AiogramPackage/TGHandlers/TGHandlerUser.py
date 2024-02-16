@@ -16,12 +16,25 @@ user_router.message.filter(BOTFilterChat(["private"]))
 @user_router.message(CommandStart())
 @user_router.message(F.text.lower() == "start")
 async def start_cmd(message: types.Message):
+    # version1
     # await message.answer(f"{message.from_user.first_name}, welcome to bot!", reply_markup=my_reply_kb.my_reply_kb)
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to bot!",
-                         reply_markup=my_bld_kb.my_reply_kb_bld.as_markup(
-                             resize_keyboard=True,
-                             input_field_placeholder="Что Вас интересует"
-                         ))
+    # version2
+    # await message.answer(f"{hbold(message.from_user.first_name)}, welcome to bot!",
+    #                      reply_markup=my_bld_kb.my_reply_kb_bld.as_markup(
+    #                          resize_keyboard=True,
+    #                          input_field_placeholder="Что Вас интересует"
+    #                      ))
+    await message.answer(f"{message.from_user.first_name}, welcome to bot!",
+                         reply_markup=my_bld_kb.get_my_kb(
+                             "Меню",
+                             "Отчеты",
+                             "О боте",
+                             "Реквизиты Компании",
+                             "Платежные реквизиты",
+                             placeholder="Выберите пункт меню",
+                             sizes=(2, 2)
+                         )
+                         )
 
 
 @user_router.message(or_f(Command("menu", "men", ignore_case=True), (F.text.lower().contains("меню"))))
