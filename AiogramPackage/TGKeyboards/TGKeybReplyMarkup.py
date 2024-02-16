@@ -8,7 +8,7 @@ my_reply_kb = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text="О боте"),
-            KeyboardButton(text="Реквизиты"),
+            KeyboardButton(text="Реквизиты Компании"),
             KeyboardButton(text="Платежные реквизиты"),
         ]
     ],
