@@ -4,10 +4,9 @@ my_reply_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text="Меню"),
-            KeyboardButton(text="Отчеты"),
+            KeyboardButton(text="О боте"),
         ],
         [
-            KeyboardButton(text="О боте"),
             KeyboardButton(text="Реквизиты Компании"),
             KeyboardButton(text="Платежные реквизиты"),
         ]

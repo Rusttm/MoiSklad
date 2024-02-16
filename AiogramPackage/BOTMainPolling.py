@@ -9,6 +9,7 @@ import logging
 
 from AiogramPackage.TGHandlers.TGHandlerUser import user_router
 from AiogramPackage.TGHandlers.TGHandlerGroup import user_group_router
+from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
 
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +25,8 @@ ALLOWED_UPDATES = ["message", "edited_message"]
 bot = Bot(token=_config.get("bot_config").get("token"), parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
+#0 router
+dp.include_router(admin_group_router)
 #1 router
 dp.include_router(user_router)
 #2 router
