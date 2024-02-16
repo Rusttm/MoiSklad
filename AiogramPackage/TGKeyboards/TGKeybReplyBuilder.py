@@ -16,6 +16,8 @@ reply_kb_bld_admin.row(
     KeyboardButton(text="Отчеты")
 )
 
+del_kb = ReplyKeyboardRemove()
+
 
 def get_my_kb(
         *btns: str,

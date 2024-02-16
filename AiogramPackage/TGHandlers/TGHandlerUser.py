@@ -37,9 +37,16 @@ async def start_cmd(message: types.Message):
                          )
 
 
+@user_router.message(Command("hide_menu", ignore_case=True))
+async def menu_cmd(message: types.Message):
+    # ver1
+    await message.answer(f"{message.from_user.first_name}, can't hide main menu!", reply_markup=my_bld_kb.del_kb)
+
 @user_router.message(or_f(Command("menu", "men", ignore_case=True), (F.text.lower().contains("меню"))))
 async def menu_cmd(message: types.Message):
-    await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kb.del_kb)
+    # ver1
+    # await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kb.del_kb)
+    await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kb.my_reply_kb)
 
 
 @user_router.message(Command("about", "abou", ignore_case=True))
