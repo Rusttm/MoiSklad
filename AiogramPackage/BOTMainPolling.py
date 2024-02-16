@@ -2,6 +2,8 @@
 import asyncio
 import os
 from aiogram import Bot, Dispatcher, types
+from aiogram.enums import ParseMode
+
 from AiogramPackage.TGConnectors.BOTMainClass import BOTMainClass
 import logging
 
@@ -19,7 +21,7 @@ logger.info(f"logger {os.path.basename(__file__)} starts logging")
 
 ALLOWED_UPDATES = ["message", "edited_message"]
 
-bot = Bot(token=_config.get("bot_config").get("token"))
+bot = Bot(token=_config.get("bot_config").get("token"), parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
 #1 router
