@@ -3,6 +3,7 @@ import logging
 from aiogram import types, Router, F
 from aiogram.filters import CommandStart, Command, or_f
 from aiogram.utils.markdown import hbold
+from aiogram.utils.formatting import as_list, as_marked_section, Bold
 
 from AiogramPackage.TGFilters.BOTFilterChats import BOTFilterChat
 from AiogramPackage.TGKeyboards import TGKeybReplyMarkup as my_reply_kb
@@ -19,7 +20,7 @@ async def start_cmd(message: types.Message):
     await message.answer(f"{hbold(message.from_user.first_name)}, welcome to bot!",
                          reply_markup=my_bld_kb.my_reply_kb_bld.as_markup(
                              resize_keyboard=True,
-                             input_field_placeholder="Что Вас интересует?"
+                             input_field_placeholder="Что Вас интересует"
                          ))
 
 
@@ -41,7 +42,8 @@ async def menu_cmd(message: types.Message):
 @user_router.message(Command("details", "company", ignore_case=True))
 @user_router.message(F.text.lower().contains("компан"))
 async def menu_cmd(message: types.Message):
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to company details!")
+    text = as_list(as_marked_section(Bold("Реквизиты"), "1", "2", marker="·"), sep="\n-----")
+    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to company details!\n {text.as_html()}")
     logging.info("details reports")
 
 @user_router.message(Command("account", "payments", ignore_case=True))
