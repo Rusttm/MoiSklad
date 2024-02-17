@@ -11,7 +11,7 @@ from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType
 user_group_router = Router()
 user_group_router.message.filter(BOTFilterChatType(["group", "supergroup"]))
 
-restricted_words = {"идиот", "дурак", "хрень", "idiot"}
+# restricted_words = {"идиот", "дурак", "хрень", "idiot"}
 
 
 def clean_text(text: str):
@@ -32,9 +32,10 @@ async def admin_cmd(message: types.Message, bot: Bot):
 
 @user_group_router.edited_message()
 @user_group_router.message()
-async def cleaner(message: types.Message):
+async def cleaner(message: types.Message, bot: Bot):
     message_words_set = set(clean_text(message.text.lower()).split())
-    if restricted_words.intersection(message_words_set):
+    restricted_set = set(bot.restricted_words)
+    if restricted_set.intersection(message_words_set):
         await message.answer(f"{message.from_user.username}, соблюдайте порядок в чате!")
         await message.delete()
         # можно даже забанить

@@ -11,7 +11,7 @@ from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_bld_admin, de
 from aiogram.utils.markdown import hbold
 
 admin_group_router = Router()
-admin_group_router.message.filter(BOTFilterChatType(["private", "group", "supergroup"]), BOTFilterAdminList())
+admin_group_router.message.filter(BOTFilterChatType(["private"]), BOTFilterAdminList())
 # admin_group_router.edited_message.filter(BOTFilterChatType(["private", "group", "supergroup"]), BOTFilterAdminList())
 
 
@@ -22,18 +22,25 @@ def clean_text(text: str):
 
 async def reload_admins_list(bot: Bot):
     _main_key = "bot_config"
-    _fin_key = "admin_members"
+    _admin_key = "admin_members"
+    _fin_key = "fin_members"
+    _restricted_key = "restricted_words"
     _config_dir_name = "config"
     _config_file_name = "bot_main_config.json"
     _module_config: dict = None
     from AiogramPackage.TGConnectors.BOTReadJsonAsync import BOTReadJsonAsync
     connector = BOTReadJsonAsync()
-    _module_config = await connector.get_main_config_json_data_async(_config_dir_name,
-                                                                               _config_file_name)
-    admin_members_dict = _module_config.get(_main_key).get(_fin_key)
+    _module_config = await connector.get_main_config_json_data_async(_config_dir_name, _config_file_name)
+    admin_members_dict = _module_config.get(_main_key).get(_admin_key)
+    fin_members_dict = _module_config.get(_main_key).get(_fin_key)
     bot.admins_list = list(admin_members_dict.values())
     logging.info(f"reloaded {bot.admins_list=}")
-    logging.info(f" now {bot.chat_group_admins_list=}")
+    bot.fins_list = list(fin_members_dict.values())
+    logging.info(f"reloaded {bot.fins_list=}")
+    restricted_words_list = _module_config.get(_main_key).get(_restricted_key)
+    bot.restricted_words = list(restricted_words_list)
+    logging.info(f"reloaded {bot.restricted_words=}")
+    # logging.info(f" now {bot.chat_group_admins_list=}")
     if not bot.chat_group_admins_list:
         bot.chat_group_admins_list = bot.admins_list
         logging.info(f" and {bot.chat_group_admins_list=}")

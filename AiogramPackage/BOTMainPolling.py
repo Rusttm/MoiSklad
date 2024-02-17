@@ -38,6 +38,7 @@ dp.include_router(user_group_router)
 bot.admins_list = [731370983]
 bot.chat_group_admins_list = []
 bot.fins_list = []
+bot.restricted_words = []
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
