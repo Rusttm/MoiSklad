@@ -5,13 +5,13 @@ from aiogram.filters import CommandStart, Command, or_f
 from aiogram.utils.markdown import hbold
 from aiogram.utils.formatting import as_list, as_marked_section, Bold
 
-from AiogramPackage.TGFilters.BOTFilterChats import BOTFilterChat
+from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType
 from AiogramPackage.TGKeyboards import TGKeybReplyMarkup as my_reply_kb
 from AiogramPackage.TGKeyboards import TGKeybReplyBuilder as my_bld_kb
 
 
 user_router = Router()
-user_router.message.filter(BOTFilterChat(["private"]))
+user_router.message.filter(BOTFilterChatType(["private"]))
 
 @user_router.message(CommandStart())
 @user_router.message(F.text.lower() == "start")

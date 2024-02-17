@@ -10,6 +10,7 @@ import logging
 from AiogramPackage.TGHandlers.TGHandlerUser import user_router
 from AiogramPackage.TGHandlers.TGHandlerGroup import user_group_router
 from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_group_router
+from AiogramPackage.TGHandlers.TGHandlerFin import fin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
 
 logging.basicConfig(level=logging.INFO)
@@ -28,10 +29,15 @@ dp = Dispatcher()
 #0 router
 dp.include_router(admin_group_router)
 #1 router
-dp.include_router(user_router)
+dp.include_router(fin_group_router)
 #2 router
+dp.include_router(user_router)
+#3 router
 dp.include_router(user_group_router)
 
+bot.admins_list = [731370983]
+bot.chat_group_admins_list = []
+bot.fins_list = []
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
