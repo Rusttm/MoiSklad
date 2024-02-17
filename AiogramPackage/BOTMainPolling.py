@@ -18,7 +18,7 @@ logging.info("logging starts")
 bot_class = BOTMainClass()
 _config = bot_class.get_main_config_json_data_sync()
 logger = bot_class.logger
-logger.name = f"{os.path.basename(__file__)}"
+logger.brand = f"{os.path.basename(__file__)}"
 logger.info(f"logger {os.path.basename(__file__)} starts logging")
 
 ALLOWED_UPDATES = ["message", "edited_message"]
