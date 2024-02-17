@@ -6,19 +6,22 @@ from aiogram import types, Router, F, Bot
 from aiogram.filters import CommandStart, Command, or_f, IS_ADMIN
 # from aiogram.filters.chat_member_updated import IS_ADMIN, ChatMemberUpdatedFilter, IS_MEMBER
 from string import punctuation
-from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinList, BOTFilterIsGroupAdmin, BOTFilterAdminList
-from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_bld_admin, del_kb
+from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinList, BOTFilterIsGroupAdmin, \
+    BOTFilterAdminList
+from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1_admin, del_kb, reply_kb_lvl2_admin
 from aiogram.utils.markdown import hbold
 
 admin_group_router = Router()
 admin_group_router.message.filter(BOTFilterChatType(["private"]), BOTFilterAdminList())
-# admin_group_router.edited_message.filter(BOTFilterChatType(["private", "group", "supergroup"]), BOTFilterAdminList())
 
+
+# admin_group_router.edited_message.filter(BOTFilterChatType(["private", "group", "supergroup"]), BOTFilterAdminList())
 
 
 def clean_text(text: str):
     """ вырезает из текста знаки"""
     return text.translate(str.maketrans("", "", punctuation))
+
 
 async def reload_admins_list(bot: Bot):
     _main_key = "bot_config"
@@ -51,10 +54,11 @@ async def reload_admins_list(bot: Bot):
 @admin_group_router.message(F.text.lower() == "start")
 async def admin_menu_cmd(message: types.Message):
     await message.answer(f"{message.from_user.first_name}, welcome to admin start command details!",
-                         reply_markup=reply_kb_bld_admin.as_markup(
+                         reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"
                          ))
+
 
 @admin_group_router.message(Command("admin", ignore_case=True))
 async def admin_cmd(message: types.Message, bot: Bot):
@@ -62,10 +66,14 @@ async def admin_cmd(message: types.Message, bot: Bot):
     await reload_admins_list(bot=bot)
     await message.delete()
 
+
 @admin_group_router.message(Command("report", "rep", ignore_case=True))
-@admin_group_router.message(F.text.lower().contains("отчет"))
+@admin_group_router.message(F.text.lower().contains("отчеты"))
 async def menu_cmd(message: types.Message):
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to <b>reports!</b>")
+    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to <b>reports!</b>", reply_markup=
+    reply_kb_lvl2_admin.as_markup(
+        resize_keyboard=True,
+        input_field_placeholder="Какой отчет Вас интересует?"))
     logging.info("requested reports")
 
 
@@ -74,6 +82,6 @@ async def menu_cmd(message: types.Message):
     # ver1
     # await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kb.del_kb)
     await message.answer(f"{message.from_user.first_name}, welcome to admin main menu!",
-                         reply_markup=reply_kb_bld_admin.as_markup(
+                         reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"))

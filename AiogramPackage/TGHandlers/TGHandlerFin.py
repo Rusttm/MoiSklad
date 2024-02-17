@@ -7,7 +7,7 @@ from aiogram.filters import CommandStart, Command, or_f, IS_ADMIN
 # from aiogram.filters.chat_member_updated import IS_ADMIN, ChatMemberUpdatedFilter, IS_MEMBER
 from string import punctuation
 from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinList, BOTFilterIsGroupAdmin
-from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_bld_admin, del_kb
+from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1_admin, del_kb
 from aiogram.utils.markdown import hbold
 
 fin_group_router = Router()
@@ -23,7 +23,7 @@ def clean_text(text: str):
 @fin_group_router.message(F.text.lower() == "start")
 async def admin_menu_cmd(message: types.Message):
     await message.answer(f"{message.from_user.first_name}, welcome to fin start command details!",
-                         reply_markup=reply_kb_bld_admin.as_markup(
+                         reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"
                          ))
@@ -41,6 +41,6 @@ async def menu_cmd(message: types.Message):
     # ver1
     # await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kb.del_kb)
     await message.answer(f"{message.from_user.first_name}, welcome to admin main menu!",
-                         reply_markup=reply_kb_bld_admin.as_markup(
+                         reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"))

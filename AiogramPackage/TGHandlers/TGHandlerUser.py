@@ -6,35 +6,36 @@ from aiogram.utils.markdown import hbold
 from aiogram.utils.formatting import as_list, as_marked_section, Bold
 
 from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType
-from AiogramPackage.TGKeyboards import TGKeybReplyMarkup as my_reply_kb
-from AiogramPackage.TGKeyboards import TGKeybReplyBuilder as my_bld_kb
+# from AiogramPackage.TGKeyboards import TGKeybReplyMarkup as my_reply_kb
+from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1, reply_kb_lvl2
 
 
 user_router = Router()
 user_router.message.filter(BOTFilterChatType(["private"]))
 
 @user_router.message(CommandStart())
+@user_router.message(or_f(Command("menu", "men", ignore_case=True), (F.text.lower().contains("меню"))))
 @user_router.message(F.text.lower() == "start")
 async def start_cmd(message: types.Message):
     # version1
     # await message.answer(f"{message.from_user.first_name}, welcome to bot!", reply_markup=my_reply_kb.my_reply_kb)
     # version2
-    # await message.answer(f"{hbold(message.from_user.first_name)}, welcome to bot!",
-    #                      reply_markup=my_bld_kb.my_reply_kb_bld.as_markup(
-    #                          resize_keyboard=True,
-    #                          input_field_placeholder="Что Вас интересует"
-    #                      ))
+    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to bot!",
+                         reply_markup=reply_kb_lvl1.as_markup(
+                             resize_keyboard=True,
+                             input_field_placeholder="Что Вас интересует"
+                         ))
     # version 3
-    await message.answer(f"{message.from_user.first_name}, welcome to bot!",
-                         reply_markup=my_bld_kb.get_my_kb(
-                             "Меню",
-                             "О боте",
-                             "Реквизиты Компании",
-                             "Платежные реквизиты",
-                             placeholder="Выберите пункт меню",
-                             sizes=(2, 2)
-                         )
-                         )
+    # await message.answer(f"{message.from_user.first_name}, welcome to bot!",
+    #                      reply_markup=my_bld_kb.get_my_kb(
+    #                          "Меню",
+    #                          "О боте",
+    #                          "Реквизиты Компании",
+    #                          "Платежные реквизиты",
+    #                          placeholder="Выберите пункт меню",
+    #                          sizes=(2, 2)
+    #                      )
+    #                      )
 
 
 @user_router.message(Command("hide_menu", ignore_case=True))
@@ -49,26 +50,13 @@ async def menu_cmd(message: types.Message):
     await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kb.my_reply_kb)
 
 
-@user_router.message(Command("about", "abou", ignore_case=True))
-@user_router.message((F.text.lower().contains("о боте")) | (F.text.lower().contains("бот")))
+@user_router.message(Command("catalogue", ignore_case=True))
+@user_router.message((F.text.lower().contains("каталог")) | (F.text.lower().contains("catalogue")))
 async def menu_cmd(message: types.Message):
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to <b>company about!</b>",
-                         reply_markup=my_bld_kb.my_reply_kb_bld.as_markup(
+    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to <b>Catalogue</b>",
+                         reply_markup=reply_kb_lvl2.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"
                          ))
 
-
-@user_router.message(Command("details", "company", ignore_case=True))
-@user_router.message(F.text.lower().contains("компан"))
-async def menu_cmd(message: types.Message):
-    text = as_list(as_marked_section(Bold("Реквизиты"), "1", "2", marker="·"), sep="\n-----")
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to company details!\n {text.as_html()}")
-    logging.info("details reports")
-
-@user_router.message(Command("account", "payments", ignore_case=True))
-@user_router.message(F.text.lower().contains("платеж"))
-async def menu_cmd(message: types.Message):
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to account details!")
-    logging.info(f"{hbold()}account details reports")
 

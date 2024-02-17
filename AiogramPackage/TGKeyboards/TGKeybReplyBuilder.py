@@ -1,22 +1,37 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-my_reply_kb_bld = ReplyKeyboardBuilder()
-my_reply_kb_bld.add(
-    KeyboardButton(text="Меню"),
-    KeyboardButton(text="Платежные реквизиты"),
-    KeyboardButton(text="О боте"),
+reply_kb_lvl1 = ReplyKeyboardBuilder()
+reply_kb_lvl1.add(
+    KeyboardButton(text="Каталог"),
     KeyboardButton(text="Реквизиты Компании")
 )
-my_reply_kb_bld.adjust(2, 2)
+# reply_kb_lvl1.adjust(2, 2)
+reply_kb_lvl1.adjust(1, 1)
 
-reply_kb_bld_admin = ReplyKeyboardBuilder()
-reply_kb_bld_admin.attach(my_reply_kb_bld)
-reply_kb_bld_admin.row(
+reply_kb_lvl2 = ReplyKeyboardBuilder()
+reply_kb_lvl2.add(
+    KeyboardButton(text="Инструмент"),
+    KeyboardButton(text="Запчасти"),
+    KeyboardButton(text="Меню")
+
+)
+reply_kb_lvl2.adjust(2, 1)
+
+reply_kb_lvl1_admin = ReplyKeyboardBuilder()
+reply_kb_lvl1_admin.attach(reply_kb_lvl1)
+reply_kb_lvl1_admin.row(
     KeyboardButton(text="Отчеты")
 )
-
 del_kb = ReplyKeyboardRemove()
+
+reply_kb_lvl2_admin = ReplyKeyboardBuilder()
+reply_kb_lvl2_admin.row(
+    KeyboardButton(text="Прибыли"),
+    KeyboardButton(text="Баланс"),
+    KeyboardButton(text="Меню")
+)
+reply_kb_lvl2_admin.adjust(2, 1)
 
 
 def get_my_kb(
