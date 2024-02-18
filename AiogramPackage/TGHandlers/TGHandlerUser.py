@@ -89,11 +89,7 @@ async def find_brand_instrument(message: types.Message, state: FSMContext):
     await message.answer(f"Введите <b>Марку</b> инструмента", reply_markup=make_row_keyboard(kb_lines))
     await state.set_state(FindInstrument.brand)
 
-@user_router.message(FindInstrument.brand, F.text.lower() != "отмена")
-async def wrong_brand_instrument(message: types.Message):
-    kb_lines = [add_btn, available_instrument_brands]
-    await message.answer(f"Введена неверная марка! Введите <b>Марку</b> инструмента",
-                         reply_markup=make_row_keyboard(kb_lines))
+
 
 @user_router.message(FindInstrument.brand, F.text.in_(available_instrument_brands))
 async def find_model_instrument(message: types.Message, state: FSMContext):
@@ -102,12 +98,12 @@ async def find_model_instrument(message: types.Message, state: FSMContext):
     await message.answer(f"Введите <b>Модель</b> инструмента", reply_markup=make_row_keyboard(kb_lines))
     await state.set_state(FindInstrument.model)
 
-
-@user_router.message(FindInstrument.model, F.text.lower() != "отмена")
-async def wrong_model_instrument(message: types.Message):
-    kb_lines = [add_btn, available_instrument_models]
-    await message.answer(f"Введена неверная модель! Введите <b>Модель</b> инструмента",
+@user_router.message(FindInstrument.brand, F.text.lower() != "отмена")
+async def wrong_brand_instrument(message: types.Message):
+    kb_lines = [add_btn, available_instrument_brands]
+    await message.answer(f"Введена неверная марка! Введите <b>Марку</b> инструмента",
                          reply_markup=make_row_keyboard(kb_lines))
+
 
 @user_router.message(FindInstrument.model, F.text.in_(available_instrument_models))
 async def find_instrument(message: types.Message, state: FSMContext):
@@ -121,7 +117,11 @@ async def find_instrument(message: types.Message, state: FSMContext):
     await state.clear()
 
 
-
+@user_router.message(FindInstrument.model, F.text.lower() != "отмена")
+async def wrong_model_instrument(message: types.Message):
+    kb_lines = [add_btn, available_instrument_models]
+    await message.answer(f"Введена неверная модель! Введите <b>Модель</b> инструмента",
+                         reply_markup=make_row_keyboard(kb_lines))
 
 
 
