@@ -5,6 +5,8 @@ from aiogram.filters import CommandStart, Command, or_f, StateFilter
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.markdown import hbold
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from aiogram.utils.formatting import as_list, as_marked_section, Bold
 
@@ -12,6 +14,7 @@ from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType
 # from AiogramPackage.TGKeyboards import TGKeybReplyMarkup as my_reply_kb
 from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1, reply_kb_lvl2, del_kb
 from AiogramPackage.TGKeyboards.TGKeybReplyList import make_row_keyboard
+from AiogramPackage.TGAlchemy.TGModelProd import ModALBaseProd
 
 user_router = Router()
 user_router.message.filter(BOTFilterChatType(["private"]))
@@ -70,7 +73,7 @@ class FindInstrument(StatesGroup):
     model = State()
 
 available_instrument_brands = ["Block", "Meite"]
-available_instrument_models = ["812", "CN50"]
+available_instrument_models = ["812", "CN70"]
 add_btn = ["Отмена"]
 @user_router.message(StateFilter('*'), Command("cancel", ignore_case=True))
 @user_router.message(StateFilter('*'), F.text.casefold() == "отмена")
@@ -106,14 +109,28 @@ async def wrong_brand_instrument(message: types.Message):
 
 
 @user_router.message(FindInstrument.model, F.text.in_(available_instrument_models))
-async def find_instrument(message: types.Message, state: FSMContext):
+async def find_instrument(message: types.Message, state: FSMContext, session: AsyncSession):
     await state.update_data(model=message.text)
     await message.answer(f"<b>Поиск</b> инструмента", reply_markup=reply_kb_lvl2.as_markup(
         resize_keyboard=True,
         input_field_placeholder="Что Вас интересует?"
     ))
     data = await state.get_data()
-    await message.answer(str(data))
+    print(data)
+    brand = data.get("brand")
+    model = data.get("model")
+    statement = select(ModALBaseProd).filter(ModALBaseProd.name.contains(brand)).filter(ModALBaseProd.name.contains(model))
+    result = await session.execute(statement)
+    obj_list = result.scalars().all()
+
+    if obj_list:
+        values_list = list()
+        for prod_obj in obj_list:
+            values_list.append(prod_obj.name)
+        await message.answer(f"Надено {len(values_list)} инструментов:\n {'_'.join(values_list)}.")
+    else:
+        await message.answer(f"Инструмента {str(data)} не обнаружено!")
+
     await state.clear()
 
 

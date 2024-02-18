@@ -134,7 +134,7 @@ def delete_table_sync():
 
 if __name__ == '__main__':
     # create_new_table_sync()
-    # asyncio.run(create_table_async())
+    asyncio.run(create_table_async())
     # asyncio.run(drop_table_async())
 
 
