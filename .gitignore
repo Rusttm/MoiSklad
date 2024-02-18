@@ -8,6 +8,7 @@ bot_log.txt
 *.httml
 *.html
 *.log
+*.db
 workspace.xml
 googleEmail.txt
 token.pickle
