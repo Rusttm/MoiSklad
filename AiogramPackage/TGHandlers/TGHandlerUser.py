@@ -66,31 +66,48 @@ async def menu_cmd(message: types.Message):
 
 
 class FindInstrument(StatesGroup):
-    brand = State(),
+    brand = State()
     model = State()
 
 available_instrument_brands = ["Block", "Meite"]
 available_instrument_models = ["812", "CN50"]
+add_btn = ["Отмена"]
+@user_router.message(StateFilter('*'), Command("cancel", ignore_case=True))
+@user_router.message(StateFilter('*'), F.text.casefold() == "отмена")
+async def cancel_find_instrument(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.clear()
+    await message.answer(f"Ввод <b>Отменен</b>", reply_markup=
+    reply_kb_lvl2.as_markup(resize_keyboard=True, input_field_placeholder="Что Вас интересует?"))
+
 
 @user_router.message(StateFilter(None), F.text == "Инструмент")
 async def find_brand_instrument(message: types.Message, state: FSMContext):
-    await message.answer(f"Введите <b>Марку</b> инструмента", reply_markup=make_row_keyboard(available_instrument_brands))
+    kb_lines = [add_btn, available_instrument_brands]
+    await message.answer(f"Введите <b>Марку</b> инструмента", reply_markup=make_row_keyboard(kb_lines))
     await state.set_state(FindInstrument.brand)
 
-@user_router.message(FindInstrument.brand)
-async def find_brand_instrument(message: types.Message):
-    await message.answer(f"Введена невернаф марка! Введите <b>Марку</b> инструмента",
-                         reply_markup=make_row_keyboard(available_instrument_brands))
+@user_router.message(FindInstrument.brand, F.text.lower() != "отмена")
+async def wrong_brand_instrument(message: types.Message):
+    kb_lines = [add_btn, available_instrument_brands]
+    await message.answer(f"Введена неверная марка! Введите <b>Марку</b> инструмента",
+                         reply_markup=make_row_keyboard(kb_lines))
+
+@user_router.message(FindInstrument.brand, F.text.in_(available_instrument_brands))
+async def find_model_instrument(message: types.Message, state: FSMContext):
+    kb_lines = [add_btn, available_instrument_models]
+    await state.update_data(brand=message.text)
+    await message.answer(f"Введите <b>Модель</b> инструмента", reply_markup=make_row_keyboard(kb_lines))
+    await state.set_state(FindInstrument.model)
 
 
-# @user_router.message(FindInstrument.brand, F.text.in_(available_instrument_brands))
-# async def find_model_instrument(message: types.Message, state: FSMContext):
-#     await state.update_data(brand=message.text)
-#     await message.answer(f"Введите <b>Модель</b> инструмента", reply_markup=make_row_keyboard(available_instrument_models))
-#     await state.set_state(FindInstrument.model)
-#     current_state = await state.get_state()
-#     print(f"{current_state=}")
-
+@user_router.message(FindInstrument.model, F.text.lower() != "отмена")
+async def wrong_model_instrument(message: types.Message):
+    kb_lines = [add_btn, available_instrument_models]
+    await message.answer(f"Введена неверная модель! Введите <b>Модель</b> инструмента",
+                         reply_markup=make_row_keyboard(kb_lines))
 
 @user_router.message(FindInstrument.model, F.text.in_(available_instrument_models))
 async def find_instrument(message: types.Message, state: FSMContext):
@@ -104,14 +121,21 @@ async def find_instrument(message: types.Message, state: FSMContext):
     await state.clear()
 
 
-@user_router.message(Command("cancel", ignore_case=True))
-@user_router.message(F.text.casefold() == "Отмена")
-async def cancel_find_instrument(message: types.Message, state: FSMContext):
-    await message.answer(f"Ввод <b>Отменен</b>", reply_markup=
-    reply_kb_lvl2.as_markup(resize_keyboard=True, input_field_placeholder="Что Вас интересует?"))
 
 
-@user_router.message(Command("back", ignore_case=True))
-@user_router.message(F.text.casefold() == "Назад")
-async def cancel_find_instrument(message: types.Message, state: FSMContext):
-    await message.answer(f"<b>Возврат</b> к прошлому шагу")
+
+
+# @user_router.message(StateFilter('*'), Command("back", ignore_case=True))
+# @user_router.message(StateFilter('*'), F.text.casefold() == "назад")
+# async def cancel_find_instrument(message: types.Message, state: FSMContext):
+#     current_state = await state.get_state()
+#     if current_state == FindInstrument.brand:
+#         await message.answer(f"предыдущего шага нет, нажмите кнопку Отмена")
+#         return
+#     prev = None
+#     for step in FindInstrument.__all_states__:
+#         if step.state == current_state:
+#             await state.set_state(prev)
+#             await message.answer(f"<b>Возврат</b> к прошлому шагу")
+#             return
+#         prev = step
