@@ -4,6 +4,7 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
 
+from AiogramPackage.TGAlchemy.TGModelProd import create_table_async, drop_table_async
 from AiogramPackage.TGConnectors.BOTMainClass import BOTMainClass
 import logging
 
@@ -12,7 +13,8 @@ from AiogramPackage.TGHandlers.TGHandlerGroup import user_group_router
 from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_group_router
 from AiogramPackage.TGHandlers.TGHandlerFin import fin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
-from AiogramPackage.TGMiddleWares.TGMWDatabase import CounterMiddleware
+from AiogramPackage.TGMiddleWares.TGMWDatabase import DBMiddleware
+from AiogramPackage.TGAlchemy.TGModelProd import async_session
 
 logging.basicConfig(level=logging.INFO)
 logging.info("logging starts")
@@ -30,7 +32,7 @@ dp = Dispatcher()
 # version1 work after filter middleware
 # admin_group_router.message.middleware(CounterMiddleware())
 # version2 update in outer middleware all events before filters
-dp.update.outer_middleware(CounterMiddleware())
+# dp.update.outer_middleware(CounterMiddleware())
 
 #0 router
 dp.include_router(admin_group_router)
@@ -41,14 +43,25 @@ dp.include_router(user_router)
 #3 router
 dp.include_router(user_group_router)
 
-
-
 bot.admins_list = [731370983]
 bot.chat_group_admins_list = []
 bot.fins_list = []
 bot.restricted_words = []
+async def on_startup(bot):
+    run_param = False
+    print("bot runs")
+    if run_param:
+        await drop_table_async()
 
+    await create_table_async()
+
+async def on_shutdown():
+    print("Бот закрылся")
 async def main():
+    dp.startup.register(on_startup)
+    dp.shutdown.register(on_shutdown)
+    # version3
+    dp.update.middleware(DBMiddleware(session_pool=async_session))
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_my_commands(commands=private_commands, scope=types.BotCommandScopeAllPrivateChats())
     await dp.start_polling(bot, allowed_updates=ALLOWED_UPDATES)
