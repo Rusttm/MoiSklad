@@ -12,6 +12,7 @@ from AiogramPackage.TGHandlers.TGHandlerGroup import user_group_router
 from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_group_router
 from AiogramPackage.TGHandlers.TGHandlerFin import fin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
+from AiogramPackage.TGMiddleWares.TGMWDatabase import CounterMiddleware
 
 logging.basicConfig(level=logging.INFO)
 logging.info("logging starts")
@@ -26,6 +27,11 @@ ALLOWED_UPDATES = ["message", "edited_message"]
 bot = Bot(token=_config.get("bot_config").get("token"), parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
+# version1 work after filter middleware
+# admin_group_router.message.middleware(CounterMiddleware())
+# version2 update in outer middleware all events before filters
+dp.update.outer_middleware(CounterMiddleware())
+
 #0 router
 dp.include_router(admin_group_router)
 #1 router
@@ -34,6 +40,8 @@ dp.include_router(fin_group_router)
 dp.include_router(user_router)
 #3 router
 dp.include_router(user_group_router)
+
+
 
 bot.admins_list = [731370983]
 bot.chat_group_admins_list = []
