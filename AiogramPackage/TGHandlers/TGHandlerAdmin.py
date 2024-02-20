@@ -1,22 +1,32 @@
 """ модерация группы в которой бот является админом"""
 
 import logging
+import os
 
-from aiogram import types, Router, F, Bot
-from aiogram.filters import CommandStart, Command, or_f, IS_ADMIN
+from aiogram import types, Router, F, Bot, html
+from aiogram.filters import CommandStart, Command, or_f, IS_ADMIN, StateFilter, CommandObject
 # from aiogram.filters.chat_member_updated import IS_ADMIN, ChatMemberUpdatedFilter, IS_MEMBER
 from string import punctuation
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.utils.markdown import hbold
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinList, BOTFilterIsGroupAdmin, \
     BOTFilterAdminList
 from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1_admin, del_kb, reply_kb_lvl2_admin
-from aiogram.utils.markdown import hbold
-
+from AiogramPackage.TGAlchemy.TGDbQueriesEvent import db_add_event
+from AiogramPackage.TGAlchemy.TGModelEvent import TGModelEvent
 admin_group_router = Router()
 admin_group_router.message.filter(BOTFilterChatType(["private"]), BOTFilterAdminList())
 
 
 # admin_group_router.edited_message.filter(BOTFilterChatType(["private", "group", "supergroup"]), BOTFilterAdminList())
+class SavePhoto(StatesGroup):
+    event_img = State()
 
+class LoadPhoto(StatesGroup):
+    download_img = State()
 
 def clean_text(text: str):
     """ вырезает из текста знаки"""
@@ -24,6 +34,7 @@ def clean_text(text: str):
 
 
 async def reload_admins_list(bot: Bot):
+    """ some lists should be reloaded by /admin command"""
     _main_key = "bot_config"
     _admin_key = "admin_members"
     _fin_key = "fin_members"
@@ -53,7 +64,7 @@ async def reload_admins_list(bot: Bot):
 @admin_group_router.message(CommandStart())
 @admin_group_router.message(F.text.lower() == "start")
 async def admin_menu_cmd(message: types.Message):
-    await message.answer(f"{message.from_user.first_name}, welcome to admin start command details!",
+    await message.answer(f"Hi, {html.quote(message.from_user.first_name)}, welcome to admin start command details!",
                          reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"
@@ -85,3 +96,59 @@ async def menu_cmd(message: types.Message):
                          reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"))
+
+@admin_group_router.message(Command("photo", "foto", ignore_case=True))
+@admin_group_router.message(StateFilter(None), F.text == "photo")
+async def download_img(message: types.Message, state: FSMContext):
+    # current_state = await state.get_state()
+    # if current_state is None:
+    #     return
+    # await state.clear()
+    await state.set_state(SavePhoto.event_img)
+    await message.answer("Загрузите фото")
+
+
+@admin_group_router.message(SavePhoto.event_img, F.photo)
+async def add_event_img(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
+    await state.update_data(image=message.photo[-1].file_id)
+
+    data_dict = await state.get_data()
+    # if not data_dict:
+    #     data_dict = dict()
+    data_dict = dict()
+    data_dict["from_chat_id"] = message.from_user.id
+    data_dict["to_chat_id"] = message.chat.id
+    data_dict["event_msg"] = "сообщение:" + str(message.text)
+    data_dict["event_descr"] = "описание:" + str(message.text)
+    data_dict["event_img"] = message.photo[-1].file_id
+    try:
+        await db_add_event(session, data_dict)
+
+        static_file = os.path.join(os.getcwd(), "data_static", f"{message.photo[-1].file_id}.jpg")
+        print(f"{static_file=}")
+        await bot.download(message.photo[-1], destination=static_file)
+    except Exception as e:
+        msg = f"Не смог добавить фото и сообщение в базу, ошибка: \n {e}"
+        await message.answer(msg)
+    else:
+        await message.answer("photo added to db and downloaded")
+    await state.clear()
+#
+@admin_group_router.message(SavePhoto.event_img)
+async def add_event_img(message: types.Message):
+    await message.answer("photo not added, please send me a photo")
+
+# from https://mastergroosha.github.io/aiogram-3-guide/messages/
+@admin_group_router.message(Command("download"))
+async def cmd_download(message: types.Message, command: CommandObject):
+    if command.args is None:
+        await message.answer("Ошибка: не переданы аргументы. \n Верно: /download filename.ext")
+        return
+    await message.answer(f"Загружаю файл {command.args} ...")
+
+
+@admin_group_router.message(F.text.lower().startswith("download_"))
+async def download_img(message: types.Message):
+    """  downloading img from static directory"""
+    await message.answer(f"Отправляю файл ...")
+    return

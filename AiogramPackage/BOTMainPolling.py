@@ -4,7 +4,7 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
 
-from AiogramPackage.TGAlchemy.TGModelProd import create_table_async, drop_table_async
+from AiogramPackage.TGAlchemy.TGModelProd import create_table_async, drop_table_async, async_session
 from AiogramPackage.TGConnectors.BOTMainClass import BOTMainClass
 import logging
 
@@ -14,7 +14,7 @@ from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_group_router
 from AiogramPackage.TGHandlers.TGHandlerFin import fin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
 from AiogramPackage.TGMiddleWares.TGMWDatabase import DBMiddleware
-from AiogramPackage.TGAlchemy.TGModelProd import async_session
+
 
 logging.basicConfig(level=logging.INFO)
 logging.info("logging starts")
