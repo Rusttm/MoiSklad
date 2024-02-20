@@ -102,10 +102,6 @@ async def menu_cmd(message: types.Message):
 @admin_private_router.message(Command("save", "upload", ignore_case=True))
 @admin_private_router.message(StateFilter(None), F.text == "save")
 async def start_save_img(message: types.Message, state: FSMContext):
-    # current_state = await state.get_state()
-    # if current_state is None:
-    #     return
-    # await state.clear()
     await state.set_state(SaveFile.event_file)
     await message.answer("Загрузите файл")
 
