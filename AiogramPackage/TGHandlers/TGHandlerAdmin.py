@@ -17,6 +17,7 @@ from aiogram.types import BufferedInputFile
 from aiogram.utils.markdown import hbold
 from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.utils.deep_linking import create_start_link
+from aiogram.methods.delete_message import DeleteMessage
 
 from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinList, BOTFilterIsGroupAdmin, \
     BOTFilterAdminList
@@ -148,7 +149,7 @@ async def add_event_img(message: types.Message):
 # from https://mastergroosha.github.io/aiogram-3-guide/messages/
 @admin_private_router.message(Command("download"))
 @admin_private_router.message(StateFilter(None), F.text.lower() == "download")
-async def cmd_download(message: types.Message, command: CommandObject, state: FSMContext):
+async def download_static_file(message: types.Message, command: CommandObject, state: FSMContext):
     if command.args is None:
         await state.set_state(DownLoadFile.download_file)
         await message.answer("Введите название файла")
@@ -167,11 +168,12 @@ async def cmd_download(message: types.Message, command: CommandObject, state: FS
             msg = f"Cant load file from destination, Error: \n {e}"
             await message.answer(msg)
         else:
+            state.clear()
             await message.answer(f"Файл {file_name} отправлен!")
 
 @admin_private_router.message(DownLoadFile.download_file)
 @admin_private_router.message(F.text.lower().startswith("download_"))
-async def save_static_img(message: types.Message, state: FSMContext):
+async def save_static_file(message: types.Message, state: FSMContext, bot: Bot):
     """  downloading and sending img from bot static directory"""
     if message.text.startswith("download_"):
         file_name = message.text[9:]
@@ -186,19 +188,23 @@ async def save_static_img(message: types.Message, state: FSMContext):
         except Exception as e:
             msg = f"cant get file_name info, Error \n {e}"
             print(msg)
-    await message.answer(f"Отправляю файл ...")
+    # await message.answer(f"Отправляю файл ...")
+    tech_msg_1 = await bot.send_message(chat_id=message.chat.id, text=f"Отправляю файл ...")
     try:
         static_file = os.path.join(os.getcwd(), "data_static", file_name)
         async with aiofiles.open(static_file, 'rb') as file_from_buffer:
             result = await message.answer_document(
-                BufferedInputFile(file=await file_from_buffer.read(), filename=f"bot_{file_name}"), caption=f"Загрузите файл")
+                BufferedInputFile(file=await file_from_buffer.read(), filename=f"bot_{file_name}"), caption=f"Файл")
     except Exception as e:
         msg = f"Cant load file from destination, Error: \n {e}"
         await message.answer(msg)
     else:
-        await message.answer(f"Файл отправлен")
-    await state.clear()
-    return
+        msg_id = message.message_id
+        # msg_id = message.from_user.id
+        await bot.delete_messages(chat_id=message.chat.id, message_ids=[msg_id-1, msg_id, tech_msg_1.message_id])
+    finally:
+        await state.clear()
+
 
 
 @admin_private_router.message(CommandStart())

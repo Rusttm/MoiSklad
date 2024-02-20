@@ -116,7 +116,6 @@ async def find_instrument(message: types.Message, state: FSMContext, session: As
         input_field_placeholder="Что Вас интересует?"
     ))
     data = await state.get_data()
-    print(data)
     brand = data.get("brand")
     model = data.get("model")
     statement = select(ModALBaseProd).filter(ModALBaseProd.name.contains(brand)).filter(ModALBaseProd.name.contains(model))
