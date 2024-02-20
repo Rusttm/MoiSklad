@@ -10,7 +10,7 @@ import logging
 
 from AiogramPackage.TGHandlers.TGHandlerUser import user_router
 from AiogramPackage.TGHandlers.TGHandlerGroup import user_group_router
-from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_group_router
+from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_private_router
 from AiogramPackage.TGHandlers.TGHandlerFin import fin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
 from AiogramPackage.TGMiddleWares.TGMWDatabase import DBMiddleware
@@ -35,7 +35,7 @@ dp = Dispatcher()
 # dp.update.outer_middleware(CounterMiddleware())
 
 #0 router
-dp.include_router(admin_group_router)
+dp.include_router(admin_private_router)
 #1 router
 dp.include_router(fin_group_router)
 #2 router

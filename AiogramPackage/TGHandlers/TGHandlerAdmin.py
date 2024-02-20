@@ -2,10 +2,12 @@
 
 import logging
 import os
+import typing
 
 import aiofiles
 from aiogram import types, Router, F, Bot, html
 from aiogram.filters import CommandStart, Command, or_f, IS_ADMIN, StateFilter, CommandObject
+
 # from aiogram.filters.chat_member_updated import IS_ADMIN, ChatMemberUpdatedFilter, IS_MEMBER
 from string import punctuation
 
@@ -22,20 +24,18 @@ from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1_admin, d
 from AiogramPackage.TGAlchemy.TGDbQueriesEvent import db_add_event
 from AiogramPackage.TGAlchemy.TGModelEvent import TGModelEvent
 
-admin_group_router = Router()
-admin_group_router.message.filter(BOTFilterChatType(["private"]), BOTFilterAdminList())
+admin_private_router = Router()
+admin_private_router.message.filter(BOTFilterChatType(["private"]), BOTFilterAdminList())
 
 
 # admin_group_router.edited_message.filter(BOTFilterChatType(["private", "group", "supergroup"]), BOTFilterAdminList())
-class SavePhoto(StatesGroup):
-    event_img = State()
+class SaveFile(StatesGroup):
+    event_file = State()
 
 
 class DownLoadFile(StatesGroup):
     download_file = State()
 
-# class DownLoadFile(StatesGroup):
-#     download_file = State()
 
 
 def clean_text(text: str):
@@ -72,15 +72,15 @@ async def reload_admins_list(bot: Bot):
     # print(f"{bot.admins_list=}")
 
 
-@admin_group_router.message(Command("admin", ignore_case=True))
+@admin_private_router.message(Command("admin", ignore_case=True))
 async def admin_cmd(message: types.Message, bot: Bot):
     """ this handler reloads group admins list"""
     await reload_admins_list(bot=bot)
     await message.delete()
 
 
-@admin_group_router.message(Command("report", "rep", ignore_case=True))
-@admin_group_router.message(F.text.lower().contains("отчеты"))
+@admin_private_router.message(Command("report", "rep", ignore_case=True))
+@admin_private_router.message(F.text.lower().contains("отчеты"))
 async def menu_cmd(message: types.Message):
     await message.answer(f"{hbold(message.from_user.first_name)}, welcome to <b>reports!</b>", reply_markup=
     reply_kb_lvl2_admin.as_markup(
@@ -89,7 +89,7 @@ async def menu_cmd(message: types.Message):
     logging.info("requested reports")
 
 
-@admin_group_router.message(or_f(Command("menu", "men", ignore_case=True), (F.text.lower().contains("меню"))))
+@admin_private_router.message(or_f(Command("menu", "men", ignore_case=True), (F.text.lower().contains("меню"))))
 async def menu_cmd(message: types.Message):
     # ver1
     # await message.answer(f"{message.from_user.first_name}, welcome to main menu!", reply_markup=my_reply_kb.del_kb)
@@ -99,58 +99,59 @@ async def menu_cmd(message: types.Message):
                              input_field_placeholder="Что Вас интересует?"))
 
 
-@admin_group_router.message(Command("photo", "foto", ignore_case=True))
-@admin_group_router.message(StateFilter(None), F.text == "photo")
+@admin_private_router.message(Command("save", "upload", ignore_case=True))
+@admin_private_router.message(StateFilter(None), F.text == "save")
 async def start_save_img(message: types.Message, state: FSMContext):
     # current_state = await state.get_state()
     # if current_state is None:
     #     return
     # await state.clear()
-    await state.set_state(SavePhoto.event_img)
-    await message.answer("Загрузите фото")
+    await state.set_state(SaveFile.event_file)
+    await message.answer("Загрузите файл")
 
 
-@admin_group_router.message(SavePhoto.event_img, F.photo)
+@admin_private_router.message(SaveFile.event_file)
 async def add_event_img(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
-    await state.update_data(image=message.photo[-1].file_id)
-    print(f"{message.caption=}")
-
-    data_dict = await state.get_data()
-    # if not data_dict:
-    #     data_dict = dict()
+    file_id = message.document.file_id
     data_dict = dict()
     data_dict["from_chat_id"] = message.from_user.id
     data_dict["to_chat_id"] = message.chat.id
     data_dict["event_msg"] = "сообщение:" + str(message.text)
     data_dict["event_descr"] = "описание:" + str(message.text)
-    data_dict["event_img"] = message.photo[-1].file_id
+    data_dict["event_img"] = file_id
     try:
         await db_add_event(session, data_dict)
-        file_name = message.photo[-1].file_id
-        static_file = os.path.join(os.getcwd(), "data_static", f"{file_name}.jpg")
-        print(f"{static_file=}")
-        await bot.download(message.photo[-1], destination=static_file)
+        file = await bot.get_file(file_id)
+        file_path = file.file_path
+        # version1
+        file_name = "bot_" + str(file_path.split("/")[-1])
+        # version2
+        # file_name = file_id
+        static_file = os.path.join(os.getcwd(), "data_static", f"{file_name}")
+        # print(f"{static_file=}")
+        # version1 with binary object
+        # my_object = typing.BinaryIO()
+        # MyBinariIO = await bot.download(file, my_object)
+        # version2
+        await bot.download(file, static_file)
     except Exception as e:
         msg = f"Не смог добавить фото и сообщение в базу, ошибка: \n {e}"
         await message.answer(msg)
     else:
-        await message.answer("photo added to db and downloaded")
-        # link = await create_start_link(bot, f"download?{file_name}.jpg")
-        # await message.answer(f"go to tag: {link}")
-        await message.answer(f"/download {file_name}.jpg")
-        await message.answer(f"download_{file_name}.jpg")
-    await state.clear()
+        await message.answer(f"Файл загружен, можете скачать его коммандами:\n <b>/download {file_name}</b>\n или \n <b>download_{file_name}</b>")
+    finally:
+        await state.clear()
 
 
 #
-@admin_group_router.message(SavePhoto.event_img)
+@admin_private_router.message(SaveFile.event_file)
 async def add_event_img(message: types.Message):
     await message.answer("photo not added, please send me a photo")
 
 
 # from https://mastergroosha.github.io/aiogram-3-guide/messages/
-@admin_group_router.message(Command("download"))
-@admin_group_router.message(StateFilter(None), F.text.lower() == "download")
+@admin_private_router.message(Command("download"))
+@admin_private_router.message(StateFilter(None), F.text.lower() == "download")
 async def cmd_download(message: types.Message, command: CommandObject, state: FSMContext):
     if command.args is None:
         await state.set_state(DownLoadFile.download_file)
@@ -172,8 +173,8 @@ async def cmd_download(message: types.Message, command: CommandObject, state: FS
         else:
             await message.answer(f"Файл {file_name} отправлен!")
 
-@admin_group_router.message(DownLoadFile.download_file)
-@admin_group_router.message(F.text.lower().startswith("download_"))
+@admin_private_router.message(DownLoadFile.download_file)
+@admin_private_router.message(F.text.lower().startswith("download_"))
 async def save_static_img(message: types.Message, state: FSMContext):
     """  downloading and sending img from bot static directory"""
     if message.text.startswith("download_"):
@@ -204,8 +205,8 @@ async def save_static_img(message: types.Message, state: FSMContext):
     return
 
 
-@admin_group_router.message(CommandStart())
-@admin_group_router.message(F.text.lower() == "start")
+@admin_private_router.message(CommandStart())
+@admin_private_router.message(F.text.lower() == "start")
 async def admin_menu_cmd(message: types.Message):
     await message.answer(f"Hi, {html.quote(message.from_user.first_name)}, welcome to admin start command details!",
                          reply_markup=reply_kb_lvl1_admin.as_markup(

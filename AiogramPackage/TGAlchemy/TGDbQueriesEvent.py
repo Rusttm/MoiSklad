@@ -12,7 +12,6 @@ async def db_add_event(session: AsyncSession, data_dict: dict):
         event_descr=data_dict.get("event_descr"),
         event_img=data_dict.get("event_img")
     )
-    print(data_dict)
     session.add(obj)
     await session.commit()
 
