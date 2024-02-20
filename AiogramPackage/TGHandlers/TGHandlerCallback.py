@@ -20,11 +20,11 @@ callback_router = Router()
 callback_router.message.filter(BOTFilterChatType(["private"]))
 
 
-@callback_router.callback_query(F.data.startwith("get_info"))
+@callback_router.callback_query(F.data.startswith("get_prod_info_"))
 async def get_prod_info(callback: types.CallbackQuery, session: AsyncSession):
-    prod_id = callback.data[8:]
-    prod_data_dict = await db_get_prod(prod_id=prod_id, session=session)
-    prod_name = prod_data_dict.get("name", "unknown")
-    await callback.answer(f"Получите свой товар: {prod_name}")
-    await callback.message.answer("Товар получили, спасибо!")
+    prod_id = callback.data[14:]
+    prod_data = await db_get_prod(prod_id=prod_id, session=session)
+    prod_description = prod_data.description
+    # await callback.answer(f"Описание товара: {prod_description}", show_alert=True)
+    await callback.message.answer(f"Описание товара: {prod_description}")
 

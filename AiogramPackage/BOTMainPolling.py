@@ -36,7 +36,7 @@ dp = Dispatcher()
 # dp.update.outer_middleware(CounterMiddleware())
 
 #0 router
-# dp.include_router(callback_router)
+dp.include_router(callback_router)
 #1 router
 dp.include_router(admin_private_router)
 #2 router
@@ -52,6 +52,7 @@ bot.admins_list = [731370983]
 bot.chat_group_admins_list = []
 bot.fins_list = []
 bot.restricted_words = []
+bot.filters_dict = dict()
 async def on_startup(bot):
     run_param = False
     print("bot runs")

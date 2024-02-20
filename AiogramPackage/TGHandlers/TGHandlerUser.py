@@ -82,7 +82,7 @@ class FindSpare(StatesGroup):
     brand = State()
     code = State()
 
-available_instrument_brands = ["Block", "Meite"]
+available_instrument_brands = []
 available_instrument_models = ["812", "CN70"]
 add_btn = ["Отмена"]
 
@@ -99,7 +99,8 @@ async def cancel_find_instrument(message: types.Message, state: FSMContext):
 
 
 @user_router.message(StateFilter(None), F.text == "Инструмент")
-async def find_brand_instrument(message: types.Message, state: FSMContext):
+async def find_brand_instrument(message: types.Message, state: FSMContext, bot: Bot):
+    available_instrument_brands = bot.filters_dict.get("instrument_brands_list", ["Meite", "Block"])
     kb_lines = [add_btn, available_instrument_brands]
     await message.answer(f"Введите <b>Марку</b> инструмента", reply_markup=make_row_keyboard(kb_lines))
     await state.set_state(FindInstrument.brand)
@@ -107,18 +108,19 @@ async def find_brand_instrument(message: types.Message, state: FSMContext):
 
 # @user_router.message(FindInstrument.brand, F.text.in_(available_instrument_brands))
 @user_router.message(FindInstrument.brand)
-async def find_model_instrument(message: types.Message, state: FSMContext):
+async def find_model_instrument(message: types.Message, state: FSMContext, bot: Bot):
+    available_instrument_models = bot.filters_dict.get("instrument_models_list", ["8016", "851", "CN"])
     kb_lines = [add_btn, available_instrument_models]
     await state.update_data(brand=message.text)
     await message.answer(f"Введите <b>Модель</b> инструмента", reply_markup=make_row_keyboard(kb_lines))
     await state.set_state(FindInstrument.model)
 
 
-@user_router.message(FindInstrument.brand, F.text.lower() != "отмена")
-async def wrong_brand_instrument(message: types.Message):
-    kb_lines = [add_btn, available_instrument_brands]
-    await message.answer(f"Введена неверная марка! Введите <b>Марку</b> инструмента",
-                         reply_markup=make_row_keyboard(kb_lines))
+# @user_router.message(FindInstrument.brand, F.text.lower() != "отмена")
+# async def wrong_brand_instrument(message: types.Message):
+#     kb_lines = [add_btn, available_instrument_brands]
+#     await message.answer(f"Введена неверная марка! Введите <b>Марку</b> инструмента",
+#                          reply_markup=make_row_keyboard(kb_lines))
 
 
 # @user_router.message(FindInstrument.model, F.text.in_(available_instrument_models))
@@ -146,32 +148,64 @@ async def find_instrument(message: types.Message, state: FSMContext, session: As
                                      caption=f"Инструмент {prod_obj.name}",
                                      reply_markup=get_mixed_btns(btns={
                                          "Перейти": f"{prod_obj.meta.get('uuidHref')}",
-                                         "Подробнее": f"get_info_{prod_obj.id}"
+                                         "Подробнее": f"get_prod_info_{prod_obj.id}"
                                      }))
 
     else:
         await message.answer(f"Инструмента {str(data)} не обнаружено!")
     await state.clear()
 
-# ("Подробнее" == "get_info")
-# @user_router.callback_query(F.callback_query.data.startwith("get_info_"))
-@user_router.callback_query(F.data.startswith("get_info_"))
-async def get_prod_info(callback: types.CallbackQuery, session: AsyncSession):
-    data_str = callback.data
-    prod_id = callback.data[9:]
-    print(f"{prod_id=}")
-    prod_data = await db_get_prod(prod_id=prod_id, session=session)
-    prod_description = prod_data.description
-    # await callback.answer(f"Описание товара: {prod_description}", show_alert=True)
-    await callback.message.answer(f"Описание товара: {prod_description}")
+
 
 """  Запчасти """
 
-@user_router.message(StateFilter(None), F.text.lower == "запчасти")
-async def find_brand_instrument(message: types.Message, state: FSMContext):
-    kb_lines = [add_btn, available_instrument_brands]
+@user_router.message(StateFilter(None), F.text.lower() == "запчасти")
+async def find_brand_spare(message: types.Message, state: FSMContext, bot: Bot):
+    available_spares_brands = bot.filters_dict.get("spares_brands_list", ["Meite", "Block"])
+    kb_lines = [add_btn, available_spares_brands]
     await message.answer(f"Введите <b>строку</b> для поиска запчасти", reply_markup=make_row_keyboard(kb_lines))
-    await state.set_state(FindInstrument.brand)
+    await state.set_state(FindSpare.brand)
+
+@user_router.message(FindSpare.brand)
+async def find_model_spare(message: types.Message, state: FSMContext, bot: Bot):
+    available_spares_codes = bot.filters_dict.get("spare_codes_list", ["8016", "851", "CN"])
+    kb_lines = [add_btn, available_spares_codes]
+    await state.update_data(brand=message.text)
+    await message.answer(f"Введите <b>код</b> запчасти",
+                         reply_markup=make_row_keyboard(kb_lines),
+                         input_field_placeholder="Введите поисковый запрос")
+    await state.set_state(FindSpare.code)
+@user_router.message(FindSpare.code)
+async def find_spare(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
+    await state.update_data(code=message.text)
+    await message.answer(f"<b>Поиск</b> инструмента", reply_markup=reply_kb_lvl2.as_markup(
+        resize_keyboard=True,
+        input_field_placeholder="Введите поисковый запрос"
+    ))
+    data = await state.get_data()
+    brand = data.get("brand")
+    code = data.get("code")
+    statement = select(TGModelProd).filter(TGModelProd.pathName.contains(brand)).filter(TGModelProd.name.contains(code))
+    result = await session.execute(statement)
+    obj_list = result.scalars().all()
+    if obj_list:
+        for prod_obj in obj_list:
+            static_file = os.path.join(os.getcwd(), "data_static", "spares_img2.jpg")
+            async with aiofiles.open(static_file, "rb") as plot_img:
+                print(f"{len(prod_obj.id)=} and {len(prod_obj.meta.get('href'))=}")
+                url = prod_obj.meta.get('href')
+                await bot.send_photo(chat_id=message.chat.id,
+                                     photo=BufferedInputFile(file=await plot_img.read(), filename="Инструмент"),
+                                     caption=f"Запчасти {prod_obj.name}",
+                                     reply_markup=get_mixed_btns(btns={
+                                         "Перейти": f"{prod_obj.meta.get('uuidHref')}",
+                                         "Подробнее": f"get_prod_info_{prod_obj.id}"
+                                     }))
+
+    else:
+        await message.answer(f"Запчастей: {str(data)} не обнаружено!")
+    await state.clear()
+
 
 # @user_router.message(FindInstrument.model, F.text.lower() != "отмена")
 # async def wrong_model_instrument(message: types.Message):
