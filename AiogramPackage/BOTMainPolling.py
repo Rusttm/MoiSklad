@@ -24,7 +24,7 @@ logger = bot_class.logger
 logger.brand = f"{os.path.basename(__file__)}"
 logger.info(f"logger {os.path.basename(__file__)} starts logging")
 
-ALLOWED_UPDATES = ["message", "edited_message"]
+ALLOWED_UPDATES = ["message", "edited_message", "callback_query"]
 
 bot = Bot(token=_config.get("bot_config").get("token"), parse_mode=ParseMode.HTML)
 dp = Dispatcher()
@@ -64,7 +64,10 @@ async def main():
     dp.update.middleware(DBMiddleware(session_pool=async_session))
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_my_commands(commands=private_commands, scope=types.BotCommandScopeAllPrivateChats())
-    await dp.start_polling(bot, allowed_updates=ALLOWED_UPDATES)
+    # version1 wuth list of updates
+    # await dp.start_polling(bot, allowed_updates=ALLOWED_UPDATES)
+    # version2 with all uodates
+    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     logger.info(f"logger {os.path.basename(__file__)} starts logging")
 
 

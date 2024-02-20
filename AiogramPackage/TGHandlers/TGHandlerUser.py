@@ -1,9 +1,12 @@
 import logging
+import os
 
-from aiogram import types, Router, F
+import aiofiles
+from aiogram import types, Router, F, Bot
 from aiogram.filters import CommandStart, Command, or_f, StateFilter
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+from aiogram.types import BufferedInputFile
 from aiogram.utils.markdown import hbold
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -14,6 +17,7 @@ from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType
 # from AiogramPackage.TGKeyboards import TGKeybReplyMarkup as my_reply_kb
 from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1, reply_kb_lvl2, del_kb
 from AiogramPackage.TGKeyboards.TGKeybReplyList import make_row_keyboard
+from AiogramPackage.TGKeyboards.TGKeybInline import get_callback_btns, get_url_btns, get_mixed_btns
 from AiogramPackage.TGAlchemy.TGModelProd import ModALBaseProd
 
 user_router = Router()
@@ -94,7 +98,8 @@ async def find_brand_instrument(message: types.Message, state: FSMContext):
 
 
 
-@user_router.message(FindInstrument.brand, F.text.in_(available_instrument_brands))
+# @user_router.message(FindInstrument.brand, F.text.in_(available_instrument_brands))
+@user_router.message(FindInstrument.brand)
 async def find_model_instrument(message: types.Message, state: FSMContext):
     kb_lines = [add_btn, available_instrument_models]
     await state.update_data(brand=message.text)
@@ -108,8 +113,9 @@ async def wrong_brand_instrument(message: types.Message):
                          reply_markup=make_row_keyboard(kb_lines))
 
 
-@user_router.message(FindInstrument.model, F.text.in_(available_instrument_models))
-async def find_instrument(message: types.Message, state: FSMContext, session: AsyncSession):
+# @user_router.message(FindInstrument.model, F.text.in_(available_instrument_models))
+@user_router.message(FindInstrument.model)
+async def find_instrument(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
     await state.update_data(model=message.text)
     await message.answer(f"<b>Поиск</b> инструмента", reply_markup=reply_kb_lvl2.as_markup(
         resize_keyboard=True,
@@ -121,23 +127,33 @@ async def find_instrument(message: types.Message, state: FSMContext, session: As
     statement = select(ModALBaseProd).filter(ModALBaseProd.name.contains(brand)).filter(ModALBaseProd.name.contains(model))
     result = await session.execute(statement)
     obj_list = result.scalars().all()
-
     if obj_list:
-        values_list = list()
         for prod_obj in obj_list:
-            values_list.append(prod_obj.name)
-        await message.answer(f"Надено {len(values_list)} инструментов:\n {'_'.join(values_list)}.")
+            static_file = os.path.join(os.getcwd(), "data_static", "instrument_img.jpg")
+            async with aiofiles.open(static_file, "rb") as plot_img:
+                await bot.send_photo(chat_id=message.chat.id,
+                                     photo=BufferedInputFile(file=await plot_img.read(), filename="Инструмент"),
+                                     caption=f"Инструмент {prod_obj.name}",
+                                     reply_markup=get_mixed_btns(btns={
+                                         "Перейти": f"{prod_obj.meta.get('href')}",
+                                         "Подробнее": f"get_info_{prod_obj.id}"
+                                 }))
+
+        # values_list = list()
+        # for prod_obj in obj_list:
+        #     values_list.append()
+        # await message.answer(f"Надено {len(values_list)} инструментов:\n {'_'.join(values_list)}.")
     else:
         await message.answer(f"Инструмента {str(data)} не обнаружено!")
 
     await state.clear()
 
 
-@user_router.message(FindInstrument.model, F.text.lower() != "отмена")
-async def wrong_model_instrument(message: types.Message):
-    kb_lines = [add_btn, available_instrument_models]
-    await message.answer(f"Введена неверная модель! Введите <b>Модель</b> инструмента",
-                         reply_markup=make_row_keyboard(kb_lines))
+# @user_router.message(FindInstrument.model, F.text.lower() != "отмена")
+# async def wrong_model_instrument(message: types.Message):
+#     kb_lines = [add_btn, available_instrument_models]
+#     await message.answer(f"Введена неверная модель! Введите <b>Модель</b> инструмента",
+#                          reply_markup=make_row_keyboard(kb_lines))
 
 
 

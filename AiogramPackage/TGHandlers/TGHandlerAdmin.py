@@ -80,14 +80,14 @@ async def admin_cmd(message: types.Message, bot: Bot):
     await message.delete()
 
 
-@admin_private_router.message(Command("report", "rep", ignore_case=True))
-@admin_private_router.message(F.text.lower().contains("отчеты"))
-async def menu_cmd(message: types.Message):
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to <b>reports!</b>", reply_markup=
-    reply_kb_lvl2_admin.as_markup(
-        resize_keyboard=True,
-        input_field_placeholder="Какой отчет Вас интересует?"))
-    logging.info("requested reports")
+# @admin_private_router.message(Command("report", "rep", ignore_case=True))
+# @admin_private_router.message(F.text.lower().contains("отчеты"))
+# async def menu_cmd(message: types.Message):
+#     await message.answer(f"{hbold(message.from_user.first_name)}, welcome to <b>reports!</b>", reply_markup=
+#     reply_kb_lvl2_admin.as_markup(
+#         resize_keyboard=True,
+#         input_field_placeholder="Какой отчет Вас интересует?"))
+#     logging.info("requested reports")
 
 
 @admin_private_router.message(or_f(Command("menu", "men", ignore_case=True), (F.text.lower().contains("меню"))))
