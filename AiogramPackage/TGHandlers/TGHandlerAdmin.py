@@ -48,6 +48,7 @@ async def reload_admins_list(bot: Bot):
     """ some lists should be reloaded by /admin command"""
     _main_key = "bot_config"
     _admin_key = "admin_members"
+    _filters_key = "filters_config"
     _fin_key = "fin_members"
     _restricted_key = "restricted_words"
     _config_dir_name = "config"
@@ -71,6 +72,9 @@ async def reload_admins_list(bot: Bot):
         bot.chat_group_admins_list = bot.admins_list
         logging.info(f" and {bot.chat_group_admins_list=}")
     # print(f"{bot.admins_list=}")
+    filters_dict = _module_config.get(_main_key).get(_filters_key)
+    bot.filters_dict = dict(filters_dict)
+    logging.info(f"reloaded {bot.filters_dict=}")
 
 
 @admin_private_router.message(Command("admin", ignore_case=True))
@@ -168,7 +172,7 @@ async def download_static_file(message: types.Message, command: CommandObject, s
             msg = f"Cant load file from destination, Error: \n {e}"
             await message.answer(msg)
         else:
-            state.clear()
+            await state.clear()
             await message.answer(f"Файл {file_name} отправлен!")
 
 @admin_private_router.message(DownLoadFile.download_file)

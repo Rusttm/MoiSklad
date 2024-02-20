@@ -23,11 +23,11 @@ class Base(DeclarativeBase):
     updated: Mapped[DateTime] = Column(DateTime, default=func.now(), onupdate=func.now())
 
 
-class ModALBaseProd(Base):
-    def __init__(self, dictionary=None):
+class TGModelProd(Base):
+    def __init__(self, obj_dict: dict = None):
         super().__init__()
-        if dictionary:
-            for k, v in dictionary.items():
+        if obj_dict:
+            for k, v in obj_dict.items():
                 setattr(self, k, v)
 
     __tablename__ = 'product_model'
@@ -119,7 +119,7 @@ async def drop_table_async():
 
 
 async def insert_new_row(prod_dict):
-    prog_obj = ModALBaseProd(prod_dict)
+    prog_obj = TGModelProd(prod_dict)
     async with async_session.begin() as s:
         s.add(prog_obj)
 

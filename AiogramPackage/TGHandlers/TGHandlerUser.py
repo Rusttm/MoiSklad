@@ -4,6 +4,7 @@ import os
 import aiofiles
 from aiogram import types, Router, F, Bot
 from aiogram.filters import CommandStart, Command, or_f, StateFilter
+from aiogram.filters.callback_data import CallbackQueryFilter
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from aiogram.types import BufferedInputFile
@@ -18,7 +19,8 @@ from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType
 from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1, reply_kb_lvl2, del_kb
 from AiogramPackage.TGKeyboards.TGKeybReplyList import make_row_keyboard
 from AiogramPackage.TGKeyboards.TGKeybInline import get_callback_btns, get_url_btns, get_mixed_btns
-from AiogramPackage.TGAlchemy.TGModelProd import ModALBaseProd
+from AiogramPackage.TGAlchemy.TGModelProd import TGModelProd
+from AiogramPackage.TGAlchemy.TGDbQueriesProd import db_get_prod
 
 user_router = Router()
 user_router.message.filter(BOTFilterChatType(["private"]))
@@ -31,7 +33,7 @@ async def start_cmd(message: types.Message):
     # version1
     # await message.answer(f"{message.from_user.first_name}, welcome to bot!", reply_markup=my_reply_kb.my_reply_kb)
     # version2
-    await message.answer(f"{hbold(message.from_user.first_name)}, welcome to bot!",
+    await message.answer(f"Hi, {hbold(message.from_user.first_name)}, welcome to bot!",
                          reply_markup=reply_kb_lvl1.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует"
@@ -76,9 +78,15 @@ class FindInstrument(StatesGroup):
     brand = State()
     model = State()
 
+class FindSpare(StatesGroup):
+    brand = State()
+    code = State()
+
 available_instrument_brands = ["Block", "Meite"]
 available_instrument_models = ["812", "CN70"]
 add_btn = ["Отмена"]
+
+
 @user_router.message(StateFilter('*'), Command("cancel", ignore_case=True))
 @user_router.message(StateFilter('*'), F.text.casefold() == "отмена")
 async def cancel_find_instrument(message: types.Message, state: FSMContext):
@@ -97,7 +105,6 @@ async def find_brand_instrument(message: types.Message, state: FSMContext):
     await state.set_state(FindInstrument.brand)
 
 
-
 # @user_router.message(FindInstrument.brand, F.text.in_(available_instrument_brands))
 @user_router.message(FindInstrument.brand)
 async def find_model_instrument(message: types.Message, state: FSMContext):
@@ -105,6 +112,7 @@ async def find_model_instrument(message: types.Message, state: FSMContext):
     await state.update_data(brand=message.text)
     await message.answer(f"Введите <b>Модель</b> инструмента", reply_markup=make_row_keyboard(kb_lines))
     await state.set_state(FindInstrument.model)
+
 
 @user_router.message(FindInstrument.brand, F.text.lower() != "отмена")
 async def wrong_brand_instrument(message: types.Message):
@@ -124,37 +132,52 @@ async def find_instrument(message: types.Message, state: FSMContext, session: As
     data = await state.get_data()
     brand = data.get("brand")
     model = data.get("model")
-    statement = select(ModALBaseProd).filter(ModALBaseProd.name.contains(brand)).filter(ModALBaseProd.name.contains(model))
+    statement = select(TGModelProd).filter(TGModelProd.name.contains(brand)).filter(TGModelProd.name.contains(model))
     result = await session.execute(statement)
     obj_list = result.scalars().all()
     if obj_list:
         for prod_obj in obj_list:
             static_file = os.path.join(os.getcwd(), "data_static", "instrument_img.jpg")
             async with aiofiles.open(static_file, "rb") as plot_img:
+                print(f"{len(prod_obj.id)=} and {len(prod_obj.meta.get('href'))=}")
+                url = prod_obj.meta.get('href')
                 await bot.send_photo(chat_id=message.chat.id,
                                      photo=BufferedInputFile(file=await plot_img.read(), filename="Инструмент"),
                                      caption=f"Инструмент {prod_obj.name}",
                                      reply_markup=get_mixed_btns(btns={
-                                         "Перейти": f"{prod_obj.meta.get('href')}",
+                                         "Перейти": f"{prod_obj.meta.get('uuidHref')}",
                                          "Подробнее": f"get_info_{prod_obj.id}"
-                                 }))
+                                     }))
 
-        # values_list = list()
-        # for prod_obj in obj_list:
-        #     values_list.append()
-        # await message.answer(f"Надено {len(values_list)} инструментов:\n {'_'.join(values_list)}.")
     else:
         await message.answer(f"Инструмента {str(data)} не обнаружено!")
-
     await state.clear()
 
+# ("Подробнее" == "get_info")
+# @user_router.callback_query(F.callback_query.data.startwith("get_info_"))
+@user_router.callback_query(F.data.startswith("get_info_"))
+async def get_prod_info(callback: types.CallbackQuery, session: AsyncSession):
+    data_str = callback.data
+    prod_id = callback.data[9:]
+    print(f"{prod_id=}")
+    prod_data = await db_get_prod(prod_id=prod_id, session=session)
+    prod_description = prod_data.description
+    # await callback.answer(f"Описание товара: {prod_description}", show_alert=True)
+    await callback.message.answer(f"Описание товара: {prod_description}")
+
+"""  Запчасти """
+
+@user_router.message(StateFilter(None), F.text.lower == "запчасти")
+async def find_brand_instrument(message: types.Message, state: FSMContext):
+    kb_lines = [add_btn, available_instrument_brands]
+    await message.answer(f"Введите <b>строку</b> для поиска запчасти", reply_markup=make_row_keyboard(kb_lines))
+    await state.set_state(FindInstrument.brand)
 
 # @user_router.message(FindInstrument.model, F.text.lower() != "отмена")
 # async def wrong_model_instrument(message: types.Message):
 #     kb_lines = [add_btn, available_instrument_models]
 #     await message.answer(f"Введена неверная модель! Введите <b>Модель</b> инструмента",
 #                          reply_markup=make_row_keyboard(kb_lines))
-
 
 
 # @user_router.message(StateFilter('*'), Command("back", ignore_case=True))

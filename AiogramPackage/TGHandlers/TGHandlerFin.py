@@ -43,8 +43,9 @@ async def menu_cmd(message: types.Message, bot: Bot):
         await bot.send_photo(chat_id=message.chat.id,
                              photo=BufferedInputFile(file=await plot_img.read(), filename="График"),
                              caption=f"Здравствуйте, {hbold(message.from_user.first_name)}, добро пожаловать в <b>отчеты</b>!",
-                             reply_markup=get_callback_btns(btns={"Прибыли/Убытки": "profit_report",
-                                                              "Баланс": "balance_report"}))
+                             reply_markup=get_callback_btns(btns={
+                                 "Прибыли/Убытки": "profit_report",
+                                 "Баланс": "balance_report"}))
 
     logging.info("requested reports")
 

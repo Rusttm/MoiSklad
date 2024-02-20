@@ -23,7 +23,11 @@ class Base(DeclarativeBase):
 
 class TGModelEvent(Base):
     """ this model for event record in telegram"""
-
+    def __init__(self, obj_dict: dict = None):
+        super().__init__()
+        if obj_dict:
+            for key, value in obj_dict.items():
+                setattr(self, key, value)
     __tablename__ = 'event_model'
     position_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     from_chat_id: Mapped[int] = mapped_column(Integer, comment='Номер чата написавшего', nullable=False)
