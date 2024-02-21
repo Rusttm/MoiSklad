@@ -21,7 +21,7 @@ from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
 
 callback_router = Router()
 callback_router.message.filter(BOTFilterChatType(["private"]))
-callback_router.callback_query.middleware(CallbackAnswerMiddleware(pre=True, text="🤔", cache_time=30000))
+callback_router.callback_query.middleware(CallbackAnswerMiddleware(pre=True, text="🤔dont press", cache_time=30))
 
 @callback_router.callback_query(F.data.startswith("get_prod_info_"), BOTFilterFinList())
 async def get_prod_info(callback: types.CallbackQuery, session: AsyncSession):
@@ -88,14 +88,15 @@ async def get_rep_account(callback: types.CallbackQuery):
 
 
 @callback_router.callback_query(F.data.startswith("rep_fin_daily_"), BOTFilterFinList())
-@flags.callback_answer(pre=False, cache_time=30)
-async def get_rep_daily(callback: types.CallbackQuery):
-    await callback.answer(cache_time=300)
+@flags.callback_answer(pre=False, cache_time=10)
+async def get_rep_daily(callback: types.CallbackQuery, callback_answer: CallbackAnswer):
+    callback_answer.text = "Не надо жать так часто!"
+    await callback.answer(cache_time=10)
     extra_data = callback.data[16:]  # recieve chat_id
     today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     res_str = str(f"Отчет на {today}\n")
     try:
-        res_str += await TGMSConnector().get_account_rep_str_async()
+        res_str += await TGMSConnector().get_summary_rep_str_async()
     except Exception as e:
         res_str = f"Can't form accounts report, Error:\n {e}"
         logging.warning(res_str)

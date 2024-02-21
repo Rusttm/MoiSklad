@@ -62,7 +62,7 @@ class TGMSConnector(MSGSControllerAsync):
             self.logger.warning(res_str)
             logging.warning(res_str)
         else:
-            res_str = f"<a href='{gs_href + '/edit#gid=' + str(ws_id)}'>Итоговый ⚖️<b>Баланс</b> на сегодня: {int(total)}руб.</a>\n"
+            res_str = f"<a href='{gs_href + '/edit#gid=' + str(ws_id)}'>⚖️<b>Баланс</b> на сегодня: {int(total)}руб.</a>\n"
         return res_str
     async def get_margins_rep_str_async(self):
         res_str = str()
@@ -76,7 +76,7 @@ class TGMSConnector(MSGSControllerAsync):
             total = res_dict.get("info").get("total")
 
             if total == 0:
-                res_str = f"<a href='{gs_href + '/edit#gid=' + str(ws_id)}'>🛠️<b>Отгрузок</b> меньше {margin}% нет 🔦</a>"
+                res_str = f"<a href='{gs_href + '/edit#gid=' + str(ws_id)}'>🛠️<b>Отгрузок</b> меньше {margin}% нет 🤷🏼‍</a>"
             else:
                 try:
                     res_str = f"<a href='{gs_href + '/edit#gid=' + str(ws_id)}'>🛠️{int(total)}шт. <b>Отгрузок</b> с прибылью меньше {margin}%: </a>\n"

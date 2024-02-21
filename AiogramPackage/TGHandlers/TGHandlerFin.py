@@ -78,8 +78,11 @@ async def menu_cmd(message: types.Message):
 
 
 @fin_group_router.message(F.text.lower().startswith("итог"))
-async def get_state_rep_daily(message: types.Message, state: FSMContext, bot: Bot):
-    temp_msg = await message.answer("Запрошен большой итоговый отчет, формируется, подождите ...")
+async def send_summary_rep_daily(message: types.Message, state: FSMContext, bot: Bot):
+    """ send summary daily report"""
+    temp_msg = await message.answer("Запрошен большой итоговый отчет, формируется, подождите ...⏱️")
+    # from https://zelenka.guru/threads/3538801/
+    temp_sticker = await message.reply_sticker(sticker="CAACAgIAAxkBAAELd3Vl1n8pL3dHXcijRQ6OSUXB4Iu7EwACGwMAAs-71A7CHN2zMqnsdTQE")
     today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     res_msg = str(f"Отчет на {today}\n")
     try:
@@ -89,5 +92,5 @@ async def get_state_rep_daily(message: types.Message, state: FSMContext, bot: Bo
         logging.warning(msg)
         await message.answer(msg)
     else:
-        await bot.delete_messages(chat_id=message.chat.id, message_ids=[temp_msg.message_id])
+        await bot.delete_messages(chat_id=message.chat.id, message_ids=[temp_msg.message_id, temp_sticker.message_id])
         await message.answer(res_msg)
