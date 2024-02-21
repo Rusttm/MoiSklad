@@ -1,5 +1,6 @@
 # from https://docs.aiogram.dev/en/latest/
 import asyncio
+import aioschedule
 import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
@@ -55,15 +56,31 @@ bot.fins_list = []
 bot.restricted_words = []
 bot.filters_dict = dict()
 async def on_startup(bot):
-    run_param = False
     print("bot runs")
-    if run_param:
-        await drop_table_async()
+    # run_param = False
 
-    await create_table_async()
+    # if run_param:
+    #     await drop_table_async()
+    #
+    # await create_table_async()
+    asyncio.create_task(scheduler())
 
 async def on_shutdown():
     print("Бот закрылся")
+
+# from https://ru.stackoverflow.com/questions/1144849/%D0%9A%D0%B0%D0%BA-%D1%81%D0%BE%D0%B2%D0%BC%D0%B5%D1%81%D1%82%D0%B8%D1%82%D1%8C-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83-aiogram-%D0%B8-schedule-%D0%BD%D0%B0-%D0%A2elegram-bot
+async def scheduler():
+    aioschedule.every().day.at("02:25").do(scheduller_sends)
+    while True:
+        await aioschedule.run_pending()
+        await asyncio.sleep(1)
+
+async def scheduller_sends():
+    admins_list = bot.admins_list
+    for admin_id in admins_list:
+        await bot.send_message(chat_id=admin_id, text="Высылаю ежедневный отчет")
+    print("It's noon!")
+
 async def main():
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)

@@ -21,7 +21,7 @@ from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
 
 callback_router = Router()
 callback_router.message.filter(BOTFilterChatType(["private"]))
-callback_router.callback_query.middleware(CallbackAnswerMiddleware(pre=True, text="🤔dont press", cache_time=30))
+callback_router.callback_query.middleware(CallbackAnswerMiddleware(pre=True, text="🤔dont press", cache_time=10))
 
 @callback_router.callback_query(F.data.startswith("get_prod_info_"), BOTFilterFinList())
 async def get_prod_info(callback: types.CallbackQuery, session: AsyncSession):
