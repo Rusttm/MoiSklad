@@ -63,7 +63,7 @@ class MSReportBalacesAsync(MSMainClass):
         return cust_groups
 
     async def form_balance_dict_async(self) -> dict:
-        result_dict = dict({"Дата": datetime.now().strftime("%d.%m.%y %H:%M")})
+        result_dict = dict({"Дата": datetime.now().strftime("%Y.%m.%d %H:%M")})
         balance_sum = int()
         accounts_money_sum = await self.get_accounts_sum_async()
         balance_sum += sum([int(value) for value in accounts_money_sum.values()])

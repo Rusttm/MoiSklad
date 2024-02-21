@@ -17,7 +17,7 @@ from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_private_router
 from AiogramPackage.TGHandlers.TGHandlerFin import fin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
 from AiogramPackage.TGMiddleWares.TGMWDatabase import DBMiddleware
-
+from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
 
 logging.basicConfig(level=logging.INFO)
 logging.info("logging starts")
@@ -51,9 +51,9 @@ dp.include_router(user_group_router)
 
 
 bot.admins_list = [731370983]
-bot.chat_group_admins_list = []
-bot.fins_list = []
-bot.restricted_words = []
+bot.chat_group_admins_list = [731370983]
+bot.fins_list = [731370983]
+bot.restricted_words = ['idiot']
 bot.filters_dict = dict()
 async def on_startup(bot):
     print("bot runs")
@@ -70,15 +70,16 @@ async def on_shutdown():
 
 # from https://ru.stackoverflow.com/questions/1144849/%D0%9A%D0%B0%D0%BA-%D1%81%D0%BE%D0%B2%D0%BC%D0%B5%D1%81%D1%82%D0%B8%D1%82%D1%8C-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83-aiogram-%D0%B8-schedule-%D0%BD%D0%B0-%D0%A2elegram-bot
 async def scheduler():
-    aioschedule.every().day.at("02:25").do(scheduller_sends)
+    aioschedule.every().day.at("09:00").do(scheduller_sends)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
 
 async def scheduller_sends():
+    prepare_rep_string = await TGMSConnector().get_summary_rep_str_async()
     admins_list = bot.admins_list
     for admin_id in admins_list:
-        await bot.send_message(chat_id=admin_id, text="Высылаю ежедневный отчет")
+        await bot.send_message(chat_id=admin_id, text=prepare_rep_string)
     print("It's noon!")
 
 async def main():
