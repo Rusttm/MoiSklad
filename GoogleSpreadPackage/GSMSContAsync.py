@@ -22,21 +22,24 @@ import pandas as pd
 class GSMSContAsync(GSConnAsync):
     """ data handler """
     logger_name = f"{os.path.basename(__file__)}"
-    ss_names_key = "gs_names"
+    _gs_names_key = "gs_names"
+    _ws_id_key = "ws_id"
     _async_gc = None
 
     def __init__(self):
         super().__init__()
 
-    async def save_data_ms_gs_async(self, ms_data: dict, gs_tag: str, insert=False, ws_id=0) -> pd.DataFrame:
+    async def save_data_ms_gs_async(self, ms_data: dict, gs_tag: str, insert=False, ws_id: int = None) -> pd.DataFrame:
         df = pd.DataFrame()
         try:
             self._async_gc = await self.create_gs_client_async()
-            ss_id = self._config_data.get(self.ss_names_key).get(gs_tag)
+            gs_id = self._config_data.get(self._gs_names_key).get(gs_tag)
+            if not ws_id:
+                ws_id = self._config_data.get(self._ws_id_key).get(gs_tag)
             from GoogleSpreadPackage.GSMSDataHandlerAsync import GSMSDataHandlerAsync
             handler = GSMSDataHandlerAsync()
             df = await handler.convert_ms_dict_2df_async(ms_data=ms_data)
-            spread_sheet = await self._async_gc.open_by_key(ss_id)
+            spread_sheet = await self._async_gc.open_by_key(gs_id)
             work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
             # df = pd.DataFrame(await work_sheet.get_all_values())
             if insert:
@@ -50,7 +53,7 @@ class GSMSContAsync(GSConnAsync):
             print(msg)
         return df
 
-    async def save_data_ms_gs_id_async(self, ms_data: dict, gs_id: str, insert=False, ws_id=0, time_col=False) -> pd.DataFrame:
+    async def save_data_ms_gs_id_async(self, ms_data: dict, gs_id: str, insert=False, ws_id: int = None, time_col=False) -> pd.DataFrame:
         df = pd.DataFrame()
         try:
             self._async_gc = await self.create_gs_client_async()
@@ -61,6 +64,13 @@ class GSMSContAsync(GSConnAsync):
                 # df["rep_time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                 df.insert(0, "rep_time", datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
             spread_sheet = await self._async_gc.open_by_key(gs_id)
+            if not ws_id:
+                ws_id = 0
+                gs_tag_id_dict = self._config_data.get(self._gs_names_key)
+                for tag, id in gs_tag_id_dict.items():
+                    if id == gs_id:
+                        ws_id = self._config_data.get(self._ws_id_key).get(tag)
+                        break
             work_sheet = await spread_sheet.get_worksheet_by_id(ws_id)
             # df = pd.DataFrame(await work_sheet.get_all_values())
             if insert:

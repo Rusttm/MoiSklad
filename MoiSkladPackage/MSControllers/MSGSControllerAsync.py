@@ -6,6 +6,10 @@ import pandas as pd
 
 class MSGSControllerAsync(GSMSContAsync):
     logger_name = f"{os.path.basename(__file__)}"
+    _gs_profit_tag: str = "gs_profit"
+    # _ws_profit_tag: int = 539265374
+    _gs_balance_tag: str = "gs_balance"
+    # _ws_balance_tag: int = 1349066460
 
     def __init__(self):
         super().__init__()
@@ -17,7 +21,7 @@ class MSGSControllerAsync(GSMSContAsync):
             from MoiSkladPackage.MSReports.MSReportBalacesAsync import MSReportBalacesAsync
             connector = MSReportBalacesAsync()
             balances_data = await connector.get_balance_data_async()
-            await self.save_data_ms_gs_async(balances_data, gs_tag="gs_balance", ws_id=1349066460)
+            await self.save_data_ms_gs_async(balances_data, gs_tag=self._gs_balance_tag)
             msg = f"{__class__.__name__} saves balance data to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
@@ -34,7 +38,7 @@ class MSGSControllerAsync(GSMSContAsync):
             connector = MSReportProfitAsync()
             profit_data = await connector.get_handled_expenses(from_date=from_date, to_date=to_date,
                                                                report_type=report_type)
-            await self.save_data_ms_gs_async(profit_data, gs_tag="gs_profit", ws_id=539265374)
+            await self.save_data_ms_gs_async(profit_data, gs_tag=self._gs_profit_tag)
             msg = f"{__class__.__name__} saves custom profit report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
@@ -50,11 +54,11 @@ class MSGSControllerAsync(GSMSContAsync):
             from MoiSkladPackage.MSReports.MSReportProfitAsync import MSReportProfitAsync
             connector = MSReportProfitAsync()
             profit_data = await connector.get_daily_profit_report_async()
-            await self.save_data_ms_gs_async(profit_data, gs_tag="gs_profit", ws_id=539265374)
+            await self.save_data_ms_gs_async(profit_data, gs_tag=self._gs_profit_tag)
             msg = f"{__class__.__name__} saves daily profit report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
-            msg = f"{__class__.__name__} cant saves daily profit repor to spreadsheet, Error: \n {e} "
+            msg = f"{__class__.__name__} cant saves daily profit report to spreadsheet, Error: \n {e} "
             self.logger.warning(msg)
             print(msg)
         return profit_data
@@ -66,7 +70,7 @@ class MSGSControllerAsync(GSMSContAsync):
             from MoiSkladPackage.MSReports.MSReportProfitAsync import MSReportProfitAsync
             connector = MSReportProfitAsync()
             profit_data = await connector.get_monthly_profit_report_async(to_year=to_year, to_month=to_month)
-            await self.save_data_ms_gs_async(profit_data, gs_tag="gs_profit", ws_id=539265374)
+            await self.save_data_ms_gs_async(profit_data, gs_tag=self._gs_profit_tag)
             msg = f"{__class__.__name__} saves monthly profit report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
@@ -102,7 +106,7 @@ class MSGSControllerAsync(GSMSContAsync):
             req_data = await connector.get_today_low_margin_clients_async()
             gs_id = req_data.get("info").get("gs_id")
             ws_id = req_data.get("info").get("gs_ws_id")
-            await self.save_data_ms_gs_id_async(req_data, gs_id=gs_id, ws_id=ws_id, time_col=True, insert=True)
+            await self.save_data_ms_gs_id_async(req_data, gs_id=gs_id, ws_id=ws_id, time_col=True, insert=False)
             msg = f"{__class__.__name__} saves accounts report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
@@ -120,11 +124,11 @@ class MSGSControllerAsync(GSMSContAsync):
             req_data = await connector.get_customers_debt_sum_async()
             gs_id = req_data.get("info").get("gs_id")
             ws_id = req_data.get("info").get("gs_ws_id")
-            await self.save_data_ms_gs_id_async(req_data, gs_id=gs_id, ws_id=ws_id, time_col=True, insert=True)
+            await self.save_data_ms_gs_id_async(req_data, gs_id=gs_id, ws_id=ws_id, time_col=True, insert=False)
             msg = f"{__class__.__name__} saves debt report to spreadsheet. "
             self.logger.debug(msg)
         except Exception as e:
-            msg = f"{__class__.__name__} cant deebt report to spreadsheet, Error: \n {e} "
+            msg = f"{__class__.__name__} cant debt report to spreadsheet, Error: \n {e} "
             self.logger.warning(msg)
             print(msg)
         return req_data
@@ -136,13 +140,13 @@ if __name__ == "__main__":
     # print(connect.get_stores_dict())
     # print(asyncio.run(controller.save_balance_gs_async()))
     # print(asyncio.run(controller.save_profit_gs_custom_async(from_date="2023-01-01", to_date="2023-12-31")))
-    # print(asyncio.run(controller.save_profit_gs_daily_async()))
+    print(asyncio.run(controller.save_profit_gs_daily_async()))
     # print(asyncio.run(controller.save_profit_gs_monthly_async(to_year=2021, to_month=9)))
     # for year in range(2021,2024):
     #     for month in range(1,13):
     #         asyncio.run(controller.save_profit_gs_monthly_async(to_year=year, to_month=month))
     # print(asyncio.run(controller.save_daily_margins_gs_async()))
-    print(asyncio.run(controller.save_daily_debt_gs_async()))
+    # print(asyncio.run(controller.save_daily_debt_gs_async()))
     # print(asyncio.run(controller.save_daily_accounts_gs_async()))
     controller.logger.debug("stock_all class initialized")
 
