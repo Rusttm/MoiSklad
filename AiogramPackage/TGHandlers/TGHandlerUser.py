@@ -139,15 +139,28 @@ async def find_instrument(message: types.Message, state: FSMContext, session: As
     obj_list = result.scalars().all()
     if obj_list:
         for prod_obj in obj_list:
+            url = "https://sermangroup.ru"
+            photo = None
+            try:
+                prod_attrs = prod_obj.attributes
+                for attr in prod_attrs:
+                    attr_name = attr.get("name")
+                    if attr_name == "Ссылка на товар на сайте магазина":
+                        url = attr.get("value")
+                    elif attr_name == "Ссылка на фото товара":
+                        photo = attr.get("value")
+            except Exception as e:
+                logging.warning(f"cannot get attributes from prod, error {e}")
             static_file = os.path.join(os.getcwd(), "data_static", "instrument_img.jpg")
             async with aiofiles.open(static_file, "rb") as plot_img:
-                print(f"{len(prod_obj.id)=} and {len(prod_obj.meta.get('href'))=}")
-                url = prod_obj.meta.get('href')
+                # print(f"{len(prod_obj.id)=} and {len(prod_obj.meta.get('href'))=}")
+                if not photo:
+                    photo = BufferedInputFile(file=await plot_img.read(), filename="Инструмент")
                 await bot.send_photo(chat_id=message.chat.id,
-                                     photo=BufferedInputFile(file=await plot_img.read(), filename="Инструмент"),
+                                     photo=photo,
                                      caption=f"Инструмент {prod_obj.name}",
                                      reply_markup=get_mixed_btns(btns={
-                                         "Перейти": f"{prod_obj.meta.get('uuidHref')}",
+                                         "Перейти": url,
                                          "Подробнее": f"get_prod_info_{prod_obj.id}"
                                      }))
 
@@ -190,15 +203,28 @@ async def find_spare(message: types.Message, state: FSMContext, session: AsyncSe
     obj_list = result.scalars().all()
     if obj_list:
         for prod_obj in obj_list:
+            url = "https://sermangroup.ru"
+            photo = None
+            try:
+                prod_attrs = prod_obj.attributes
+                for attr in prod_attrs:
+                    attr_name = attr.get("name")
+                    if attr_name == "Ссылка на товар на сайте магазина":
+                        url = attr.get("value")
+                    elif attr_name == "Ссылка на фото товара":
+                        photo = attr.get("value")
+            except Exception as e:
+                logging.warning(f"cannot get attributes from prod, error {e}")
             static_file = os.path.join(os.getcwd(), "data_static", "spares_img.jpg")
             async with aiofiles.open(static_file, "rb") as plot_img:
                 print(f"{len(prod_obj.id)=} and {len(prod_obj.meta.get('href'))=}")
-                url = prod_obj.meta.get('href')
+                if not photo:
+                    photo = BufferedInputFile(file=await plot_img.read(), filename="Запчасть")
                 await bot.send_photo(chat_id=message.chat.id,
-                                     photo=BufferedInputFile(file=await plot_img.read(), filename="Инструмент"),
+                                     photo=photo,
                                      caption=f"Запчасти {prod_obj.name}",
                                      reply_markup=get_mixed_btns(btns={
-                                         "Перейти": f"{prod_obj.meta.get('uuidHref')}",
+                                         "Перейти": url,
                                          "Подробнее": f"get_prod_info_{prod_obj.id}"
                                      }))
 
