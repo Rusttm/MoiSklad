@@ -2,19 +2,25 @@
 
 import logging
 import os
+import datetime
 
 import aiofiles
-from aiogram import types, Router, F, Bot
+from aiogram import types, Router, F, Bot, flags
 from aiogram.filters import CommandStart, Command, or_f, IS_ADMIN
 # from aiogram.filters.chat_member_updated import IS_ADMIN, ChatMemberUpdatedFilter, IS_MEMBER
 from string import punctuation
 
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import BufferedInputFile
+from aiogram.utils.callback_answer import CallbackAnswerMiddleware, CallbackAnswer
+from aiogram.utils.markdown import hbold
 
 from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinList, BOTFilterIsGroupAdmin
 from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1_admin, del_kb
 from AiogramPackage.TGKeyboards.TGKeybInline import get_callback_btns
-from aiogram.utils.markdown import hbold
+from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
+
 
 fin_group_router = Router()
 fin_group_router.message.filter(BOTFilterChatType(["private"]), BOTFilterFinList())
@@ -25,14 +31,19 @@ def clean_text(text: str):
     return text.translate(str.maketrans("", "", punctuation))
 
 
+class PrepaReport(StatesGroup):
+    requested = State()
+
+
 @fin_group_router.message(CommandStart())
 @fin_group_router.message(F.text.lower() == "start")
 async def admin_menu_cmd(message: types.Message):
-    await message.answer(f"Здравствуйте, {message.from_user.first_name}, добро пожаловать в 🧮финансовый блок нашего бота",
-                         reply_markup=reply_kb_lvl1_admin.as_markup(
-                             resize_keyboard=True,
-                             input_field_placeholder="Что Вас интересует?"
-                         ))
+    await message.answer(
+        f"Здравствуйте, {message.from_user.first_name}, добро пожаловать в 🧮финансовый блок нашего бота",
+        reply_markup=reply_kb_lvl1_admin.as_markup(
+            resize_keyboard=True,
+            input_field_placeholder="Что Вас интересует?"
+        ))
 
 
 @fin_group_router.message(Command("report", "rep", ignore_case=True))
@@ -49,8 +60,9 @@ async def menu_cmd(message: types.Message, bot: Bot):
                                  "🚬Долги клиентов": "rep_fin_debt_",
                                  "🛠️Отгрузки <30%": "rep_fin_margin_",
                                  "💰Остатки на счетах": "rep_fin_account_",
-                                 "📆Итоги на сегодня": "rep_fin_daily_"
-                             }))
+                                 "📆Итоги на сегодня": f"rep_fin_daily_{message.chat.id}"
+                             }),
+                             request_timeout=100)
 
     logging.info("requested reports")
 
@@ -63,3 +75,19 @@ async def menu_cmd(message: types.Message):
                          reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"))
+
+
+@fin_group_router.message(F.text.lower().startswith("итог"))
+async def get_state_rep_daily(message: types.Message, state: FSMContext, bot: Bot):
+    temp_msg = await message.answer("Запрошен большой итоговый отчет, формируется, подождите ...")
+    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    res_msg = str(f"Отчет на {today}\n")
+    try:
+        res_msg += await TGMSConnector().get_summary_rep_str_async()
+    except Exception as e:
+        msg = f"Can't form summary daily report, Error:\n {e}"
+        logging.warning(msg)
+        await message.answer(msg)
+    else:
+        await bot.delete_messages(chat_id=message.chat.id, message_ids=[temp_msg.message_id])
+        await message.answer(res_msg)

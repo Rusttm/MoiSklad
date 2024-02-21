@@ -30,7 +30,6 @@ ALLOWED_UPDATES = ["message", "edited_message", "callback_query"]
 
 bot = Bot(token=_config.get("bot_config").get("token"), parse_mode=ParseMode.HTML)
 dp = Dispatcher()
-dp.callback_query.middleware(CallbackAnswerMiddleware(pre=True, text="🤔"))
 
 # version1 work after filter middleware
 # admin_group_router.message.middleware(CounterMiddleware())

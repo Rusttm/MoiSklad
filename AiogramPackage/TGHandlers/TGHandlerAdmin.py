@@ -204,7 +204,6 @@ async def save_static_file(message: types.Message, state: FSMContext, bot: Bot):
         await message.answer(msg)
     else:
         msg_id = message.message_id
-        # msg_id = message.from_user.id
         await bot.delete_messages(chat_id=message.chat.id, message_ids=[msg_id-1, msg_id, tech_msg_1.message_id])
     finally:
         await state.clear()

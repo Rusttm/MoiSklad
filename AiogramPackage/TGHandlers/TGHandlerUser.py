@@ -115,15 +115,6 @@ async def find_model_instrument(message: types.Message, state: FSMContext, bot: 
     await message.answer(f"Введите <b>Модель</b> 🔨инструмента", reply_markup=make_row_keyboard(kb_lines))
     await state.set_state(FindInstrument.model)
 
-
-# @user_router.message(FindInstrument.brand, F.text.lower() != "отмена")
-# async def wrong_brand_instrument(message: types.Message):
-#     kb_lines = [add_btn, available_instrument_brands]
-#     await message.answer(f"Введена неверная марка! Введите <b>Марку</b> инструмента",
-#                          reply_markup=make_row_keyboard(kb_lines))
-
-
-# @user_router.message(FindInstrument.model, F.text.in_(available_instrument_models))
 @user_router.message(FindInstrument.model)
 async def find_instrument(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
     await state.update_data(model=message.text)
