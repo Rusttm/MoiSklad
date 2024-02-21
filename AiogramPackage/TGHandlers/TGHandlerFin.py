@@ -28,7 +28,7 @@ def clean_text(text: str):
 @fin_group_router.message(CommandStart())
 @fin_group_router.message(F.text.lower() == "start")
 async def admin_menu_cmd(message: types.Message):
-    await message.answer(f"{message.from_user.first_name}, welcome to fin start command details!",
+    await message.answer(f"Здравствуйте, {message.from_user.first_name}, добро пожаловать в 🧮финансовый блок нашего бота",
                          reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"
@@ -42,10 +42,15 @@ async def menu_cmd(message: types.Message, bot: Bot):
     async with aiofiles.open(static_file, "rb") as plot_img:
         await bot.send_photo(chat_id=message.chat.id,
                              photo=BufferedInputFile(file=await plot_img.read(), filename="График"),
-                             caption=f"Здравствуйте, {hbold(message.from_user.first_name)}, добро пожаловать в <b>отчеты</b>!",
+                             caption=f"Здравствуйте, {hbold(message.from_user.first_name)}, добро пожаловать в 📉<b>отчеты</b>!",
                              reply_markup=get_callback_btns(btns={
-                                 "Прибыли/Убытки": "rep_fin_profit_daily",
-                                 "Баланс": "rep_fin_balance_"}))
+                                 "💸Прибыли/Убытки": "rep_fin_profit_daily",
+                                 "⚖️Баланс": "rep_fin_balance_",
+                                 "🚬Долги клиентов": "rep_fin_debt_",
+                                 "🛠️Отгрузки <30%": "rep_fin_margin_",
+                                 "💰Остатки на счетах": "rep_fin_account_",
+                                 "📆Итоги на сегодня": "rep_fin_daily_"
+                             }))
 
     logging.info("requested reports")
 

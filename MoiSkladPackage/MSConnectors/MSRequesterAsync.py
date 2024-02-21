@@ -110,7 +110,7 @@ class MSRequesterAsync(MSMainClass):
         delta = 0
         try:
             # check full length of data by data['meta']['size']
-            delta = int(data['meta']['size']) - int(data['meta']['offset'])
+            delta = int(data.get('meta').get('size', 0)) - int(data.get('meta').get('offset', 0))
         except Exception as e:
             # if there is no data in data['meta']['size']
             self.logger.warning(f"{__class__.__name__} cant find key {e} for data['meta']['size'] ")

@@ -22,7 +22,7 @@ class MSReportLowMarginAsync(MSMainClass):
 
     async def get_low_margin_cust_list_async(self, from_date, to_date) -> dict:
         """ return dict low margin clients"""
-        res_margins = dict({'data': [], 'col_list': ['name', 'profitability'], 'info': {'total': 0}})
+        res_margins = dict({'data': [], 'col_list': ['name', 'sale', 'profitability'], 'info': {'total': 0}})
         profit_margin = self._module_config.get(self._main_key).get(self._profit_margin_key)
         res_margins["info"] = self._module_config.get(self._main_key).get(self._info_key)
         try:
@@ -42,10 +42,12 @@ class MSReportLowMarginAsync(MSMainClass):
                     if profitability < profit_margin:
                         name_dict['name'] = name
                         name_dict['profitability'] = profitability
+                        name_dict['sale'] = sales
                         counter += 1
                         names_list.append(name_dict)
-            res_margins["data"] = [names_list]
+            res_margins["data"] = names_list
             res_margins["info"]["total"] = counter
+            res_margins["info"]["margin"] = profit_margin
 
         except Exception as e:
             msg = f"module {__class__.__name__} can't read sales data, error: {e}"

@@ -21,7 +21,8 @@ class DBMiddleware(BaseMiddleware):
     ) -> Any:
         async with self.session_pool() as session:
             data["session"] = session
-            return await handler(event, data)
+            res_handler = await handler(event, data)
+            return res_handler
 
 # class CounterMiddleware(BaseMiddleware):
 #     """ example middleware"""

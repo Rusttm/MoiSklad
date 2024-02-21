@@ -214,7 +214,7 @@ async def save_static_file(message: types.Message, state: FSMContext, bot: Bot):
 @admin_private_router.message(CommandStart())
 @admin_private_router.message(F.text.lower() == "start")
 async def admin_menu_cmd(message: types.Message):
-    await message.answer(f"Hi, {html.quote(message.from_user.first_name)}, welcome to admin start command details!",
+    await message.answer(f"Hi, {html.quote(message.from_user.first_name)}, welcome to 👨🏼‍🔧admin panel\n Please renew data with /admin command",
                          reply_markup=reply_kb_lvl1_admin.as_markup(
                              resize_keyboard=True,
                              input_field_placeholder="Что Вас интересует?"

@@ -25,7 +25,7 @@ class MSReportDebtControlAsync(MSMainClass):
     async def get_customers_debt_sum_async(self) -> dict:
         """ sum only negative!!! (debt) balances in client group
         return dict of groups with balances {'другие': 710918, 'москваконтрагенты': 450593, 'поставщики': 2984930}"""
-        res_debt = dict({'data': [], 'cols_list': [], 'info': {'total': 0}})
+        res_debt = dict({'data': [], 'col_list': [], 'info': {'total': 0}})
         cust_groups = dict()
         try:
             from MoiSkladPackage.MSReports.MSCustBalAsync import MSCustBalAsync
