@@ -185,12 +185,12 @@ async def find_spare(message: types.Message, state: FSMContext, session: AsyncSe
     data = await state.get_data()
     brand = data.get("brand")
     code = data.get("code")
-    statement = select(TGModelProd).filter(TGModelProd.pathName.contains(brand)).filter(TGModelProd.name.contains(code))
+    statement = select(TGModelProd).filter(TGModelProd.pathName.contains(brand)).filter(TGModelProd.pathName.contains("Запасные")).filter(TGModelProd.name.contains(code))
     result = await session.execute(statement)
     obj_list = result.scalars().all()
     if obj_list:
         for prod_obj in obj_list:
-            static_file = os.path.join(os.getcwd(), "data_static", "spares_img2.jpg")
+            static_file = os.path.join(os.getcwd(), "data_static", "spares_img.jpg")
             async with aiofiles.open(static_file, "rb") as plot_img:
                 print(f"{len(prod_obj.id)=} and {len(prod_obj.meta.get('href'))=}")
                 url = prod_obj.meta.get('href')
