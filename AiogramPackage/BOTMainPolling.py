@@ -17,7 +17,7 @@ from AiogramPackage.TGHandlers.TGHandlerAdmin import admin_private_router
 from AiogramPackage.TGHandlers.TGHandlerFin import fin_group_router
 from AiogramPackage.TGCommon.TGBotCommandsList import private_commands
 from AiogramPackage.TGMiddleWares.TGMWDatabase import DBMiddleware
-from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
+# from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
 
 logging.basicConfig(level=logging.INFO)
 logging.info("logging starts")
@@ -76,9 +76,12 @@ async def scheduler():
         await asyncio.sleep(1)
 
 async def scheduller_sends():
-    prepare_rep_string = await TGMSConnector().get_summary_rep_str_async()
+    from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
+    connector = TGMSConnector()
+    prepare_rep_string = await connector.get_summary_rep_str_async()
     admins_list = bot.admins_list
     for admin_id in admins_list:
+        await bot.send_message(chat_id=admin_id, text="Время ежедневного отчета")
         await bot.send_message(chat_id=admin_id, text=prepare_rep_string)
     print("It's noon!")
 

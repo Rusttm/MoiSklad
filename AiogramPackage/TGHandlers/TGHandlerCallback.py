@@ -18,6 +18,7 @@ from aiogram.utils.formatting import as_list, as_marked_section, Bold
 from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinList
 from AiogramPackage.TGAlchemy.TGDbQueriesProd import db_get_prod
 from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
+from AiogramPackage.TGMiddleWares.TGMWCallbackData import TGMWCallbackData
 
 callback_router = Router()
 callback_router.message.filter(BOTFilterChatType(["private"]))
@@ -30,6 +31,7 @@ async def get_prod_info(callback: types.CallbackQuery, session: AsyncSession):
     prod_description = prod_data.description
     # await callback.answer(f"Описание товара: {prod_description}", show_alert=True)
     await callback.message.answer(f"Описание товара: {prod_description}")
+    await callback.answer()
 
 @callback_router.callback_query(F.data.startswith("rep_fin_profit_"), BOTFilterFinList())
 async def get_rep_fin_profit(callback: types.CallbackQuery):
@@ -42,6 +44,7 @@ async def get_rep_fin_profit(callback: types.CallbackQuery):
         logging.warning(res_str)
     else:
         await callback.message.answer(res_str)
+    await callback.answer()
 
 @callback_router.callback_query(F.data.startswith("rep_fin_balance_"), BOTFilterFinList())
 # @flags.callback_answer(pre=False, cache_time=60)
@@ -54,6 +57,7 @@ async def get_rep_bal(callback: types.CallbackQuery):
         logging.warning(res_str)
     else:
         await callback.message.answer(res_str)
+    await callback.answer()
 @callback_router.callback_query(F.data.startswith("rep_fin_debt_"), BOTFilterFinList())
 async def get_rep_debt(callback: types.CallbackQuery):
     extra_data = callback.data[13:]
@@ -64,6 +68,7 @@ async def get_rep_debt(callback: types.CallbackQuery):
         logging.warning(res_str)
     else:
         await callback.message.answer(res_str)
+    await callback.answer()
 @callback_router.callback_query(F.data.startswith("rep_fin_margin_"), BOTFilterFinList())
 async def get_rep_margins(callback: types.CallbackQuery):
     extra_data = callback.data[15:]
@@ -74,6 +79,7 @@ async def get_rep_margins(callback: types.CallbackQuery):
         logging.warning(res_str)
     else:
         await callback.message.answer(res_str)
+    await callback.answer()
 
 @callback_router.callback_query(F.data.startswith("rep_fin_account_"), BOTFilterFinList())
 async def get_rep_account(callback: types.CallbackQuery):
@@ -85,13 +91,12 @@ async def get_rep_account(callback: types.CallbackQuery):
         logging.warning(res_str)
     else:
         await callback.message.answer(res_str)
+    await callback.answer()
 
 
 @callback_router.callback_query(F.data.startswith("rep_fin_daily_"), BOTFilterFinList())
 @flags.callback_answer(pre=False, cache_time=10)
 async def get_rep_daily(callback: types.CallbackQuery, callback_answer: CallbackAnswer):
-    callback_answer.text = "Не надо жать так часто!"
-    await callback.answer(cache_time=10)
     extra_data = callback.data[16:]  # recieve chat_id
     today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     res_str = str(f"Отчет на {today}\n")
@@ -102,3 +107,5 @@ async def get_rep_daily(callback: types.CallbackQuery, callback_answer: Callback
         logging.warning(res_str)
     else:
         await callback.message.answer(res_str)
+    callback_answer.text = str(f"Отчет на {today}\n отправлен")
+    await callback.answer()

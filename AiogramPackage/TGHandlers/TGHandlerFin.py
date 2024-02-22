@@ -20,6 +20,7 @@ from AiogramPackage.TGFilters.BOTFilter import BOTFilterChatType, BOTFilterFinLi
 from AiogramPackage.TGKeyboards.TGKeybReplyBuilder import reply_kb_lvl1_admin, del_kb
 from AiogramPackage.TGKeyboards.TGKeybInline import get_callback_btns
 from AiogramPackage.TGConnectors.TGMSConnector import TGMSConnector
+from AiogramPackage.TGMiddleWares.TGMWCallbackData import TGMWCallbackData
 
 
 fin_group_router = Router()
