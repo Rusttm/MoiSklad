@@ -388,5 +388,7 @@ def fill_the_purchases_book(start_day='2021-05-01', end_day='2021-05-31'):
 
 
 if __name__ == '__main__':
-    fill_the_purchases_book(start_day='2024-02-01', end_day='2024-02-29')
-    #fill_the_sales_book()
+    start_day = '2024-02-01'
+    end_day = '2024-02-29'
+    fill_the_purchases_book(start_day, end_day)
+    # fill_the_sales_book(start_day, end_day)
