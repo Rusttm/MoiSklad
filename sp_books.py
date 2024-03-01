@@ -386,5 +386,7 @@ def fill_the_purchases_book(start_day='2021-05-01', end_day='2021-05-31'):
     new_sales_books.append_array(data_for_purchases_book, 0)
     return work_book
 
-#fill_the_purchases_book()
-#fill_the_sales_book()
+
+if __name__ == '__main__':
+    fill_the_purchases_book(start_day='2024-02-01', end_day='2024-02-29')
+    #fill_the_sales_book()
