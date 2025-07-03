@@ -238,13 +238,21 @@ class moi_sklad():
             req = requests.get(url=positions_link, headers=header_for_token_auth)
             #with open('profit_prod_list.json', 'w') as ff:
             #    json.dump(req.json(), ff, ensure_ascii=False)
-            for position in req.json()['rows']:
+            temp_rows = req.json()['rows']
+            for position in temp_rows :
                 pos_link = position['assortment']['meta']['href']
-                pos_cost = self.product_dict[pos_link]
-                pos_qty = position['quantity']
-                pos_cost_sum += pos_qty * pos_cost
+                try:
+                    pos_cost = self.product_dict[pos_link]
+                    pos_qty = position['quantity']
+                    pos_cost_sum += pos_qty * pos_cost
+                except Exception as e:
+                    print(f'cant get product {pos_link} price, Error {e}')
         except IndexError:
             print('Sorry, cant get products dict ')
+        except KeyError:
+            print('Sorry, cant get products dict ')
+        except Exception as e:
+            print(f'cant get products prices {e}')
         return pos_cost_sum
 
     def request_customer_data(self, customer_link):
@@ -457,4 +465,4 @@ def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-04-05'):
 if __name__ == '__main__':
     # new_report = agents_books()
     # res = new_report.
-    print(get_nsk_agent_report())
+    print(get_nsk_agent_report(start_day="2025-05-20", end_day="2025-05-21"))

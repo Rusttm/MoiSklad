@@ -85,8 +85,8 @@ class report_forming():
             self.report_link = agents.get_nsk_agent_report(self.from_date, self.to_date)
             self.formed_data['tag'] = f'https://docs.google.com/spreadsheets/d/{str(self.report_link)}/edit#gid=0'
             self.formed_data['result'] = f'NSK agent report from {self.from_date} to {self.to_date} was formed {str(datetime.now().strftime("%Y-%m-%d"))}!'
-        except:
-            self.formed_data['result'] = "Error in AgentNskReport"
+        except Exception as e:
+            self.formed_data['result'] = f"Error in AgentNskReport: {e}"
         print(self.formed_data)
 
     def AgentPfoReport(self):

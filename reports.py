@@ -302,3 +302,4 @@ def actual_report():
 
 
 #print(new_report.get_payments_by_purpose_list())
+print(monthly_report(start_day='2024-07-01', end_day='2024-07-31'))
