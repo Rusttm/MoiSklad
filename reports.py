@@ -185,7 +185,8 @@ class management_report():
             customer_req = requests.get(url=customer_link, headers=header_for_token_auth)
             customer = customer_req.json()
             group_request = requests.get(url=customer['group']['meta']['href'], headers=header_for_token_auth)
-            customer_group = group_request.json()['name']
+            req_group = group_request.json()
+            customer_group = req_group.get['name']
             customer_data_list = [customer['name'], customer_group]
             return customer_data_list
         except IndexError:
@@ -239,6 +240,7 @@ class management_report():
                                  'Новосибирск': [0, 0, 0],
                                  'Саратов': [0, 0, 0],
                                  'Москва': [0, 0, 0],
+                                 'Torker': [0, 0, 0],
                                  'Основной': [0, 0, 0]}
         profit_by_customers_dict = self.get_profit_by_customer_list()
         data_linked = [['отчет создан:', self.form_date], ['период с:', self.start_day], ['период по:', self.end_day],[]]
@@ -302,4 +304,4 @@ def actual_report():
 
 
 #print(new_report.get_payments_by_purpose_list())
-print(monthly_report(start_day='2024-07-01', end_day='2024-07-31'))
+print(monthly_report(start_day='2025-07-01', end_day='2025-09-30'))

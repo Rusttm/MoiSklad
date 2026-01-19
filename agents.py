@@ -166,7 +166,6 @@ class agents_books():
 
 class moi_sklad():
     def __init__(self, agent_name = 'Саратов', start_day='2021-02-08', end_day=toda_y_date):
-
         self.agent_name = agent_name
         self.start_day = start_day
         self.end_day = end_day
@@ -219,11 +218,12 @@ class moi_sklad():
         end_day = self.end_day
         try:
             #url_filtered = str(f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00') # !momentTo doesnt work
-            url_filtered = f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00&momentTo={end_day} 23:00:00'
+            url_filtered = f'{url_profit_product}?momentFrom={start_day_for_sales} 00:00:00&momentTo={end_day} 23:59:59'
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
             with open('profit_prod_list.json', 'w') as ff:
                 json.dump(req.json(), ff, ensure_ascii=False)
-            for elem in req.json()['rows']:
+            temp_req_rows = req.json()['rows']
+            for elem in temp_req_rows:
                 self.product_dict[elem['assortment']['meta']['href']] = elem['sellCost']/100
             return self.product_dict
 
@@ -312,7 +312,7 @@ class moi_sklad():
             product_profit = self.get_profit_by_product_list(start_day_for_sales)
             payments = self.get_payments_list()
             url_filtered = str(
-                f'{url_otgruzka_list}?order=moment,name&filter=moment>={start_day_for_sales} 00:00:00.000;moment<={end_day} 23:00:00.000')
+                f'{url_otgruzka_list}?order=moment,name&filter=moment>={start_day_for_sales} 00:00:00.000;moment<={end_day} 23:00:00.000;salesChannel=https://api.moysklad.ru/api/remap/1.2/entity/saleschannel/81521152-9aa9-11ef-0a80-0e47001f593c')
             req = requests.get(url=url_filtered, headers=header_for_token_auth)
             self.req_date = str(datetime.now().strftime("%Y_%m_%d"))
             self.start_day = start_day
@@ -465,4 +465,4 @@ def get_nsk_agent_report(start_day='2021-04-01', end_day='2021-04-05'):
 if __name__ == '__main__':
     # new_report = agents_books()
     # res = new_report.
-    print(get_nsk_agent_report(start_day="2025-05-20", end_day="2025-05-21"))
+    print(get_nsk_agent_report(start_day="2025-10-01", end_day="2025-12-31"))
